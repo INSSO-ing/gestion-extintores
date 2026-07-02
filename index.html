@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SuperSpuma · Gestión de Extintores</title>
+    <title>SuperSpuma · Seguridad Industrial</title>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -24,34 +24,36 @@
             --rojo-alerta: #C62828;
             --verde-ok: #2E7D32;
             --naranja-warn: #E65100;
-            --gris-oscuro: #212121;
             --texto-primario: #3E2723;
             --texto-secundario: #5D4037;
-            --fondo-app: #FFF8E1;
-            --sombra: 0 2px 8px rgba(0,0,0,0.1);
+            --sombra: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
-            background: #f5f0e8;
             color: var(--texto-primario);
             display: flex;
             justify-content: center;
             min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
+            background: 
+                linear-gradient(rgba(255,248,225,0.94), rgba(255,248,225,0.94)),
+                url('https://image.pollinations.ai/prompt/red%20fire%20extinguisher%20industrial%20safety%20blurred%20background?width=1200&height=1600&nofeed=true') center/cover no-repeat fixed;
         }
 
         .app-container {
             width: 100%;
             max-width: 480px;
-            background: var(--crema);
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+            box-shadow: 0 0 30px rgba(0,0,0,0.2);
             position: relative;
         }
 
@@ -68,13 +70,13 @@
             z-index: 50;
         }
 
-        .app-header img {
+        .app-header .logo-img {
             width: 42px;
             height: 42px;
             border-radius: 8px;
             object-fit: cover;
             background: var(--crema);
-            padding: 4px;
+            padding: 3px;
         }
 
         .app-header h1 {
@@ -103,7 +105,6 @@
             padding: 16px;
             overflow-y: auto;
             padding-bottom: 80px;
-            background: var(--fondo-app);
         }
 
         .bottom-nav {
@@ -123,9 +124,9 @@
             background: transparent;
             border: none;
             color: var(--crema-oscuro);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
-            padding: 6px 10px;
+            padding: 6px 8px;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
@@ -149,7 +150,9 @@
         }
 
         .tarjeta-resumen {
-            background: var(--blanco);
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             border-radius: 16px;
             padding: 16px;
             box-shadow: var(--sombra);
@@ -163,7 +166,7 @@
         }
 
         .tarjeta-resumen .etiqueta {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--texto-secundario);
             font-weight: 500;
         }
@@ -183,7 +186,9 @@
         }
 
         .tarjeta-tipo {
-            background: var(--blanco);
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             border-radius: 16px;
             overflow: hidden;
             box-shadow: var(--sombra);
@@ -194,18 +199,20 @@
             width: 100%;
             height: 100px;
             object-fit: cover;
-            background: #f0f0f0;
+            background: #e0e0e0;
         }
 
         .tarjeta-tipo .tipo-nombre {
             padding: 8px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             color: var(--marron-oscuro);
         }
 
         .tabla-container {
-            background: var(--blanco);
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             border-radius: 16px;
             padding: 16px;
             box-shadow: var(--sombra);
@@ -239,11 +246,11 @@
             border: none;
             border-radius: 12px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             transition: 0.2s;
             background: var(--marron-medio);
             color: var(--crema);
@@ -275,10 +282,10 @@
         }
 
         .preview-imagen img {
-            width: 120px;
-            height: 120px;
-            object-fit: contain;
-            background: #f9f9f9;
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            background: #f0f0f0;
             border-radius: 12px;
             border: 1px solid #ddd;
         }
@@ -335,31 +342,29 @@
     </style>
 </head>
 <body>
-<div class="app-container">
-    <!-- Header con logo de imagen real -->
+<div class="app-container" id="app-container">
+    <!-- Header -->
     <header class="app-header">
-        <img src="https://image.pollinations.ai/prompt/fire%20extinguisher%20isolated%20on%20white%20background?width=100&height=100&nofeed=true" alt="Extintor">
+        <img class="logo-img" src="https://image.pollinations.ai/prompt/red%20fire%20extinguisher%20icon%20logo?width=100&height=100&nofeed=true" alt="SuperSpuma" onerror="this.style.display='none'">
         <div>
             <h1>SuperSpuma</h1>
-            <small>Seguridad Industrial · Extintores</small>
+            <small>Seguridad Industrial</small>
         </div>
-        <div class="conexion-indicator" id="conexion-indicator" title="Estado de conexión"></div>
+        <div class="conexion-indicator" id="conexion-indicator" title="Estado de conexion"></div>
     </header>
 
     <main class="app-content" id="app-content">
         <!-- Dashboard -->
         <section id="dashboard" class="seccion activa">
             <div class="tarjetas-resumen" id="tarjetas-resumen"></div>
-
             <div class="tipos-extintores">
                 <h3>Tipos de Extintores</h3>
                 <div class="grid-tipos" id="grid-tipos"></div>
             </div>
-
             <div class="tabla-container">
-                <h3 style="margin-bottom:12px;">Próximos a vencer</h3>
+                <h3 style="margin-bottom:12px;">Proximos a vencer</h3>
                 <table id="tabla-vencimientos">
-                    <thead><tr><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Estado</th></tr></thead>
+                    <thead><tr><th>Ubicacion</th><th>Tipo</th><th>Vence</th><th>Estado</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -373,18 +378,18 @@
                     <option value="todos">Todos</option>
                     <option value="Operativo">Operativo</option>
                     <option value="Vencido">Vencido</option>
-                    <option value="Próximo a vencer">Próximo</option>
+                    <option value="Proximo a vencer">Proximo</option>
                 </select>
             </div>
             <div class="tabla-container">
                 <table id="tabla-inventario">
-                    <thead><tr><th>QR</th><th>Ubicación</th><th>Tipo</th><th>Estado</th><th></th></tr></thead>
+                    <thead><tr><th>QR</th><th>Ubicacion</th><th>Tipo</th><th>Estado</th><th></th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
             <div style="display:flex; gap:8px; margin-top:12px;">
-                <button class="btn btn-marron" onclick="exportarCSV()">CSV</button>
-                <button class="btn btn-outline" onclick="imprimirInventario()">PDF</button>
+                <button class="btn btn-marron" onclick="exportarCSV()">Descargar CSV</button>
+                <button class="btn btn-outline" onclick="imprimirInventario()">Imprimir PDF</button>
             </div>
         </section>
 
@@ -393,14 +398,14 @@
             <h2 id="titulo-form" style="color:var(--marron-oscuro); margin-bottom:12px;">Nuevo Extintor</h2>
             <form id="form-extintor" onsubmit="guardarExtintor(event)" class="form-grid">
                 <input type="hidden" id="edit-id">
-                <div><label>Ubicación *</label><input type="text" id="ubicacion" required placeholder="Ej: Nave 3 - Sector B"></div>
+                <div><label>Ubicacion *</label><input type="text" id="ubicacion" required placeholder="Ej: Nave 3 - Sector B"></div>
                 <div>
                     <label>Tipo *</label>
                     <select id="tipo" required onchange="actualizarImagenTipo(); manejarOtro('tipo')">
                         <option value="">Seleccionar...</option>
-                        <option value="Espuma mecánica">Espuma mecánica</option>
-                        <option value="PQS">PQS (Polvo químico seco)</option>
-                        <option value="CO2">CO₂</option>
+                        <option value="Espuma mecanica">Espuma mecanica</option>
+                        <option value="PQS">PQS (Polvo quimico seco)</option>
+                        <option value="CO2">CO2</option>
                         <option value="Carrito de Espuma">Carrito de Espuma</option>
                         <option value="Alogenado (eco)">Alogenado (eco)</option>
                         <option value="Otro">Otro (especificar)</option>
@@ -408,7 +413,7 @@
                     <input type="text" id="otro-tipo" placeholder="Especificar tipo" style="display:none; margin-top:8px;">
                 </div>
                 <div>
-                    <label>Tamaño *</label>
+                    <label>Tamanio *</label>
                     <select id="tamano" required onchange="manejarOtro('tamano')">
                         <option value="">Seleccionar...</option>
                         <option value="25 kg">25 kg</option>
@@ -416,14 +421,14 @@
                         <option value="18 kg">18 kg</option>
                         <option value="Otro">Otro (especificar)</option>
                     </select>
-                    <input type="text" id="otro-tamano" placeholder="Especificar tamaño" style="display:none; margin-top:8px;">
+                    <input type="text" id="otro-tamano" placeholder="Especificar tamanio" style="display:none; margin-top:8px;">
                 </div>
 
                 <div class="preview-imagen">
-                    <img id="tipo-imagen-preview" src="https://image.pollinations.ai/prompt/fire%20extinguisher?width=200&height=200&nofeed=true" alt="Vista previa">
+                    <img id="tipo-imagen-preview" src="https://image.pollinations.ai/prompt/red%20fire%20extinguisher%20isolated?width=200&height=200&nofeed=true" alt="Vista previa del extintor">
                 </div>
 
-                <div><label>Próxima recarga</label><input type="date" id="fecha-proxima"></div>
+                <div><label>Proxima recarga</label><input type="date" id="fecha-proxima"></div>
                 <div><label>N° serie / Etiqueta</label><input type="text" id="numero-serie" placeholder="Etiqueta o lote"></div>
                 <div><label>Notas</label><textarea id="notas" rows="2"></textarea></div>
                 <button type="submit" class="btn btn-marron" style="width:100%;">Guardar Extintor</button>
@@ -441,7 +446,7 @@
                 <button class="btn btn-rojo" id="btn-detener" onclick="detenerEscaner()" style="display:none;">Detener</button>
             </div>
             <div class="escaner-box">
-                <p id="texto-escaner">Seleccioná un modo</p>
+                <p id="texto-escaner">Selecciona un modo</p>
                 <div id="qr-reader"></div>
             </div>
             <div id="resultado-escaner" style="margin-top:12px;"></div>
@@ -455,7 +460,7 @@
                 <div><label>Inspector *</label><input type="text" id="inspector" required></div>
                 <div><label>Resultado</label><select id="resultado" required><option value="Aprobado">Aprobado</option><option value="Rechazado">Rechazado</option></select></div>
                 <div><label>Observaciones</label><textarea id="obs-inspeccion" rows="2"></textarea></div>
-                <button type="submit" class="btn btn-verde" style="width:100%;">Registrar Inspección</button>
+                <button type="submit" class="btn btn-verde" style="width:100%;">Registrar Inspeccion</button>
             </form>
             <div class="tabla-container">
                 <table id="tabla-inspecciones">
@@ -502,10 +507,67 @@
     let editMode = false;
     let currentEditId = null;
 
-    // Conexión
+    // ==========================================
+    // DETECTAR SI SE ACCEDIO DESDE UN QR (URL con ?id=)
+    // ==========================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const idDesdeQR = urlParams.get('id');
+
+    if (idDesdeQR) {
+        // Ocultar la app y mostrar ficha del extintor
+        document.getElementById('app-container').style.display = 'none';
+        
+        db.ref('extintores/' + idDesdeQR).once('value').then((snap) => {
+            const ext = snap.val();
+            const body = document.body;
+            
+            // Crear contenedor de ficha
+            const ficha = document.createElement('div');
+            ficha.style.cssText = 'max-width:500px;margin:20px auto;padding:30px;background:white;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.2);font-family:Segoe UI,sans-serif;text-align:center;';
+            
+            if (ext) {
+                ficha.innerHTML = `
+                    <img src="https://image.pollinations.ai/prompt/red%20fire%20extinguisher%20logo?width=100&height=100&nofeed=true" style="width:80px;margin-bottom:16px;" alt="SuperSpuma">
+                    <h2 style="color:#3E2723;">SuperSpuma</h2>
+                    <p style="color:#5D4037;font-size:14px;">Seguridad Industrial</p>
+                    <hr style="margin:16px 0;border-color:#ddd;">
+                    <h3 style="color:#C62828;margin-bottom:16px;">Extintor ${ext.tipo} - ${ext.tamano || ext.capacidad || ''}</h3>
+                    <table style="width:100%;text-align:left;border-collapse:collapse;">
+                        <tr><td style="padding:8px;font-weight:600;color:#5D4037;">Ubicacion:</td><td style="padding:8px;">${ext.ubicacion}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;color:#5D4037;">Numero de serie:</td><td style="padding:8px;">${ext.numeroSerie || 'No registrado'}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;color:#5D4037;">Proxima recarga:</td><td style="padding:8px;">${ext.fechaProxima || 'No especificada'}</td></tr>
+                        <tr><td style="padding:8px;font-weight:600;color:#5D4037;">Estado:</td><td style="padding:8px;"><span style="background:${ext.estado==='Operativo'?'#2E7D32':ext.estado==='Vencido'?'#C62828':'#E65100'};color:white;padding:4px 12px;border-radius:12px;font-size:12px;">${ext.estado}</span></td></tr>
+                        <tr><td style="padding:8px;font-weight:600;color:#5D4037;">Notas:</td><td style="padding:8px;">${ext.notas || 'Sin observaciones'}</td></tr>
+                    </table>
+                    <p style="font-size:11px;color:#999;margin-top:16px;">ID: ${idDesdeQR}</p>
+                    <p style="font-size:11px;color:#4CAF50;margin-top:8px;">QR escaneado correctamente</p>
+                `;
+            } else {
+                ficha.innerHTML = `
+                    <h2 style="color:#C62828;">Extintor no encontrado</h2>
+                    <p>ID: ${idDesdeQR}</p>
+                    <p style="color:#999;">Este QR no corresponde a ningun extintor registrado.</p>
+                `;
+            }
+            
+            body.innerHTML = '';
+            body.appendChild(ficha);
+            body.style.display = 'flex';
+            body.style.alignItems = 'center';
+            body.style.justifyContent = 'center';
+        });
+    }
+
+    // ==========================================
+    // RESTO DE FUNCIONES
+    // ==========================================
+
     const connectedRef = db.ref('.info/connected');
     connectedRef.on('value', (snap) => {
-        document.getElementById('conexion-indicator').className = 'conexion-indicator ' + (snap.val() ? 'online' : 'offline');
+        const indicator = document.getElementById('conexion-indicator');
+        if (indicator) {
+            indicator.className = 'conexion-indicator ' + (snap.val() ? 'online' : 'offline');
+        }
     });
 
     function mostrarToast(mensaje) {
@@ -537,12 +599,12 @@
         document.getElementById('titulo-form').textContent = 'Nuevo Extintor';
         document.getElementById('otro-tipo').style.display = 'none';
         document.getElementById('otro-tamano').style.display = 'none';
-        document.getElementById('tipo-imagen-preview').src = 'https://image.pollinations.ai/prompt/fire%20extinguisher?width=200&height=200&nofeed=true';
+        document.getElementById('tipo-imagen-preview').src = 'https://image.pollinations.ai/prompt/red%20fire%20extinguisher%20isolated?width=200&height=200&nofeed=true';
         editMode = false;
         currentEditId = null;
     }
 
-    function cancelarEdicion() { resetFormulario(); mostrarToast('Edición cancelada'); }
+    function cancelarEdicion() { resetFormulario(); mostrarToast('Edicion cancelada'); }
 
     function manejarOtro(tipo) {
         if (tipo === 'tipo') {
@@ -556,15 +618,15 @@
         const tipo = document.getElementById('tipo').value;
         const img = document.getElementById('tipo-imagen-preview');
         const prompts = {
-            'Espuma mecánica': 'mechanical foam fire extinguisher',
-            'PQS': 'dry powder fire extinguisher',
-            'CO2': 'CO2 fire extinguisher',
-            'Carrito de Espuma': 'wheeled foam fire extinguisher',
-            'Alogenado (eco)': 'halotron fire extinguisher',
-            'Otro': 'generic fire extinguisher'
+            'Espuma mecanica': 'mechanical%20foam%20fire%20extinguisher',
+            'PQS': 'dry%20chemical%20powder%20fire%20extinguisher',
+            'CO2': 'CO2%20carbon%20dioxide%20fire%20extinguisher',
+            'Carrito de Espuma': 'wheeled%20foam%20fire%20extinguisher%20cart',
+            'Alogenado (eco)': 'halotron%20clean%20agent%20fire%20extinguisher',
+            'Otro': 'red%20fire%20extinguisher%20isolated'
         };
-        const prompt = prompts[tipo] || 'fire extinguisher';
-        img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=200&height=200&nofeed=true`;
+        const prompt = prompts[tipo] || 'red%20fire%20extinguisher';
+        img.src = `https://image.pollinations.ai/prompt/${prompt}?width=200&height=200&nofeed=true`;
     }
 
     async function cargarDashboard() {
@@ -575,32 +637,30 @@
         const total = extintores.length;
         const operativos = extintores.filter(e => e.estado === 'Operativo').length;
         const vencidos = extintores.filter(e => e.estado === 'Vencido').length;
-        const proximos = extintores.filter(e => e.estado === 'Próximo a vencer').length;
+        const proximos = extintores.filter(e => e.estado === 'Proximo a vencer').length;
 
         document.getElementById('tarjetas-resumen').innerHTML = `
             <div class="tarjeta-resumen"><div class="numero">${total}</div><div class="etiqueta">Total Extintores</div></div>
             <div class="tarjeta-resumen" style="border-left-color: var(--verde-ok);"><div class="numero">${operativos}</div><div class="etiqueta">Operativos</div></div>
-            <div class="tarjeta-resumen" style="border-left-color: var(--naranja-warn);"><div class="numero">${proximos}</div><div class="etiqueta">Próximos a vencer</div></div>
+            <div class="tarjeta-resumen" style="border-left-color: var(--naranja-warn);"><div class="numero">${proximos}</div><div class="etiqueta">Proximos a vencer</div></div>
             <div class="tarjeta-resumen" style="border-left-color: var(--rojo-alerta);"><div class="numero">${vencidos}</div><div class="etiqueta">Vencidos</div></div>
         `;
 
-        // Cuadrícula de tipos de extintores con imágenes reales
         const tipos = [
-            { nombre: 'Espuma', prompt: 'mechanical foam fire extinguisher' },
-            { nombre: 'PQS', prompt: 'dry powder fire extinguisher' },
-            { nombre: 'CO2', prompt: 'CO2 fire extinguisher' },
-            { nombre: 'Carrito', prompt: 'wheeled foam fire extinguisher' },
-            { nombre: 'Alogenado', prompt: 'halotron fire extinguisher' },
-            { nombre: 'Otro', prompt: 'generic fire extinguisher' }
+            { nombre: 'Espuma', prompt: 'mechanical%20foam%20fire%20extinguisher' },
+            { nombre: 'PQS', prompt: 'dry%20chemical%20powder%20fire%20extinguisher' },
+            { nombre: 'CO2', prompt: 'CO2%20carbon%20dioxide%20fire%20extinguisher' },
+            { nombre: 'Carrito', prompt: 'wheeled%20foam%20fire%20extinguisher%20cart' },
+            { nombre: 'Alogenado', prompt: 'halotron%20clean%20agent%20fire%20extinguisher' },
+            { nombre: 'Otro', prompt: 'red%20fire%20extinguisher%20isolated' }
         ];
         document.getElementById('grid-tipos').innerHTML = tipos.map(t => `
             <div class="tarjeta-tipo">
-                <img src="https://image.pollinations.ai/prompt/${encodeURIComponent(t.prompt)}?width=200&height=200&nofeed=true" alt="${t.nombre}">
+                <img src="https://image.pollinations.ai/prompt/${t.prompt}?width=200&height=200&nofeed=true" alt="${t.nombre}">
                 <div class="tipo-nombre">${t.nombre}</div>
             </div>
         `).join('');
 
-        // Próximos a vencer
         const tbody = document.querySelector('#tabla-vencimientos tbody');
         const lista = extintores.filter(e => e.estado !== 'Operativo').slice(0, 10);
         tbody.innerHTML = lista.map(e => `
@@ -663,8 +723,8 @@
         let tamano = document.getElementById('tamano').value;
         let tipoOtro = '';
         let tamanoOtro = '';
-        if (tipo === 'Otro') { tipoOtro = document.getElementById('otro-tipo').value.trim(); if (!tipoOtro) { mostrarToast('Especificá el tipo'); return; } }
-        if (tamano === 'Otro') { tamanoOtro = document.getElementById('otro-tamano').value.trim(); if (!tamanoOtro) { mostrarToast('Especificá el tamaño'); return; } }
+        if (tipo === 'Otro') { tipoOtro = document.getElementById('otro-tipo').value.trim(); if (!tipoOtro) { mostrarToast('Especifica el tipo'); return; } }
+        if (tamano === 'Otro') { tamanoOtro = document.getElementById('otro-tamano').value.trim(); if (!tamanoOtro) { mostrarToast('Especifica el tamanio'); return; } }
         const data = {
             ubicacion: document.getElementById('ubicacion').value,
             tipo: tipo, tipoOtro: tipoOtro,
@@ -681,8 +741,11 @@
         } else {
             const ref = db.ref('extintores').push();
             const id = ref.key;
-            const qrURL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${id}`;
+            // URL PUBLICA para que cualquier telefono pueda escanear
+            const urlPublica = `https://insso-ing.github.io/gestion-extintores/?id=${id}`;
+            const qrURL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(urlPublica)}`;
             data.qrURL = qrURL;
+            data.urlPublica = urlPublica;
             await ref.set(data);
             mostrarToast('Extintor creado');
             mostrarQR(id, qrURL, data.ubicacion, data.tipo, data.tamano, data.fechaProxima, data.numeroSerie);
@@ -696,9 +759,10 @@
     function mostrarQR(id, qrURL, ubicacion, tipo, tamano, fecha, serie) {
         document.getElementById('modal-contenido').innerHTML = `
             <div style="text-align:center;"><img src="${qrURL}" width="200"></div>
-            <p><strong>${tipo} ${tamano}</strong> · ${ubicacion}</p>
+            <p style="font-size:12px;color:#999;margin-top:8px;">Escanear con cualquier telefono</p>
+            <p><strong>${tipo} ${tamano}</strong> - ${ubicacion}</p>
             ${serie ? `<p>Serie: ${serie}</p>` : ''}
-            ${fecha ? `<p>Próx. recarga: ${fecha}</p>` : ''}
+            ${fecha ? `<p>Prox. recarga: ${fecha}</p>` : ''}
             <button class="btn btn-marron" onclick="descargarQR('${qrURL}','${id}','${ubicacion}','${tipo}','${tamano}')">Descargar QR</button>
             <button class="btn btn-outline" onclick="compartirWhatsApp('${qrURL}','${id}','${ubicacion}','${tipo}','${tamano}')">WhatsApp</button>
             <button class="btn btn-outline" onclick="copiarID('${id}')">Copiar ID</button>`;
@@ -716,8 +780,8 @@
             ctx.fillStyle = 'white'; ctx.fillRect(0,0,canvas.width,canvas.height);
             ctx.drawImage(img, 20, 20, 300, 300);
             ctx.fillStyle = '#3E2723'; ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center';
-            ctx.fillText(`SuperSpuma · ${tipo} ${tamano}`, 170, 350);
-            ctx.font = '12px Arial'; ctx.fillText(`Ubicación: ${ubicacion}`, 170, 375);
+            ctx.fillText(`SuperSpuma - ${tipo} ${tamano}`, 170, 350);
+            ctx.font = '12px Arial'; ctx.fillText(`Ubicacion: ${ubicacion}`, 170, 375);
             ctx.fillText(`ID: ${id}`, 170, 395);
             const a = document.createElement('a');
             a.download = `QR_SuperSpuma_${id}.png`;
@@ -736,8 +800,8 @@
             ctx.fillStyle = 'white'; ctx.fillRect(0,0,canvas.width,canvas.height);
             ctx.drawImage(img, 20, 20, 300, 300);
             ctx.fillStyle = '#3E2723'; ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center';
-            ctx.fillText(`SuperSpuma · ${tipo} ${tamano}`, 170, 350);
-            ctx.font = '12px Arial'; ctx.fillText(`Ubicación: ${ubicacion}`, 170, 375);
+            ctx.fillText(`SuperSpuma - ${tipo} ${tamano}`, 170, 350);
+            ctx.font = '12px Arial'; ctx.fillText(`Ubicacion: ${ubicacion}`, 170, 375);
             ctx.fillText(`ID: ${id}`, 170, 395);
             const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
             const file = new File([blob], `QR_SuperSpuma_${id}.png`, { type: 'image/png' });
@@ -747,7 +811,7 @@
                     return;
                 } catch (err) {}
             }
-            window.open(`https://wa.me/?text=Extintor%20SuperSpuma%20-%20${encodeURIComponent(tipo)}%20${encodeURIComponent(tamano)}%20-%20${encodeURIComponent(ubicacion)}%20ID:%20${id}`);
+            window.open(`https://wa.me/?text=SuperSpuma%20-%20${encodeURIComponent(tipo)}%20${encodeURIComponent(tamano)}%20-%20${encodeURIComponent(ubicacion)}%20ID:%20${id}`);
         };
         img.src = qrURL;
     }
@@ -755,7 +819,7 @@
     function copiarID(id) { navigator.clipboard.writeText(id).then(() => mostrarToast('ID copiado')); }
 
     function exportarCSV() {
-        const filas = [['ID','Ubicación','Tipo','Tamaño','Próx. recarga','N° Serie','Estado']];
+        const filas = [['ID','Ubicacion','Tipo','Tamanio','Prox. recarga','N° Serie','Estado']];
         Object.entries(datosExtintores).forEach(([id, e]) => filas.push([id, e.ubicacion, e.tipo, e.tamano||e.capacidad||'', e.fechaProxima||'', e.numeroSerie||'', e.estado]));
         const csv = filas.map(f => f.map(c => `"${c}"`).join(',')).join('\n');
         const blob = new Blob([csv], {type: 'text/csv'});
@@ -768,12 +832,12 @@
     function imprimirInventario() {
         const ventana = window.open('', '_blank');
         const filas = Object.entries(datosExtintores).map(([id, e]) => `<tr><td>${e.ubicacion}</td><td>${e.tipo}</td><td>${e.tamano||e.capacidad||''}</td><td>${e.fechaProxima||'-'}</td><td>${e.estado}</td></tr>`).join('');
-        ventana.document.write(`<html><head><title>Inventario SuperSpuma</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th{background:#4E342E;color:white;padding:8px;} td{padding:6px;border-bottom:1px solid #ccc;}</style></head><body><h2>Inventario SuperSpuma</h2><table><thead><tr><th>Ubicación</th><th>Tipo</th><th>Tamaño</th><th>Próx. recarga</th><th>Estado</th></tr></thead><tbody>${filas}</tbody></table></body></html>`);
+        ventana.document.write(`<html><head><title>Inventario SuperSpuma</title><style>body{font-family:Arial;padding:20px;} table{width:100%;border-collapse:collapse;} th{background:#4E342E;color:white;padding:8px;} td{padding:6px;border-bottom:1px solid #ccc;}</style></head><body><h2>Inventario SuperSpuma</h2><table><thead><tr><th>Ubicacion</th><th>Tipo</th><th>Tamanio</th><th>Prox. recarga</th><th>Estado</th></tr></thead><tbody>${filas}</tbody></table></body></html>`);
         ventana.document.close();
         ventana.print();
     }
 
-    // Escáner (sin cambios)
+    // Escaner (MODIFICADO para reconocer URLs)
     async function iniciarEscanerQR() {
         document.getElementById('btn-escanear-qr').style.display='none';
         document.getElementById('btn-escanear-etiqueta').style.display='none';
@@ -783,7 +847,13 @@
         try {
             await html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:250}},
                 async (text) => {
-                    const snap = await db.ref('extintores/'+text).once('value');
+                    // Extraer ID si viene de una URL
+                    let idBuscado = text;
+                    if (text.includes('?id=')) {
+                        const params = new URLSearchParams(text.split('?')[1]);
+                        idBuscado = params.get('id') || text;
+                    }
+                    const snap = await db.ref('extintores/' + idBuscado).once('value');
                     const ext = snap.val();
                     const res = document.getElementById('resultado-escaner');
                     res.innerHTML = ext
@@ -805,10 +875,11 @@
                 async (text) => {
                     const ref = db.ref('extintores').push();
                     const id = ref.key;
-                    const qrURL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${id}`;
+                    const urlPublica = `https://insso-ing.github.io/gestion-extintores/?id=${id}`;
+                    const qrURL = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(urlPublica)}`;
                     await ref.set({
                         ubicacion:'PENDIENTE', tipo:'PENDIENTE', tamano:'PENDIENTE',
-                        numeroSerie: text, estado:'Operativo', qrURL,
+                        numeroSerie: text, estado:'Operativo', qrURL, urlPublica,
                         fechaCreacion: new Date().toISOString()
                     });
                     document.getElementById('resultado-escaner').innerHTML = `<div style="background:#fff3e0;padding:12px;border-radius:12px;">Extintor creado (${text})</div>`;
@@ -825,7 +896,7 @@
         document.getElementById('qr-reader').innerHTML = '';
     }
 
-    async function eliminarExtintor(id) { if(confirm('¿Eliminar?')) { await db.ref('extintores/'+id).remove(); cargarInventario(); cargarDashboard(); mostrarToast('Eliminado'); } }
+    async function eliminarExtintor(id) { if(confirm('Eliminar este extintor?')) { await db.ref('extintores/'+id).remove(); cargarInventario(); cargarDashboard(); mostrarToast('Eliminado'); } }
 
     async function cargarExtintoresEnSelect() {
         const snap = await db.ref('extintores').once('value');
@@ -837,7 +908,7 @@
     async function guardarInspeccion(e) {
         e.preventDefault();
         const id = document.getElementById('extintor-select').value;
-        if (!id) return mostrarToast('Seleccioná extintor');
+        if (!id) return mostrarToast('Selecciona un extintor');
         await db.ref('inspecciones').push().set({
             extintorId: id,
             inspector: document.getElementById('inspector').value,
@@ -845,7 +916,7 @@
             observaciones: document.getElementById('obs-inspeccion').value,
             fecha: new Date().toISOString()
         });
-        mostrarToast('Inspección guardada');
+        mostrarToast('Inspeccion guardada');
         document.getElementById('form-inspeccion').reset();
         cargarInspecciones();
     }
@@ -859,7 +930,6 @@
             <tbody>${inspecciones.map(i => `<tr><td>${new Date(i.fecha).toLocaleDateString()}</td><td>${i.extintorId?.slice(0,8)}</td><td>${i.inspector}</td><td>${i.resultado}</td></tr>`).join('') || '<tr><td colspan="4">Sin inspecciones</td></tr>'}</tbody>`;
     }
 
-    // Inicio
     cargarDashboard();
     resetFormulario();
 </script>
