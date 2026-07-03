@@ -12,161 +12,61 @@
 
     <style>
         :root {
-            --bg: #f5f0e8;
-            --card-bg: rgba(255,255,255,0.9);
-            --text: #3E2723;
-            --text-sec: #5D4037;
-            --header-bg: linear-gradient(135deg, #3E2723, #4E342E);
-            --sombra: 0 2px 10px rgba(0,0,0,0.08);
-            --marron: #3E2723;
-            --marron-medio: #4E342E;
-            --crema: #FFF8E1;
+            --bg: #f5f0e8; --card-bg: rgba(255,255,255,0.9); --text: #3E2723;
+            --text-sec: #5D4037; --header-bg: linear-gradient(135deg, #3E2723, #4E342E);
+            --sombra: 0 2px 10px rgba(0,0,0,0.08); --marron: #3E2723; --marron-medio: #4E342E; --crema: #FFF8E1;
         }
-
         .dark-mode {
-            --bg: #1a1a1a;
-            --card-bg: rgba(30,30,30,0.95);
-            --text: #FFF8E1;
-            --text-sec: #ccc;
-            --header-bg: linear-gradient(135deg, #111, #222);
-            --sombra: 0 2px 10px rgba(255,255,255,0.05);
+            --bg: #1a1a1a; --card-bg: rgba(30,30,30,0.95); --text: #FFF8E1;
+            --text-sec: #ccc; --header-bg: linear-gradient(135deg, #111, #222); --sombra: 0 2px 10px rgba(255,255,255,0.05);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: 0.3s; }
+        .app-container { max-width: 1200px; margin: 0 auto; padding: 16px; }
 
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            transition: 0.3s;
-        }
-
-        .app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-
-        /* Header */
         .header {
-            background: var(--header-bg);
-            color: #FFF8E1;
-            padding: 14px 20px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
+            background: var(--header-bg); color: #FFF8E1; padding: 14px 20px; border-radius: 16px;
+            display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap;
         }
         .header img { width: 45px; height: 45px; border-radius: 10px; background: #FFF8E1; padding: 3px; }
         .header h1 { font-size: 20px; font-weight: 800; }
         .header .header-right { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .header select {
-            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-            color: #FFF8E1; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; min-width: 220px;
-        }
+        .header select { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #FFF8E1; padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; min-width: 220px; }
         .header select option { background: #3E2723; color: #FFF8E1; }
-        .btn-icon {
-            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-            color: #FFF8E1; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 16px;
-        }
-        .btn-icon:hover { background: rgba(255,255,255,0.25); }
+        .btn-icon { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #FFF8E1; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 16px; }
         .conexion-dot { width: 10px; height: 10px; border-radius: 50%; background: #4CAF50; display: inline-block; }
 
-        /* Alerta de vencimientos */
-        .alerta-vencimientos {
-            background: #C62828; color: white; padding: 12px 16px; border-radius: 12px;
-            margin-bottom: 16px; display: none; font-weight: 600; font-size: 13px; cursor: pointer;
-        }
-        .alerta-vencimientos.visible { display: block; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.7; } }
-
-        /* Buscador global */
-        .buscador-global {
-            background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 14px;
-            padding: 14px; margin-bottom: 16px; box-shadow: var(--sombra);
-            display: flex; gap: 10px; align-items: center;
-        }
-        .buscador-global input { flex: 1; padding: 10px; border: 2px solid #ddd; border-radius: 10px; font-size: 13px; }
-        .buscador-global .resultado { font-size: 12px; color: var(--text-sec); }
-
-        /* Navegación principal */
-        .nav-principal {
-            display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
-        }
-        .nav-principal button {
-            padding: 10px 18px; border: none; border-radius: 10px; font-weight: 600;
-            font-size: 12px; cursor: pointer; background: #eee; color: #333; transition: 0.2s;
-        }
+        .nav-principal { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .nav-principal button { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 600; font-size: 12px; cursor: pointer; background: #eee; color: #333; }
         .nav-principal button.activo { background: var(--marron); color: #FFF8E1; }
-        .nav-principal button:hover { opacity: 0.85; }
 
-        /* Panel sucursal activa */
-        .sucursal-activa {
-            background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px;
-            padding: 20px; margin-bottom: 16px; border-left: 6px solid var(--marron); box-shadow: var(--sombra);
-        }
-        .sucursal-activa h2 { font-size: 20px; margin-bottom: 4px; color: var(--text); }
-        .sucursal-activa .direccion { font-size: 13px; color: var(--text-sec); }
+        .grid-sucursales { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 20px; }
+        .card-sucursal { background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px; padding: 16px; cursor: pointer; transition: 0.2s; border-left: 5px solid #4E342E; box-shadow: var(--sombra); }
+        .card-sucursal:hover { transform: translateY(-3px); }
+        .card-sucursal.activa { border-left-color: #2E7D32; }
+        .mini-stats { display: flex; gap: 8px; font-size: 10px; flex-wrap: wrap; }
+        .mini-stats span { padding: 3px 8px; border-radius: 8px; font-weight: 600; }
+        .critico { background: #FF0000; color: white; } .alto { background: #FF6600; color: white; } .normal { background: #00CC66; color: white; }
+
+        .sucursal-activa { background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px; padding: 20px; margin-bottom: 16px; border-left: 6px solid var(--marron); box-shadow: var(--sombra); }
         .stats { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
         .stat { text-align: center; background: var(--crema); padding: 10px 14px; border-radius: 12px; min-width: 70px; }
         .stat .num { font-size: 24px; font-weight: 800; }
-        .stat .lbl { font-size: 9px; color: #5D4037; text-transform: uppercase; }
 
-        /* Grid sucursales */
-        .grid-sucursales {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 14px; margin-bottom: 20px;
-        }
-        .card-sucursal {
-            background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px;
-            padding: 16px; cursor: pointer; transition: 0.2s; border-left: 5px solid #4E342E; box-shadow: var(--sombra);
-        }
-        .card-sucursal:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
-        .card-sucursal.activa { border-left-color: #2E7D32; }
-        .card-sucursal h3 { font-size: 15px; margin-bottom: 3px; color: var(--text); }
-        .card-sucursal .dir { font-size: 10px; color: #888; margin-bottom: 8px; }
-        .mini-stats { display: flex; gap: 8px; font-size: 10px; flex-wrap: wrap; }
-        .mini-stats span { padding: 3px 8px; border-radius: 8px; font-weight: 600; }
-        .critico { background: #FF0000; color: white; }
-        .alto { background: #FF6600; color: white; }
-        .normal { background: #00CC66; color: white; }
-
-        /* Tabs */
         .tabs { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
-        .tabs button {
-            padding: 8px 14px; border: none; border-radius: 8px; font-weight: 600;
-            font-size: 11px; cursor: pointer; background: #eee; color: #333;
-        }
+        .tabs button { padding: 8px 14px; border: none; border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; background: #eee; color: #333; }
         .tabs button.activo { background: var(--marron); color: #FFF8E1; }
 
-        /* Tablas */
-        .tabla-container {
-            background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px;
-            padding: 16px; box-shadow: var(--sombra); margin-bottom: 16px; overflow-x: auto;
-        }
-        .tabla-container h3 { margin-bottom: 12px; color: var(--text); }
+        .tabla-container { background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px; padding: 16px; box-shadow: var(--sombra); margin-bottom: 16px; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; }
         th { background: var(--marron); color: #FFF8E1; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; }
         td { padding: 7px 10px; border-bottom: 1px solid #eee; color: var(--text); }
-        tr:hover { background: rgba(0,0,0,0.03); }
         .badge { padding: 3px 7px; border-radius: 8px; font-size: 9px; font-weight: 700; }
-        .badge.critico { background: #FF0000; color: white; }
-        .badge.alta { background: #FF6600; color: white; }
-        .badge.media { background: #FFCC00; color: #333; }
-        .badge.baja { background: #33CCFF; color: #333; }
-        .badge.normal { background: #00CC66; color: white; }
-        .badge.aprobado { background: #2E7D32; color: white; }
-        .badge.rechazado { background: #C62828; color: white; }
+        .badge.critico { background: #FF0000; color: white; } .badge.alta { background: #FF6600; color: white; }
+        .badge.media { background: #FFCC00; color: #333; } .badge.baja { background: #33CCFF; color: #333; } .badge.normal { background: #00CC66; color: white; }
 
-        .btn { padding: 7px 12px; border: none; border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; background: #4E342E; color: #FFF8E1; transition: 0.2s; }
-        .btn:hover { opacity: 0.85; }
-        .btn-rojo { background: #C62828; }
-        .btn-verde { background: #2E7D32; }
-        .btn-azul { background: #1565C0; }
+        .btn { padding: 7px 12px; border: none; border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; background: #4E342E; color: #FFF8E1; }
+        .btn-rojo { background: #C62828; } .btn-verde { background: #2E7D32; } .btn-azul { background: #1565C0; }
         .btn-small { padding: 3px 7px; font-size: 9px; }
 
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
@@ -174,163 +74,105 @@
         input, select, textarea { width: 100%; padding: 9px; border: 2px solid #ddd; border-radius: 8px; font-size: 12px; background: var(--card-bg); color: var(--text); }
         label { display: block; font-weight: 600; font-size: 10px; color: var(--text-sec); margin-bottom: 2px; }
 
-        /* Cards de vencimientos */
-        .cards-vencimientos {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px; margin-bottom: 20px;
-        }
-        .card-vencimiento {
-            background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px;
-            padding: 16px; box-shadow: var(--sombra); text-align: center;
-        }
-        .card-vencimiento .dias { font-size: 36px; font-weight: 800; }
-        .card-vencimiento .label { font-size: 11px; color: var(--text-sec); margin-top: 4px; }
+        .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .checklist-item .nombre { flex: 1; font-weight: 600; font-size: 12px; }
+        .checklist-item .opciones { display: flex; gap: 8px; }
+        .checklist-item .opciones button { padding: 5px 14px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 2px solid #ccc; cursor: pointer; background: white; }
+        .checklist-item .opciones button.sel-ok { background: #2E7D32; color: white; border-color: #2E7D32; }
+        .checklist-item .opciones button.sel-nook { background: #C62828; color: white; border-color: #C62828; }
+
+        .foto-preview { width: 100px; height: 100px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin-top: 4px; }
+        .foto-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+        .etiqueta-print { background: white; border: 2px solid #333; border-radius: 10px; padding: 12px; width: 280px; display: inline-block; margin: 8px; font-family: Arial; }
+        .etiqueta-print .color-bar { height: 8px; border-radius: 4px; margin-bottom: 8px; }
 
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:1000; }
         .modal { background: white; border-radius: 16px; padding: 24px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal input { margin-bottom: 10px; width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; }
         .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #3E2723; color: #FFF8E1; padding: 10px 20px; border-radius: 20px; font-weight: 600; z-index: 2000; font-size: 13px; }
-
-        .acciones-descarga { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
             .header { flex-direction: column; text-align: center; }
             .header .header-right { margin-left: 0; }
-            .cards-vencimientos { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <!-- Header -->
     <div class="header">
         <img src="https://i.imgur.com/MbDDBwH.png" alt="SuperSpuma">
-        <div>
-            <h1>SuperSpuma</h1>
-            <small>Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small>
-        </div>
+        <div><h1>SuperSpuma</h1><small>Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small></div>
         <div class="header-right">
-            <button class="btn-icon" onclick="toggleDarkMode()" title="Modo oscuro">🌓</button>
-            <select id="sucursal-select" onchange="seleccionarSucursal(this.value)">
-                <option value="">🏢 Seleccionar sucursal...</option>
-            </select>
+            <button class="btn-icon" onclick="toggleDarkMode()">🌓</button>
+            <select id="sucursal-select" onchange="seleccionarSucursal(this.value)"><option value="">🏢 Seleccionar sucursal...</option></select>
         </div>
     </div>
 
-    <!-- Alerta de vencimientos -->
-    <div class="alerta-vencimientos" id="alerta-vencimientos" onclick="mostrarVista('historial')">
-        ⚠️ Hay extintores <strong>CRÍTICOS</strong> que necesitan atención inmediata. Hacé clic para ver.
-    </div>
-
-    <!-- Buscador global -->
-    <div class="buscador-global">
-        <input type="text" id="buscador-global-input" placeholder="🔍 Buscar extintor por N° de serie en todas las sucursales..." oninput="buscarGlobal()">
-        <span class="resultado" id="resultado-busqueda"></span>
-    </div>
-
-    <!-- Navegación principal -->
     <div class="nav-principal">
         <button class="activo" onclick="mostrarVista('sucursales')">🏢 Sucursales</button>
-        <button onclick="mostrarVista('historial')">📋 Historial y Vencimientos</button>
+        <button onclick="mostrarVista('historial')">📋 Historial</button>
         <button onclick="mostrarVista('panel-sucursal')" id="btn-panel-sucursal" disabled>📂 Panel de Sucursal</button>
     </div>
 
-    <!-- ========== VISTA: SUCURSALES ========== -->
-    <div id="vista-sucursales" class="vista">
-        <h2 style="margin-bottom:12px;">🏢 Sucursales SuperSpuma</h2>
-        <p style="color:#888;margin-bottom:14px;">Seleccioná una sucursal para gestionar sus extintores</p>
-        <div class="grid-sucursales" id="grid-sucursales-container"></div>
-    </div>
+    <div id="vista-sucursales" class="vista"><h2 style="margin-bottom:12px;">🏢 Sucursales SuperSpuma</h2><div class="grid-sucursales" id="grid-sucursales-container"></div></div>
 
-    <!-- ========== VISTA: HISTORIAL Y VENCIMIENTOS ========== -->
     <div id="vista-historial" class="vista" style="display:none;">
-        <h2 style="margin-bottom:16px;">📋 Historial y Registro de Vencimientos</h2>
-
-        <!-- Cards de resumen -->
-        <div class="cards-vencimientos" id="cards-vencimientos"></div>
-
-        <!-- Filtros -->
-        <div class="tabla-container">
-            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
-                <select id="filtro-sucursal-historial" onchange="cargarHistorialVencimientos()" style="width:auto;">
-                    <option value="todas">Todas las sucursales</option>
-                </select>
-                <select id="filtro-rango-historial" onchange="cargarHistorialVencimientos()" style="width:auto;">
-                    <option value="30">Próximos 30 días</option>
-                    <option value="60">Próximos 60 días</option>
-                    <option value="90">Próximos 90 días</option>
-                    <option value="vencidos">Vencidos</option>
-                    <option value="todos">Todos</option>
-                </select>
-                <button class="btn btn-azul" onclick="exportarCSVHistorial()">📥 Descargar CSV</button>
-                <button class="btn btn-outline" onclick="window.print()" style="background:transparent;border:2px solid #4E342E;color:#4E342E;">🖨️ Imprimir PDF</button>
-            </div>
-            <table>
-                <thead><tr><th>Sucursal</th><th>Ubicación</th><th>Tipo</th><th>Tamaño</th><th>Vence</th><th>Días</th><th>Prioridad</th><th>N° Serie</th></tr></thead>
-                <tbody id="tabla-historial-vencimientos"></tbody>
-            </table>
-        </div>
-
-        <!-- Historial de recargas -->
-        <div class="tabla-container">
-            <h3>🔄 Historial de Recargas</h3>
-            <table>
-                <thead><tr><th>Fecha</th><th>Sucursal</th><th>Extintor</th><th>Próx. Recarga</th><th>Observaciones</th></tr></thead>
-                <tbody id="tabla-historial-recargas"></tbody>
-            </table>
-        </div>
-
-        <!-- Historial de inspecciones -->
-        <div class="tabla-container">
-            <h3>🔍 Historial de Inspecciones</h3>
-            <table>
-                <thead><tr><th>Fecha</th><th>Sucursal</th><th>Extintor</th><th>Inspector</th><th>Resultado</th><th>Observaciones</th></tr></thead>
-                <tbody id="tabla-historial-inspecciones"></tbody>
-            </table>
-        </div>
+        <h2>📋 Historial de Vencimientos</h2>
+        <div class="tabla-container"><table><thead><tr><th>Sucursal</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th></tr></thead><tbody id="tabla-historial"></tbody></table></div>
+        <button class="btn btn-azul" onclick="exportarCSVHistorial()">📥 Descargar CSV</button>
     </div>
 
-    <!-- ========== VISTA: PANEL DE SUCURSAL ========== -->
     <div id="vista-panel-sucursal" class="vista" style="display:none;">
         <div class="sucursal-activa" id="info-sucursal-activa"></div>
         <div class="tabs">
             <button class="activo" onclick="mostrarTab('extintores')">🧯 Extintores</button>
             <button onclick="mostrarTab('agregar')">➕ Agregar</button>
+            <button onclick="mostrarTab('checklist')">✅ Checklist</button>
             <button onclick="mostrarTab('escanear')">📷 Escanear</button>
-            <button onclick="mostrarTab('inspecciones')">🔍 Inspecciones</button>
-            <button onclick="mostrarTab('recargas')">🔄 Recargas</button>
-            <button onclick="mostrarTab('qr-lote')">📱 QR Lote</button>
+            <button onclick="mostrarTab('etiquetas')">🏷️ Etiquetas</button>
         </div>
 
         <div id="tab-extintores" class="tab-content">
             <div class="tabla-container">
                 <div style="display:flex;gap:8px;margin-bottom:12px;">
                     <input type="text" id="busqueda" placeholder="🔍 Buscar..." oninput="cargarExtintoresSucursal()" style="flex:1;">
-                    <select id="filtro-prioridad" onchange="cargarExtintoresSucursal()" style="width:auto;">
-                        <option value="todas">Todas</option><option value="critico">Crítico</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option><option value="normal">Normal</option>
-                    </select>
+                    <select id="filtro-prioridad" onchange="cargarExtintoresSucursal()"><option value="todas">Todas</option><option value="critico">Crítico</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option><option value="normal">Normal</option></select>
                 </div>
-                <table><thead><tr><th>Ubicación</th><th>Tipo</th><th>Tamaño</th><th>Vence</th><th>Prioridad</th><th>QR</th><th>Acciones</th></tr></thead><tbody id="tabla-extintores-sucursal"></tbody></table>
+                <table><thead><tr><th>Foto</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th><th>QR</th><th>Acciones</th></tr></thead><tbody id="tabla-extintores-sucursal"></tbody></table>
             </div>
-            <button class="btn btn-azul" onclick="exportarCSV()">📥 Descargar CSV</button>
         </div>
 
         <div id="tab-agregar" class="tab-content" style="display:none;">
             <div class="tabla-container">
                 <h3 id="titulo-form">➕ Nuevo Extintor</h3>
                 <form id="form-extintor" onsubmit="guardarExtintor(event)">
-                    <input type="hidden" id="edit-id">
+                    <input type="hidden" id="edit-id"><input type="hidden" id="foto-url">
                     <div class="form-row">
                         <div><label>Ubicación *</label><input type="text" id="ubicacion" required></div>
                         <div><label>Tipo *</label><select id="tipo" required><option value="">Seleccionar...</option><option value="Espuma mecánica">Espuma mecánica</option><option value="PQS">PQS</option><option value="CO2">CO₂</option><option value="Carrito de Espuma">Carrito de Espuma</option><option value="Alogenado (eco)">Alogenado (eco)</option><option value="Otro">Otro</option></select></div>
                         <div><label>Tamaño *</label><select id="tamano" required><option value="">Seleccionar...</option><option value="18 kg">18 kg</option><option value="25 kg">25 kg</option><option value="50 kg">50 kg</option><option value="Otro">Otro</option></select></div>
                         <div><label>Próxima recarga *</label><input type="date" id="fecha-proxima" required></div>
                         <div><label>N° serie</label><input type="text" id="numero-serie"></div>
+                        <div><label>📸 Foto</label><input type="file" id="foto-input" accept="image/*" capture="environment" onchange="previsualizarFoto(event)"><div class="foto-preview" onclick="document.getElementById('foto-input').click()"><span id="foto-placeholder">📷</span><img id="foto-preview-img" style="display:none;"></div></div>
                         <div class="full"><label>Notas</label><textarea id="notas" rows="2"></textarea></div>
                         <div class="full"><button type="submit" class="btn btn-verde" style="width:100%;padding:12px;">💾 Guardar Extintor</button><button type="button" class="btn btn-rojo" style="width:100%;margin-top:8px;" onclick="cancelarEdicion()">Cancelar</button></div>
                     </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="tab-checklist" class="tab-content" style="display:none;">
+            <div class="tabla-container">
+                <h3>✅ Checklist de Inspección</h3>
+                <form onsubmit="guardarChecklist(event)">
+                    <div><label>Extintor *</label><select id="checklist-extintor" required><option value="">Seleccionar...</option></select></div>
+                    <div style="margin-top:12px;" id="checklist-items"></div>
+                    <div style="margin-top:12px;"><label>Observaciones</label><textarea id="checklist-obs" rows="2"></textarea></div>
+                    <div style="margin-top:12px;"><label>📸 Foto de inspección</label><input type="file" id="checklist-foto" accept="image/*" capture="environment"></div>
+                    <button type="submit" class="btn btn-verde" style="width:100%;margin-top:12px;">✅ Guardar Inspección</button>
                 </form>
             </div>
         </div>
@@ -344,48 +186,22 @@
             </div>
         </div>
 
-        <div id="tab-inspecciones" class="tab-content" style="display:none;">
-            <div class="tabla-container"><h3>Nueva Inspección</h3>
-                <form onsubmit="guardarInspeccion(event)"><div class="form-row">
-                    <div><label>Extintor *</label><select id="extintor-select" required><option value="">Seleccionar...</option></select></div>
-                    <div><label>Inspector</label><input type="text" id="inspector"></div>
-                    <div><label>Resultado</label><select id="resultado" required><option value="Aprobado">Aprobado</option><option value="Rechazado">Rechazado</option></select></div>
-                    <div class="full"><label>Observaciones</label><textarea id="obs-inspeccion" rows="2"></textarea></div>
-                    <div class="full"><button type="submit" class="btn btn-verde" style="width:100%;">✅ Registrar Inspección</button></div>
-                </div></form>
-            </div>
-            <div class="tabla-container"><h3>Historial</h3><table><thead><tr><th>Fecha</th><th>Extintor</th><th>Inspector</th><th>Resultado</th></tr></thead><tbody id="tabla-inspecciones"></tbody></table></div>
-        </div>
-
-        <div id="tab-recargas" class="tab-content" style="display:none;">
-            <div class="tabla-container"><h3>Registrar Recarga</h3>
-                <form onsubmit="registrarRecarga(event)"><div class="form-row">
-                    <div><label>Extintor *</label><select id="recarga-extintor" required><option value="">Seleccionar...</option></select></div>
-                    <div><label>Fecha de recarga</label><input type="date" id="recarga-fecha" required></div>
-                    <div><label>Próxima recarga</label><input type="date" id="recarga-proxima" required></div>
-                    <div class="full"><label>Observaciones</label><textarea id="recarga-obs" rows="2"></textarea></div>
-                    <div class="full"><button type="submit" class="btn btn-verde" style="width:100%;">🔄 Registrar Recarga</button></div>
-                </div></form>
-            </div>
-            <div class="tabla-container"><h3>Historial de Recargas</h3><table><thead><tr><th>Fecha</th><th>Extintor</th><th>Próx. Recarga</th><th>Obs.</th></tr></thead><tbody id="tabla-recargas"></tbody></table></div>
-        </div>
-
-        <div id="tab-qr-lote" class="tab-content" style="display:none;">
+        <div id="tab-etiquetas" class="tab-content" style="display:none;">
             <div class="tabla-container" style="text-align:center;">
-                <h3>📱 Generar QR en Lote</h3>
-                <p style="color:#888;margin-bottom:12px;">Generá todos los QR de esta sucursal para imprimir</p>
-                <button class="btn btn-azul" onclick="generarQRLote()">Generar todos los QR</button>
-                <div id="qr-lote-container" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:16px;"></div>
-                <button class="btn btn-verde" id="btn-imprimir-lote" style="display:none;margin-top:12px;" onclick="window.print()">🖨️ Imprimir QR</button>
+                <h3>🏷️ Etiquetas QR Imprimibles</h3>
+                <button class="btn btn-azul" onclick="generarEtiquetas()">Generar Etiquetas</button>
+                <div id="etiquetas-container" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:16px;"></div>
+                <button class="btn btn-verde" id="btn-imprimir-etiquetas" style="display:none;margin-top:12px;" onclick="window.print()">🖨️ Imprimir</button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal QR -->
-<div class="modal-overlay" id="modal-qr" style="display:none;" onclick="cerrarModalQR()">
-    <div class="modal" onclick="event.stopPropagation()"><h3>QR del Extintor</h3><div id="modal-qr-contenido"></div><button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalQR()">Cerrar</button></div>
-</div>
+<div class="modal-overlay" id="modal-qr" style="display:none;" onclick="cerrarModalQR()"><div class="modal" onclick="event.stopPropagation()"><h3>QR del Extintor</h3><div id="modal-qr-contenido"></div><button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalQR()">Cerrar</button></div></div>
+
+<!-- Modal Contraseña -->
+<div class="modal-overlay" id="modal-password" style="display:none;"><div class="modal" onclick="event.stopPropagation()"><h3>🔒 Contraseña requerida</h3><p style="font-size:12px;color:#888;">Ingresá la contraseña para eliminar</p><input type="password" id="input-password" placeholder="Contraseña"><div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-rojo" id="btn-confirmar-eliminar">Eliminar</button><button class="btn" onclick="cerrarModalPassword()">Cancelar</button></div></div></div>
 
 <script>
     const firebaseConfig = {
@@ -400,6 +216,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    const IMGBB_API_KEY = 'ccace8b069999997554d73161868c495';
+    const PASSWORD_MAESTRA = 'SuperSpuma2024!';
+
     const SUCURSALES = {
         'paseo_la_galeria': { nombre: 'Paseo La Galería', direccion: 'Avda. Santa Teresa 1827' },
         'villamorra_shopping': { nombre: 'Villamorra Shopping', direccion: 'Charles De Gaulle casi Av. Mariscal López' },
@@ -413,158 +232,53 @@
         'encarnacion': { nombre: 'Encarnación', direccion: 'Ruta Nº 6 Juan León Mallorquín' }
     };
 
-    let datosExtintores = {}, sucursalActiva = null, html5QrCode = null, editMode = false, currentEditId = null;
+    const CHECKLIST_ITEMS = ['Manómetro (presión correcta)', 'Manguera (sin fisuras)', 'Precinto de seguridad', 'Boquilla (sin obstrucciones)', 'Etiqueta legible', 'Gatillo / manija', 'Pintura / corrosión', 'Soporte / ubicación'];
 
+    let datosExtintores = {}, sucursalActiva = null, html5QrCode = null, editMode = false, currentEditId = null;
+    let idPendienteEliminar = null;
+
+    // Conexión
     db.ref('.info/connected').on('value', snap => {
         document.getElementById('conexion-dot').style.background = snap.val() ? '#4CAF50' : '#f44336';
     });
 
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-    }
+    // Modo oscuro
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
     if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
 
+    // Cargar datos
     function cargarDatos() {
         db.ref('extintores').on('value', snap => {
             datosExtintores = snap.val() || {};
-            cargarGridSucursales();
-            cargarSelectSucursales();
-            verificarAlertas();
-            cargarHistorialVencimientos();
-            cargarHistorialRecargas();
-            cargarHistorialInspecciones();
-            if (sucursalActiva) { cargarPanelSucursalActiva(); cargarExtintoresSucursal(); cargarSelectExtintores(); cargarInspecciones(); cargarRecargas(); }
+            cargarGridSucursales(); cargarSelectSucursales();
+            if (sucursalActiva) { cargarPanelSucursalActiva(); cargarExtintoresSucursal(); cargarSelectExtintores(); cargarChecklistItems(); }
         });
     }
 
-    function verificarAlertas() {
-        let encontrado = false;
-        for (const d of Object.values(datosExtintores)) {
-            if (calcularPrioridad(d.fechaProxima).prioridad === 'critico') { encontrado = true; break; }
-        }
-        document.getElementById('alerta-vencimientos').classList.toggle('visible', encontrado);
-    }
-
-    function mostrarVista(vista) {
-        document.querySelectorAll('.vista').forEach(v => v.style.display = 'none');
-        document.getElementById('vista-' + vista).style.display = 'block';
+    function mostrarVista(v) {
+        document.querySelectorAll('.vista').forEach(x => x.style.display = 'none');
+        document.getElementById('vista-' + v).style.display = 'block';
         document.querySelectorAll('.nav-principal button').forEach(b => b.classList.remove('activo'));
-        const botones = document.querySelectorAll('.nav-principal button');
         const vistas = ['sucursales', 'historial', 'panel-sucursal'];
-        const idx = vistas.indexOf(vista);
-        if (idx >= 0 && botones[idx]) botones[idx].classList.add('activo');
+        document.querySelectorAll('.nav-principal button')[vistas.indexOf(v)]?.classList.add('activo');
         document.getElementById('btn-panel-sucursal').disabled = !sucursalActiva;
-        if (vista === 'historial') {
-            cargarHistorialVencimientos();
-            cargarHistorialRecargas();
-            cargarHistorialInspecciones();
-        }
+        if (v === 'historial') cargarHistorial();
     }
 
-    // ========== HISTORIAL Y VENCIMIENTOS ==========
-
-    function cargarHistorialVencimientos() {
-        const filtroSuc = document.getElementById('filtro-sucursal-historial')?.value || 'todas';
-        const filtroRango = document.getElementById('filtro-rango-historial')?.value || '30';
-
-        // Cards de resumen
-        let total30 = 0, total60 = 0, total90 = 0, totalVencidos = 0;
-        Object.values(datosExtintores).forEach(d => {
-            if (!d.fechaProxima) return;
-            const diff = Math.ceil((new Date(d.fechaProxima) - new Date()) / (1000*60*60*24));
-            if (diff < 0) totalVencidos++;
-            else if (diff <= 30) total30++;
-            else if (diff <= 60) total60++;
-            else if (diff <= 90) total90++;
-        });
-
-        document.getElementById('cards-vencimientos').innerHTML = `
-            <div class="card-vencimiento" style="border-left:5px solid #FF0000;"><div class="dias" style="color:#FF0000;">${totalVencidos}</div><div class="label">Vencidos</div></div>
-            <div class="card-vencimiento" style="border-left:5px solid #FF6600;"><div class="dias" style="color:#FF6600;">${total30}</div><div class="label">Próximos 30 días</div></div>
-            <div class="card-vencimiento" style="border-left:5px solid #FFCC00;"><div class="dias" style="color:#CC9900;">${total60}</div><div class="label">Próximos 60 días</div></div>
-            <div class="card-vencimiento" style="border-left:5px solid #33CCFF;"><div class="dias" style="color:#0099CC;">${total90}</div><div class="label">Próximos 90 días</div></div>
-        `;
-
-        // Tabla
-        let items = Object.entries(datosExtintores);
-        if (filtroSuc !== 'todas') items = items.filter(([id,d]) => d.sucursal === filtroSuc);
-        items = items.filter(([id,d]) => {
-            if (!d.fechaProxima) return false;
-            const diff = Math.ceil((new Date(d.fechaProxima) - new Date()) / (1000*60*60*24));
-            if (filtroRango === 'vencidos') return diff < 0;
-            if (filtroRango === 'todos') return true;
-            return diff >= 0 && diff <= parseInt(filtroRango);
-        });
-        items.sort((a,b) => new Date(a[1].fechaProxima) - new Date(b[1].fechaProxima));
-
-        document.getElementById('tabla-historial-vencimientos').innerHTML = items.map(([id,d]) => {
+    function cargarHistorial() {
+        document.getElementById('tabla-historial').innerHTML = Object.entries(datosExtintores).sort((a,b) => new Date(a[1].fechaProxima||'9999') - new Date(b[1].fechaProxima||'9999')).map(([id,d]) => {
             const p = calcularPrioridad(d.fechaProxima);
-            const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal;
-            const diff = Math.ceil((new Date(d.fechaProxima) - new Date()) / (1000*60*60*24));
-            return `<tr>
-                <td>${suc}</td><td>${d.ubicacion||'N/A'}</td><td>${d.tipo||'N/A'}</td><td>${d.tamano||'N/A'}</td>
-                <td>${d.fechaProxima||'N/A'}</td><td>${diff < 0 ? 'Vencido' : diff + 'd'}</td>
-                <td><span class="badge ${p.prioridad}">${p.label}</span></td><td>${d.numeroSerie||'-'}</td>
-            </tr>`;
-        }).join('') || '<tr><td colspan="8" style="text-align:center;">No hay vencimientos</td></tr>';
+            return `<tr><td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal}</td><td>${d.ubicacion||''}</td><td>${d.tipo||''}</td><td>${d.fechaProxima||''}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td></tr>`;
+        }).join('');
     }
-
-    function cargarHistorialRecargas() {
-        db.ref('recargas').orderByChild('fecha').limitToLast(50).on('value', snap => {
-            const data = snap.val() || {};
-            document.getElementById('tabla-historial-recargas').innerHTML = Object.entries(data).reverse().map(([id,d]) => {
-                const ext = datosExtintores[d.extintorId];
-                const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal;
-                return `<tr><td>${new Date(d.fecha).toLocaleDateString()}</td><td>${suc}</td><td>${ext?.ubicacion||d.extintorId}</td><td>${d.fechaProxima||'N/A'}</td><td>${d.observaciones||'-'}</td></tr>`;
-            }).join('') || '<tr><td colspan="5">Sin recargas registradas</td></tr>';
-        });
-    }
-
-    function cargarHistorialInspecciones() {
-        db.ref('inspecciones').orderByChild('fecha').limitToLast(50).on('value', snap => {
-            const data = snap.val() || {};
-            document.getElementById('tabla-historial-inspecciones').innerHTML = Object.entries(data).reverse().map(([id,d]) => {
-                const ext = datosExtintores[d.extintorId];
-                const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal;
-                return `<tr>
-                    <td>${new Date(d.fecha).toLocaleDateString()}</td><td>${suc}</td><td>${ext?.ubicacion||d.extintorId}</td>
-                    <td>${d.inspector||'N/A'}</td><td><span class="badge ${d.resultado==='Aprobado'?'aprobado':'rechazado'}">${d.resultado}</span></td><td>${d.observaciones||'-'}</td>
-                </tr>`;
-            }).join('') || '<tr><td colspan="6">Sin inspecciones registradas</td></tr>';
-        });
-    }
-
-    function exportarCSVHistorial() {
-        let csv = 'Sucursal,Ubicación,Tipo,Tamaño,Vence,Días,Prioridad,N° Serie\n';
-        Object.entries(datosExtintores).forEach(([id,d]) => {
-            if (!d.fechaProxima) return;
-            const p = calcularPrioridad(d.fechaProxima);
-            const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal;
-            const diff = Math.ceil((new Date(d.fechaProxima) - new Date()) / (1000*60*60*24));
-            csv += `"${suc}","${d.ubicacion||''}","${d.tipo||''}","${d.tamano||''}","${d.fechaProxima||''}","${diff<0?'Vencido':diff+'d'}","${p.label}","${d.numeroSerie||''}"\n`;
-        });
-        const blob = new Blob(['\uFEFF'+csv],{type:'text/csv'});
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-        a.download = `vencimientos_superspuma_${new Date().toISOString().slice(0,10)}.csv`; a.click();
-    }
-
-    // ========== FUNCIONES EXISTENTES (mantenidas) ==========
 
     function cargarGridSucursales() {
-        document.getElementById('grid-sucursales-container').innerHTML = Object.entries(SUCURSALES).map(([id, s]) => {
+        document.getElementById('grid-sucursales-container').innerHTML = Object.entries(SUCURSALES).map(([id,s]) => {
             const ext = Object.values(datosExtintores).filter(e => e.sucursal === id);
-            const criticos = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
-            const altos = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'alta').length;
-            const normales = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'normal').length;
-            return `<div class="card-sucursal ${sucursalActiva===id?'activa':''}" onclick="seleccionarSucursal('${id}')">
-                <h3>🏢 ${s.nombre}</h3><div class="dir">📍 ${s.direccion}</div>
-                <div class="mini-stats"><span style="background:#eee;">📦 ${ext.length}</span>${criticos>0?`<span class="critico">🔴 ${criticos}</span>`:''}${altos>0?`<span class="alto">🟠 ${altos}</span>`:''}<span class="normal">🟢 ${normales}</span></div>
-            </div>`;
+            const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
+            const alt = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'alta').length;
+            return `<div class="card-sucursal ${sucursalActiva===id?'activa':''}" onclick="seleccionarSucursal('${id}')"><h3>🏢 ${s.nombre}</h3><div style="font-size:10px;color:#888;">📍 ${s.direccion}</div><div class="mini-stats"><span>📦 ${ext.length}</span>${cri>0?`<span class="critico">🔴 ${cri}</span>`:''}${alt>0?`<span class="alto">🟠 ${alt}</span>`:''}</div></div>`;
         }).join('');
-        // Actualizar select del historial
-        const selHist = document.getElementById('filtro-sucursal-historial');
-        if (selHist) selHist.innerHTML = '<option value="todas">Todas las sucursales</option>' + Object.entries(SUCURSALES).map(([id,s]) => `<option value="${id}">${s.nombre}</option>`).join('');
     }
 
     function cargarSelectSucursales() {
@@ -574,32 +288,15 @@
     function seleccionarSucursal(id) {
         sucursalActiva = id;
         document.getElementById('btn-panel-sucursal').disabled = !id;
-        if (id) {
-            cargarPanelSucursalActiva();
-            cargarExtintoresSucursal();
-            cargarSelectExtintores();
-            cargarInspecciones();
-            cargarRecargas();
-            mostrarTab('extintores');
-            mostrarVista('panel-sucursal');
-        }
-        cargarGridSucursales();
-        cargarSelectSucursales();
+        if (id) { cargarPanelSucursalActiva(); cargarExtintoresSucursal(); cargarSelectExtintores(); cargarChecklistItems(); mostrarTab('extintores'); mostrarVista('panel-sucursal'); }
+        cargarGridSucursales(); cargarSelectSucursales();
     }
 
     function cargarPanelSucursalActiva() {
         if (!sucursalActiva) return;
         const s = SUCURSALES[sucursalActiva];
         const ext = Object.values(datosExtintores).filter(e => e.sucursal === sucursalActiva);
-        const criticos = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
-        const altos = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'alta').length;
-        const normales = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'normal').length;
-        document.getElementById('info-sucursal-activa').innerHTML = `
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-                <div><h2>🏢 ${s.nombre}</h2><div class="direccion">📍 ${s.direccion}</div></div>
-                <button class="btn btn-rojo" onclick="sucursalActiva=null;mostrarVista('sucursales');cargarGridSucursales();cargarSelectSucursales();">✕ Cerrar</button>
-            </div>
-            <div class="stats"><div class="stat"><div class="num">${ext.length}</div><div class="lbl">Total</div></div><div class="stat"><div class="num" style="color:#FF0000;">${criticos}</div><div class="lbl">Críticos</div></div><div class="stat"><div class="num" style="color:#FF6600;">${altos}</div><div class="lbl">Alta</div></div><div class="stat"><div class="num" style="color:#00CC66;">${normales}</div><div class="lbl">En regla</div></div></div>`;
+        document.getElementById('info-sucursal-activa').innerHTML = `<div style="display:flex;justify-content:space-between;"><div><h2>🏢 ${s.nombre}</h2><div>📍 ${s.direccion}</div></div><button class="btn btn-rojo" onclick="sucursalActiva=null;mostrarVista('sucursales');">✕</button></div><div class="stats"><div class="stat"><div class="num">${ext.length}</div><div>Total</div></div><div class="stat"><div class="num" style="color:red;">${ext.filter(e=>calcularPrioridad(e.fechaProxima).prioridad==='critico').length}</div><div>Críticos</div></div></div>`;
     }
 
     function cargarExtintoresSucursal() {
@@ -612,7 +309,13 @@
         items.sort((a,b) => { const o={critico:0,alta:1,media:2,baja:3,normal:4}; return o[calcularPrioridad(a[1].fechaProxima).prioridad] - o[calcularPrioridad(b[1].fechaProxima).prioridad]; });
         document.getElementById('tabla-extintores-sucursal').innerHTML = items.map(([id,d]) => {
             const p = calcularPrioridad(d.fechaProxima);
-            return `<tr><td>${d.ubicacion||'N/A'}</td><td>${d.tipo||'N/A'}</td><td>${d.tamano||'N/A'}</td><td>${d.fechaProxima||'N/A'}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td><td><button class="btn btn-small btn-azul" onclick="mostrarQR('${id}')">QR</button></td><td><button class="btn btn-small" onclick="editarExtintor('${id}')">Editar</button> <button class="btn btn-small btn-rojo" onclick="eliminarExtintor('${id}')">🗑️</button></td></tr>`;
+            return `<tr>
+                <td>${d.fotoURL ? `<img src="${d.fotoURL}" width="40" height="40" style="object-fit:cover;border-radius:6px;">` : '📷'}</td>
+                <td>${d.ubicacion||'N/A'}</td><td>${d.tipo||'N/A'}</td><td>${d.fechaProxima||'N/A'}</td>
+                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                <td><button class="btn btn-small btn-azul" onclick="mostrarQR('${id}')">QR</button></td>
+                <td><button class="btn btn-small" onclick="editarExtintor('${id}')">✏️</button> <button class="btn btn-small btn-rojo" onclick="pedirPasswordEliminar('${id}')">🗑️</button></td>
+            </tr>`;
         }).join('') || '<tr><td colspan="7">No hay extintores</td></tr>';
     }
 
@@ -626,45 +329,134 @@
         return { prioridad: 'normal', label: 'Normal' };
     }
 
-    function buscarGlobal() {
-        const texto = document.getElementById('buscador-global-input').value.toLowerCase();
-        const res = document.getElementById('resultado-busqueda');
-        if (!texto) { res.textContent = ''; return; }
-        const encontrado = Object.entries(datosExtintores).find(([id,d]) => (d.numeroSerie||'').toLowerCase() === texto);
-        if (encontrado) {
-            const [id, d] = encontrado;
-            res.innerHTML = `✅ <strong>${SUCURSALES[d.sucursal]?.nombre}</strong> - ${d.ubicacion} <button class="btn btn-small btn-azul" onclick="seleccionarSucursal('${d.sucursal}');mostrarQR('${id}')">Ver QR</button>`;
-        } else { res.textContent = '❌ No encontrado'; }
+    // FOTOS CON IMGBB
+    function previsualizarFoto(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('foto-preview-img').src = e.target.result;
+            document.getElementById('foto-preview-img').style.display = 'block';
+            document.getElementById('foto-placeholder').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
     }
 
-    function mostrarTab(tab) {
-        document.querySelectorAll('#vista-panel-sucursal .tab-content').forEach(t => t.style.display = 'none');
-        document.getElementById('tab-' + tab).style.display = 'block';
-        document.querySelectorAll('#vista-panel-sucursal .tabs button').forEach(b => b.classList.remove('activo'));
-        const tabs = ['extintores','agregar','escanear','inspecciones','recargas','qr-lote'];
-        const idx = tabs.indexOf(tab);
-        if (idx >= 0) document.querySelectorAll('#vista-panel-sucursal .tabs button')[idx]?.classList.add('activo');
-        if (tab !== 'escanear') detenerEscaner();
+    async function subirFotoImgBB(file) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+        const data = await resp.json();
+        if (data.success) return data.data.url;
+        throw new Error('Error al subir imagen');
     }
 
-    function guardarExtintor(e) {
+    async function guardarExtintor(e) {
         e.preventDefault();
-        const data = { sucursal: sucursalActiva, ubicacion: document.getElementById('ubicacion').value.trim(), tipo: document.getElementById('tipo').value, tamano: document.getElementById('tamano').value, fechaProxima: document.getElementById('fecha-proxima').value, numeroSerie: document.getElementById('numero-serie').value.trim(), notas: document.getElementById('notas').value.trim(), actualizado: new Date().toISOString() };
+        const fotoInput = document.getElementById('foto-input');
+        let fotoURL = document.getElementById('foto-url').value;
+        if (fotoInput.files[0]) {
+            try {
+                fotoURL = await subirFotoImgBB(fotoInput.files[0]);
+                document.getElementById('foto-url').value = fotoURL;
+            } catch (err) { alert('Error al subir foto'); return; }
+        }
+        const data = {
+            sucursal: sucursalActiva, ubicacion: document.getElementById('ubicacion').value.trim(),
+            tipo: document.getElementById('tipo').value, tamano: document.getElementById('tamano').value,
+            fechaProxima: document.getElementById('fecha-proxima').value,
+            numeroSerie: document.getElementById('numero-serie').value.trim(),
+            notas: document.getElementById('notas').value.trim(), fotoURL,
+            actualizado: new Date().toISOString()
+        };
         if (!data.ubicacion||!data.tipo||!data.tamano||!data.fechaProxima) return alert('Completá todos los campos');
-        if (editMode && currentEditId) { db.ref('extintores/'+currentEditId).update(data).then(()=>{alert('✅ Actualizado');cancelarEdicion();}); }
-        else { db.ref('extintores').push(data).then(()=>{alert('✅ Creado');cancelarEdicion();document.getElementById('form-extintor').reset();}); }
+        if (editMode && currentEditId) { await db.ref('extintores/'+currentEditId).update(data); alert('✅ Actualizado'); cancelarEdicion(); }
+        else { await db.ref('extintores').push(data); alert('✅ Creado'); cancelarEdicion(); document.getElementById('form-extintor').reset(); }
     }
 
     function editarExtintor(id) {
         const d = datosExtintores[id]; if (!d) return;
         currentEditId=id; editMode=true;
-        document.getElementById('edit-id').value=id; document.getElementById('ubicacion').value=d.ubicacion||''; document.getElementById('tipo').value=d.tipo||''; document.getElementById('tamano').value=d.tamano||''; document.getElementById('fecha-proxima').value=d.fechaProxima||''; document.getElementById('numero-serie').value=d.numeroSerie||''; document.getElementById('notas').value=d.notas||'';
+        document.getElementById('edit-id').value=id; document.getElementById('ubicacion').value=d.ubicacion||'';
+        document.getElementById('tipo').value=d.tipo||''; document.getElementById('tamano').value=d.tamano||'';
+        document.getElementById('fecha-proxima').value=d.fechaProxima||''; document.getElementById('numero-serie').value=d.numeroSerie||'';
+        document.getElementById('notas').value=d.notas||''; document.getElementById('foto-url').value=d.fotoURL||'';
+        if (d.fotoURL) { document.getElementById('foto-preview-img').src=d.fotoURL; document.getElementById('foto-preview-img').style.display='block'; document.getElementById('foto-placeholder').style.display='none'; }
         document.getElementById('titulo-form').textContent='✏️ Editar Extintor'; mostrarTab('agregar');
     }
 
-    function cancelarEdicion() { editMode=false; currentEditId=null; document.getElementById('edit-id').value=''; document.getElementById('form-extintor').reset(); document.getElementById('titulo-form').textContent='➕ Nuevo Extintor'; }
-    function eliminarExtintor(id) { if(!confirm('¿Eliminar?'))return; db.ref('extintores/'+id).remove().then(()=>alert('🗑️ Eliminado')); }
+    function cancelarEdicion() {
+        editMode=false; currentEditId=null; document.getElementById('edit-id').value=''; document.getElementById('form-extintor').reset();
+        document.getElementById('foto-preview-img').style.display='none'; document.getElementById('foto-placeholder').style.display='block';
+        document.getElementById('titulo-form').textContent='➕ Nuevo Extintor';
+    }
 
+    // CONTRASEÑA PARA ELIMINAR
+    function pedirPasswordEliminar(id) {
+        idPendienteEliminar = id;
+        document.getElementById('input-password').value = '';
+        document.getElementById('modal-password').style.display = 'flex';
+        document.getElementById('btn-confirmar-eliminar').onclick = () => {
+            if (document.getElementById('input-password').value === PASSWORD_MAESTRA) {
+                db.ref('extintores/' + idPendienteEliminar).remove().then(() => { alert('🗑️ Eliminado'); cerrarModalPassword(); });
+            } else { alert('❌ Contraseña incorrecta'); }
+        };
+    }
+
+    function cerrarModalPassword() { document.getElementById('modal-password').style.display = 'none'; idPendienteEliminar = null; }
+
+    // CHECKLIST
+    function cargarChecklistItems() {
+        document.getElementById('checklist-items').innerHTML = CHECKLIST_ITEMS.map(item => `
+            <div class="checklist-item"><span class="nombre">${item}</span><div class="opciones"><button type="button" onclick="toggleCheck(this,'ok')">✅ OK</button><button type="button" onclick="toggleCheck(this,'nook')">❌ NO OK</button></div></div>
+        `).join('');
+    }
+
+    function toggleCheck(btn, tipo) {
+        const parent = btn.parentElement;
+        parent.querySelectorAll('button').forEach(b => { b.classList.remove('sel-ok', 'sel-nook'); });
+        btn.classList.add(tipo === 'ok' ? 'sel-ok' : 'sel-nook');
+    }
+
+    async function guardarChecklist(e) {
+        e.preventDefault();
+        const extintorId = document.getElementById('checklist-extintor').value;
+        if (!extintorId) return alert('Seleccioná un extintor');
+        const items = {};
+        document.querySelectorAll('.checklist-item').forEach((item, i) => {
+            const sel = item.querySelector('.sel-ok, .sel-nook');
+            items[CHECKLIST_ITEMS[i]] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : 'NO OK') : 'No verificado';
+        });
+        let fotoURL = '';
+        const fotoInput = document.getElementById('checklist-foto');
+        if (fotoInput.files[0]) {
+            try { fotoURL = await subirFotoImgBB(fotoInput.files[0]); } catch (err) {}
+        }
+        await db.ref('inspecciones').push({
+            extintorId, sucursal: sucursalActiva, tipo: 'checklist', items,
+            observaciones: document.getElementById('checklist-obs').value.trim(),
+            fotoURL, fecha: new Date().toISOString()
+        });
+        alert('✅ Checklist guardado');
+        document.getElementById('checklist-obs').value = ''; document.getElementById('checklist-foto').value = '';
+        document.querySelectorAll('.checklist-item button').forEach(b => b.classList.remove('sel-ok', 'sel-nook'));
+    }
+
+    // ETIQUETAS QR
+    function generarEtiquetas() {
+        if (!sucursalActiva) return;
+        const items = Object.entries(datosExtintores).filter(([id,d]) => d.sucursal === sucursalActiva);
+        const container = document.getElementById('etiquetas-container');
+        container.innerHTML = items.map(([id,d]) => {
+            const p = calcularPrioridad(d.fechaProxima);
+            const color = { critico: '#FF0000', alta: '#FF6600', media: '#FFCC00', baja: '#33CCFF', normal: '#00CC66' }[p.prioridad];
+            return `<div class="etiqueta-print"><div class="color-bar" style="background:${color};"></div><strong>${d.ubicacion}</strong><br>${d.tipo} · ${d.tamano}<br>Vence: ${d.fechaProxima||'N/A'}<br><span style="color:${color};font-weight:700;">${p.label}</span><div class="qr-code" id="qr-et-${id}"></div></div>`;
+        }).join('');
+        items.forEach(([id,d]) => { new QRCode(document.getElementById('qr-et-'+id), { text: window.location.origin + window.location.pathname + '?id=' + id, width: 80, height: 80 }); });
+        document.getElementById('btn-imprimir-etiquetas').style.display = 'inline-block';
+    }
+
+    // QR
     function mostrarQR(id) {
         const d = datosExtintores[id]; if (!d) return;
         const url = window.location.origin + window.location.pathname + '?id=' + id;
@@ -675,71 +467,44 @@
 
     function cerrarModalQR() { document.getElementById('modal-qr').style.display='none'; }
 
-    function generarQRLote() {
-        if (!sucursalActiva) return;
-        const items = Object.entries(datosExtintores).filter(([id,d])=>d.sucursal===sucursalActiva);
-        const container = document.getElementById('qr-lote-container');
-        container.innerHTML = items.map(([id,d]) => `<div style="text-align:center;background:white;padding:12px;border-radius:10px;"><div id="qr-${id}"></div><p style="font-size:10px;margin-top:4px;">${d.ubicacion} - ${d.tipo}</p></div>`).join('');
-        items.forEach(([id,d]) => { new QRCode(document.getElementById('qr-'+id),{text:window.location.origin+window.location.pathname+'?id='+id,width:100,height:100}); });
-        document.getElementById('btn-imprimir-lote').style.display='inline-block';
-    }
-
+    // ESCANER
     function iniciarEscaner() {
         detenerEscaner();
         document.getElementById('btn-escanear').style.display='none'; document.getElementById('btn-detener').style.display='inline-block';
         html5QrCode = new Html5Qrcode("qr-reader");
-        html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:250}},text=>{detenerEscaner();let id=text;if(text.includes('?id='))id=new URLSearchParams(text.split('?')[1]).get('id')||text;const d=datosExtintores[id];document.getElementById('resultado-escaner').innerHTML=d?`<div style="background:#e8f5e9;padding:12px;border-radius:12px;"><strong>${d.ubicacion}</strong><br>${d.tipo} ${d.tamano}<br>Vence: ${d.fechaProxima||'N/A'}</div>`:`<div style="background:#ffebee;padding:12px;border-radius:12px;">❌ No encontrado</div>`;},()=>{}).catch(()=>{alert('Error al acceder a la cámara');detenerEscaner();});
+        html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:250}},text=>{
+            detenerEscaner(); let id=text; if(text.includes('?id=')) id=new URLSearchParams(text.split('?')[1]).get('id')||text;
+            const d=datosExtintores[id];
+            document.getElementById('resultado-escaner').innerHTML=d?`<div style="background:#e8f5e9;padding:12px;border-radius:12px;"><strong>${d.ubicacion}</strong><br>${d.tipo} ${d.tamano}<br>Vence: ${d.fechaProxima||'N/A'}</div>`:`<div style="background:#ffebee;padding:12px;border-radius:12px;">❌ No encontrado</div>`;
+        },()=>{}).catch(()=>{alert('Error al acceder a la cámara');detenerEscaner();});
     }
 
     function detenerEscaner() { if(html5QrCode){html5QrCode.stop().then(()=>html5QrCode.clear()).catch(()=>{});html5QrCode=null;} document.getElementById('btn-escanear').style.display='inline-block'; document.getElementById('btn-detener').style.display='none'; }
 
     function cargarSelectExtintores() {
         if(!sucursalActiva)return;
-        const sel = document.getElementById('extintor-select');
+        const sel = document.getElementById('checklist-extintor');
         sel.innerHTML = '<option value="">Seleccionar...</option>';
         Object.entries(datosExtintores).forEach(([id,d])=>{if(d.sucursal===sucursalActiva)sel.innerHTML+=`<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;});
-        const selRec = document.getElementById('recarga-extintor');
-        if(selRec){selRec.innerHTML='<option value="">Seleccionar...</option>';Object.entries(datosExtintores).forEach(([id,d])=>{if(d.sucursal===sucursalActiva)selRec.innerHTML+=`<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;});}
     }
 
-    function guardarInspeccion(e) {
-        e.preventDefault();
-        const extintorId = document.getElementById('extintor-select').value;
-        if(!extintorId)return alert('Seleccioná un extintor');
-        db.ref('inspecciones').push({extintorId,sucursal:sucursalActiva,inspector:document.getElementById('inspector').value||'Admin',resultado:document.getElementById('resultado').value,observaciones:document.getElementById('obs-inspeccion').value.trim(),fecha:new Date().toISOString()}).then(()=>{alert('✅ Inspección registrada');document.getElementById('obs-inspeccion').value='';cargarInspecciones();});
+    function mostrarTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+        document.getElementById('tab-' + tab).style.display = 'block';
+        document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('activo'));
+        const tabs = ['extintores','agregar','checklist','escanear','etiquetas'];
+        document.querySelectorAll('.tabs button')[tabs.indexOf(tab)]?.classList.add('activo');
+        if (tab !== 'escanear') detenerEscaner();
+        if (tab === 'checklist') cargarChecklistItems();
     }
 
-    function cargarInspecciones() {
-        if(!sucursalActiva)return;
-        db.ref('inspecciones').orderByChild('sucursal').equalTo(sucursalActiva).limitToLast(20).on('value',snap=>{
-            const data=snap.val()||{};
-            document.getElementById('tabla-inspecciones').innerHTML=Object.entries(data).reverse().map(([id,d])=>{const ext=datosExtintores[d.extintorId];return`<tr><td>${new Date(d.fecha).toLocaleDateString()}</td><td>${ext?.ubicacion||d.extintorId}</td><td>${d.inspector}</td><td>${d.resultado}</td></tr>`;}).join('')||'<tr><td colspan="4">Sin inspecciones</td></tr>';
+    function exportarCSVHistorial() {
+        let csv = 'Sucursal,Ubicación,Tipo,Vence,Prioridad\n';
+        Object.entries(datosExtintores).forEach(([id,d]) => {
+            csv += `"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${calcularPrioridad(d.fechaProxima).label}"\n`;
         });
-    }
-
-    function registrarRecarga(e) {
-        e.preventDefault();
-        const extintorId=document.getElementById('recarga-extintor').value;
-        if(!extintorId)return alert('Seleccioná un extintor');
-        const fechaRecarga=document.getElementById('recarga-fecha').value;
-        const fechaProxima=document.getElementById('recarga-proxima').value;
-        db.ref('recargas').push({extintorId,sucursal:sucursalActiva,fechaRecarga,fechaProxima,observaciones:document.getElementById('recarga-obs').value.trim(),fecha:new Date().toISOString()});
-        db.ref('extintores/'+extintorId).update({fechaProxima,ultimaRecarga:fechaRecarga}).then(()=>{alert('✅ Recarga registrada');cargarRecargas();cargarExtintoresSucursal();});
-    }
-
-    function cargarRecargas() {
-        if(!sucursalActiva)return;
-        db.ref('recargas').orderByChild('sucursal').equalTo(sucursalActiva).limitToLast(20).on('value',snap=>{
-            const data=snap.val()||{};
-            document.getElementById('tabla-recargas').innerHTML=Object.entries(data).reverse().map(([id,d])=>{const ext=datosExtintores[d.extintorId];return`<tr><td>${new Date(d.fecha).toLocaleDateString()}</td><td>${ext?.ubicacion||d.extintorId}</td><td>${d.fechaProxima}</td><td>${d.observaciones||'-'}</td></tr>`;}).join('')||'<tr><td colspan="4">Sin recargas</td></tr>';
-        });
-    }
-
-    function exportarCSV() {
-        if(!sucursalActiva)return;
-        let csv='ID,Ubicación,Tipo,Tamaño,Vence,Prioridad,N° Serie\n';
-        Object.entries(datosExtintores).filter(([id,d])=>d.sucursal===sucursalActiva).forEach(([id,d])=>{csv+=`${id},"${d.ubicacion||''}","${d.tipo||''}","${d.tamano||''}","${d.fechaProxima||''}","${calcularPrioridad(d.fechaProxima).label}","${d.numeroSerie||''}"\n`;});
-        const blob=new Blob(['\uFEFF'+csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`extintores_${sucursalActiva}.csv`;a.click();
+        const blob = new Blob(['\uFEFF'+csv],{type:'text/csv'});
+        const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='historial_superspuma.csv'; a.click();
     }
 
     cargarDatos();
