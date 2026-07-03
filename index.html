@@ -78,14 +78,14 @@
         .checklist-item .opciones button.sel-nook { background: #C62828; color: white; border-color: #C62828; }
 
         .foto-preview { width: 100px; height: 100px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin-top: 4px; }
-        .foto-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .foto-mini { width: 35px; height: 35px; object-fit: cover; border-radius: 4px; cursor: pointer; }
+        .foto-preview img { width: 100%; height: 100%; object-fit: contain; background: #f0f0f0; }
+        .foto-mini { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; cursor: pointer; background: #f0f0f0; }
 
         .etiqueta-print { background: white; border: 2px solid #333; border-radius: 10px; padding: 12px; width: 280px; display: inline-block; margin: 8px; font-family: Arial; }
 
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:1000; }
         .modal { background: white; border-radius: 16px; padding: 24px; max-width: 650px; width: 90%; max-height: 90vh; overflow-y: auto; }
-        .modal-detalle-foto { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 12px; }
+        .modal-detalle-foto { width: 100%; max-height: 300px; object-fit: contain; background: #f5f5f5; border-radius: 10px; margin-bottom: 12px; }
         .modal-detalle-qr { text-align: center; margin: 12px 0; }
         .modal-detalle-qr canvas { display: inline-block !important; }
         .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #3E2723; color: #FFF8E1; padding: 10px 20px; border-radius: 20px; font-weight: 600; z-index: 2000; font-size: 13px; }
@@ -139,7 +139,7 @@
                     <input type="text" id="busqueda" placeholder="🔍 Buscar..." oninput="cargarExtintoresSucursal()" style="flex:1;">
                     <select id="filtro-prioridad" onchange="cargarExtintoresSucursal()"><option value="todas">Todas</option><option value="critico">Crítico</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option><option value="normal">Normal</option></select>
                 </div>
-                <table><thead><tr><th>Foto</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th><th>Checklist</th><th>QR</th></tr></thead><tbody id="tabla-extintores-sucursal"></tbody></table>
+                <table><thead><tr><th>Foto</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th><th>Checklist</th></tr></thead><tbody id="tabla-extintores-sucursal"></tbody></table>
                 <p style="font-size:10px;color:#888;margin-top:8px;">💡 Hacé clic en cualquier fila para ver todos los detalles</p>
             </div>
         </div>
@@ -316,13 +316,12 @@
             const p = calcularPrioridad(d.fechaProxima);
             const cl = Object.values(datosChecklists).filter(c => c.extintorId === id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
             return `<tr onclick="verDetalleExtintor('${id}')">
-                <td>${d.fotoURL ? `<img src="${d.fotoURL}" width="35" height="35" style="object-fit:cover;border-radius:4px;">` : '-'}</td>
+                <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini" style="width:40px;height:40px;">` : '-'}</td>
                 <td>${d.ubicacion||'N/A'}</td><td>${d.tipo||'N/A'}</td><td>${d.fechaProxima||'N/A'}</td>
                 <td><span class="badge ${p.prioridad}">${p.label}</span></td>
                 <td>${cl ? '<span class="badge completado">✅</span>' : '<span class="badge pendiente">❌</span>'}</td>
-                <td><button class="btn btn-small btn-azul" onclick="event.stopPropagation();verDetalleExtintor('${id}')">QR</button></td>
             </tr>`;
-        }).join('') || '<tr><td colspan="7">No hay extintores</td></tr>';
+        }).join('') || '<tr><td colspan="6">No hay extintores</td></tr>';
     }
 
     function calcularPrioridad(fecha) {
@@ -335,7 +334,6 @@
         return { prioridad: 'normal', label: 'Normal' };
     }
 
-    // DETALLE COMPLETO DEL EXTINTOR
     function verDetalleExtintor(id) {
         const d = datosExtintores[id];
         if (!d) return;
@@ -347,8 +345,8 @@
         document.getElementById('modal-detalle-contenido').innerHTML = `
             <h3>Ficha del Extintor</h3>
             ${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto" alt="Foto del extintor">` : '<div style="background:#eee;height:150px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#999;">Sin foto</div>'}
-            <table style="margin-top:12px;">
-                <tr><td style="font-weight:700;">ID:</td><td>${id}</td></tr>
+            <table style="margin-top:12px;width:100%;">
+                <tr><td style="font-weight:700;">ID:</td><td style="word-break:break-all;">${id}</td></tr>
                 <tr><td style="font-weight:700;">Sucursal:</td><td>${suc}</td></tr>
                 <tr><td style="font-weight:700;">Ubicación:</td><td>${d.ubicacion||'N/A'}</td></tr>
                 <tr><td style="font-weight:700;">Tipo:</td><td>${d.tipo||'N/A'}</td></tr>
@@ -357,10 +355,10 @@
                 <tr><td style="font-weight:700;">Prioridad:</td><td><span class="badge ${p.prioridad}">${p.label}</span></td></tr>
                 <tr><td style="font-weight:700;">N° Serie:</td><td>${d.numeroSerie||'N/A'}</td></tr>
                 <tr><td style="font-weight:700;">Notas:</td><td>${d.notas||'N/A'}</td></tr>
-                <tr><td style="font-weight:700;">Checklist:</td><td>${cl ? '<span class="badge completado">✅ '+new Date(cl.fecha).toLocaleDateString()+' - '+cl.inspector+'</span>' : '<span class="badge pendiente">❌ Pendiente</span>'}</td></tr>
+                <tr><td style="font-weight:700;">Checklist:</td><td>${cl ? '<span class="badge completado">Hecho: '+new Date(cl.fecha).toLocaleDateString()+' - '+cl.inspector+'</span>' : '<span class="badge pendiente">Pendiente</span>'}</td></tr>
             </table>
             <div class="modal-detalle-qr"><p style="font-size:11px;color:#888;margin-bottom:4px;">QR del extintor</p><div id="qr-detalle"></div></div>
-            <div style="display:flex;gap:8px;margin-top:8px;">
+            <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
                 <button class="btn btn-small btn-azul" onclick="window.open('${url}')">🔗 Abrir enlace</button>
                 <button class="btn btn-small" onclick="editarExtintor('${id}');cerrarModalDetalle();">✏️ Editar</button>
                 <button class="btn btn-small btn-rojo" onclick="pedirPasswordEliminar('${id}')">🗑️ Eliminar</button>
@@ -430,7 +428,7 @@
     }
 
     function cargarChecklistItems() {
-        document.getElementById('checklist-items').innerHTML = CHECKLIST_ITEMS.map(i => `<div class="checklist-item"><span class="nombre">${i}</span><div class="opciones"><button type="button" onclick="toggleCheck(this,'ok')">✅ OK</button><button type="button" onclick="toggleCheck(this,'nook')">❌ NO OK</button></div></div>`).join('');
+        document.getElementById('checklist-items').innerHTML = CHECKLIST_ITEMS.map(i => `<div class="checklist-item"><span class="nombre">${i}</span><div class="opciones"><button type="button" onclick="toggleCheck(this,'ok')">OK</button><button type="button" onclick="toggleCheck(this,'nook')">NO OK</button></div></div>`).join('');
     }
 
     function toggleCheck(btn, tipo) { const p = btn.parentElement; p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok','sel-nook')); btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook'); }
@@ -462,7 +460,7 @@
             const todoOK = Object.values(c.items||{}).every(v=>v==='OK');
             return `<tr onclick="verDetalleExtintor('${c.extintorId}')">
                 <td>${new Date(c.fecha).toLocaleDateString()}</td><td>${ext?.ubicacion||c.extintorId}</td><td>${c.inspector}</td>
-                <td><span class="badge ${todoOK?'completado':'pendiente'}">${todoOK?'✅ OK':'❌ Fallas'}</span></td>
+                <td><span class="badge ${todoOK?'completado':'pendiente'}">${todoOK?'OK':'Fallas'}</span></td>
                 <td>${c.fotoURL ? `<img src="${c.fotoURL}" class="foto-mini" onclick="event.stopPropagation();window.open('${c.fotoURL}')">` : '-'}</td>
             </tr>`;
         }).join('') || '<tr><td colspan="5">Sin registros</td></tr>';
