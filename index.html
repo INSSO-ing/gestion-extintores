@@ -52,7 +52,7 @@
         .tabla-container { background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px; padding: 16px; box-shadow: var(--sombra); margin-bottom: 16px; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; }
         th { background: var(--marron); color: #FFF8E1; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; }
-        td { padding: 7px 10px; border-bottom: 1px solid #eee; color: var(--text); cursor: pointer; }
+        td { padding: 7px 10px; border-bottom: 1px solid #eee; color: var(--text); }
         tr:hover { background: rgba(0,0,0,0.04); }
         .badge { padding: 3px 7px; border-radius: 8px; font-size: 9px; font-weight: 700; }
         .badge.critico { background: #FF0000; color: white; } .badge.alta { background: #FF6600; color: white; }
@@ -102,6 +102,7 @@
 <body>
 
 <div class="app-container">
+    <!-- HEADER -->
     <div class="header">
         <img src="https://i.imgur.com/MbDDBwH.png" alt="SuperSpuma">
         <div><h1>SuperSpuma</h1><small>Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small></div>
@@ -110,14 +111,21 @@
         </div>
     </div>
 
+    <!-- NAVEGACIÓN -->
     <div class="nav-principal">
         <button class="activo" onclick="mostrarVista('sucursales')">🏢 Sucursales</button>
         <button onclick="mostrarVista('historial')">📋 Historial</button>
         <button onclick="mostrarVista('checklist-global')">✅ Checklist</button>
     </div>
 
-    <div id="vista-sucursales" class="vista"><h2>🏢 Sucursales SuperSpuma</h2><p style="color:#888;margin-bottom:14px;">Seleccioná una sucursal para gestionar sus extintores</p><div class="grid-sucursales" id="grid-sucursales-container"></div></div>
+    <!-- VISTA SUCURSALES -->
+    <div id="vista-sucursales" class="vista">
+        <h2 style="margin-bottom:12px;">🏢 Sucursales SuperSpuma</h2>
+        <p style="color:#888;margin-bottom:14px;">Seleccioná una sucursal para gestionar sus extintores</p>
+        <div class="grid-sucursales" id="grid-sucursales-container"></div>
+    </div>
 
+    <!-- VISTA PANEL SUCURSAL -->
     <div id="vista-panel-sucursal" class="vista" style="display:none;">
         <div class="sucursal-header" id="sucursal-header"></div>
         <div class="tabs" id="tabs-sucursal">
@@ -130,29 +138,125 @@
             <button onclick="mostrarTabSucursal('etiquetas')">🏷️ Etiquetas</button>
         </div>
 
+        <!-- TAB: EXTINTORES -->
         <div id="tab-extintores" class="tab-sucursal">
-            <div style="margin-bottom:12px;"><button class="btn btn-verde" onclick="mostrarTabSucursal('agregar')">➕ Agregar Extintor</button><input type="text" id="busqueda-ext" placeholder="🔍 Buscar..." oninput="cargarExtintoresSucursal()" style="width:200px;margin-left:8px;"></div>
-            <div class="tabla-container"><table><thead><tr><th>Foto</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th><th>CL</th><th>QR</th><th>Acciones</th></tr></thead><tbody id="tabla-extintores-sucursal"></tbody></table></div>
+            <div style="margin-bottom:12px;">
+                <button class="btn btn-verde" onclick="mostrarTabSucursal('agregar')">➕ Agregar Extintor</button>
+                <input type="text" id="busqueda-ext" placeholder="🔍 Buscar..." oninput="cargarExtintoresSucursal()" style="width:200px;margin-left:8px;">
+            </div>
+            <div class="tabla-container">
+                <table><thead><tr><th>Foto</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th><th>CL</th><th>QR</th><th>Acciones</th></tr></thead><tbody id="tabla-extintores-sucursal"></tbody></table>
+            </div>
         </div>
 
-        <div id="tab-agregar" class="tab-sucursal" style="display:none;"><div class="tabla-container"><h3 id="titulo-form">➕ Nuevo Extintor</h3><form id="form-extintor" onsubmit="guardarExtintor(event)"><input type="hidden" id="edit-id"><input type="hidden" id="foto-url"><div class="form-row"><div><label>Ubicación *</label><input type="text" id="ubicacion" required></div><div><label>Tipo *</label><select id="tipo" required><option value="">Seleccionar...</option><option value="Espuma mecánica">Espuma mecánica</option><option value="PQS">PQS</option><option value="CO2">CO₂</option><option value="Carrito de Espuma">Carrito de Espuma</option><option value="Alogenado (eco)">Alogenado (eco)</option><option value="Otro">Otro</option></select></div><div><label>Tamaño *</label><select id="tamano" required><option value="">Seleccionar...</option><option value="18 kg">18 kg</option><option value="25 kg">25 kg</option><option value="50 kg">50 kg</option><option value="Otro">Otro</option></select></div><div><label>Próx. recarga *</label><input type="date" id="fecha-proxima" required></div><div><label>N° serie</label><input type="text" id="numero-serie"></div><div><label>📸 Foto</label><input type="file" id="foto-input" accept="image/*" capture="environment" onchange="previsualizarFoto(event)"><div class="foto-preview" onclick="document.getElementById('foto-input').click()"><span id="foto-placeholder">📷</span><img id="foto-preview-img" style="display:none;"></div></div><div class="full"><label>Notas</label><textarea id="notas" rows="2"></textarea></div><div class="full"><button type="submit" class="btn btn-verde" style="width:100%;padding:12px;">💾 Guardar</button><button type="button" class="btn btn-rojo" style="width:100%;margin-top:8px;" onclick="cancelarEdicion()">Cancelar</button></div></div></form></div></div>
+        <!-- TAB: AGREGAR -->
+        <div id="tab-agregar" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container">
+                <h3 id="titulo-form">➕ Nuevo Extintor</h3>
+                <form id="form-extintor" onsubmit="guardarExtintor(event)">
+                    <input type="hidden" id="edit-id"><input type="hidden" id="foto-url">
+                    <div class="form-row">
+                        <div><label>Ubicación *</label><input type="text" id="ubicacion" required></div>
+                        <div><label>Tipo *</label><select id="tipo" required><option value="">Seleccionar...</option><option value="Espuma mecánica">Espuma mecánica</option><option value="PQS">PQS</option><option value="CO2">CO₂</option><option value="Carrito de Espuma">Carrito de Espuma</option><option value="Alogenado (eco)">Alogenado (eco)</option><option value="Otro">Otro</option></select></div>
+                        <div><label>Tamaño *</label><select id="tamano" required><option value="">Seleccionar...</option><option value="18 kg">18 kg</option><option value="25 kg">25 kg</option><option value="50 kg">50 kg</option><option value="Otro">Otro</option></select></div>
+                        <div><label>Próx. recarga *</label><input type="date" id="fecha-proxima" required></div>
+                        <div><label>N° serie</label><input type="text" id="numero-serie"></div>
+                        <div><label>📸 Foto</label><input type="file" id="foto-input" accept="image/*" capture="environment" onchange="previsualizarFoto(event)"><div class="foto-preview" onclick="document.getElementById('foto-input').click()"><span id="foto-placeholder">📷</span><img id="foto-preview-img" style="display:none;"></div></div>
+                        <div class="full"><label>Notas</label><textarea id="notas" rows="2"></textarea></div>
+                        <div class="full"><button type="submit" class="btn btn-verde" style="width:100%;padding:12px;">💾 Guardar</button><button type="button" class="btn btn-rojo" style="width:100%;margin-top:8px;" onclick="cancelarEdicion()">Cancelar</button></div>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-        <div id="tab-checklist" class="tab-sucursal" style="display:none;"><div class="tabla-container"><h3>✅ Checklist de Inspección</h3><form onsubmit="guardarChecklistSucursal(event)"><div class="form-row"><div><label>Extintor *</label><select id="cl-extintor" required><option value="">Seleccionar...</option></select></div><div><label>Inspector *</label><input type="text" id="cl-inspector" required></div><div><label>📸 Foto</label><input type="file" id="cl-foto" accept="image/*" capture="environment"></div></div><div class="progress-bar"><div class="fill" id="cl-progress" style="width:0%;"></div></div><div id="cl-items"></div><div class="form-row" style="margin-top:12px;"><div class="full"><label>Observaciones</label><textarea id="cl-obs" rows="2"></textarea></div></div><div class="gps-info" id="cl-gps">📍 Obteniendo ubicación...</div><div id="cl-mapa"></div><button type="submit" class="btn btn-verde" style="width:100%;margin-top:12px;">✅ Guardar Checklist</button></form></div></div>
+        <!-- TAB: CHECKLIST -->
+        <div id="tab-checklist" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container">
+                <h3>✅ Checklist de Inspección</h3>
+                <form onsubmit="guardarChecklistSucursal(event)">
+                    <div class="form-row">
+                        <div><label>Extintor *</label><select id="cl-extintor" required><option value="">Seleccionar...</option></select></div>
+                        <div><label>Inspector *</label><input type="text" id="cl-inspector" required></div>
+                        <div><label>📸 Foto</label><input type="file" id="cl-foto" accept="image/*" capture="environment"></div>
+                    </div>
+                    <div class="progress-bar"><div class="fill" id="cl-progress" style="width:0%;"></div></div>
+                    <div id="cl-items"></div>
+                    <div class="form-row" style="margin-top:12px;"><div class="full"><label>Observaciones</label><textarea id="cl-obs" rows="2"></textarea></div></div>
+                    <div class="gps-info" id="cl-gps">📍 Obteniendo ubicación...</div>
+                    <div id="cl-mapa"></div>
+                    <button type="submit" class="btn btn-verde" style="width:100%;margin-top:12px;">✅ Guardar Checklist</button>
+                </form>
+            </div>
+        </div>
 
-        <div id="tab-historial-cl" class="tab-sucursal" style="display:none;"><div class="tabla-container"><h3>📋 Historial de Checklists</h3><table><thead><tr><th>Fecha</th><th>Extintor</th><th>Inspector</th><th>Resultado</th></tr></thead><tbody id="tabla-historial-cl"></tbody></table></div></div>
+        <!-- TAB: HISTORIAL CHECKLIST -->
+        <div id="tab-historial-cl" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container">
+                <h3>📋 Historial de Checklists</h3>
+                <p style="font-size:10px;color:#888;margin-bottom:8px;">Hacé clic en "Ver" para ver el detalle completo de cada checklist</p>
+                <table><thead><tr><th>Fecha</th><th>Extintor</th><th>Inspector</th><th>Resultado</th><th>Acción</th></tr></thead><tbody id="tabla-historial-cl"></tbody></table>
+            </div>
+        </div>
 
-        <div id="tab-visualizar" class="tab-sucursal" style="display:none;"><div class="tabla-container"><h3>👁️ Visualizar</h3><div id="visualizar-contenido"></div></div></div>
+        <!-- TAB: VISUALIZAR -->
+        <div id="tab-visualizar" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container">
+                <h3>👁️ Visualizar</h3>
+                <div id="visualizar-contenido"></div>
+            </div>
+        </div>
 
-        <div id="tab-escanear" class="tab-sucursal" style="display:none;"><div class="tabla-container" style="text-align:center;"><button class="btn btn-azul" id="btn-escanear" onclick="iniciarEscaner()">Iniciar Escáner</button><button class="btn btn-rojo" id="btn-detener" onclick="detenerEscaner()" style="display:none;">Detener</button><div id="qr-reader" style="margin-top:12px;"></div><div id="resultado-escaner" style="margin-top:12px;"></div></div></div>
+        <!-- TAB: ESCANEAR -->
+        <div id="tab-escanear" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container" style="text-align:center;">
+                <button class="btn btn-azul" id="btn-escanear" onclick="iniciarEscaner()">Iniciar Escáner</button>
+                <button class="btn btn-rojo" id="btn-detener" onclick="detenerEscaner()" style="display:none;">Detener</button>
+                <div id="qr-reader" style="margin-top:12px;"></div>
+                <div id="resultado-escaner" style="margin-top:12px;"></div>
+            </div>
+        </div>
 
-        <div id="tab-etiquetas" class="tab-sucursal" style="display:none;"><div class="tabla-container" style="text-align:center;"><h3>🏷️ Etiquetas QR</h3><button class="btn btn-azul" onclick="generarEtiquetas()">Generar Etiquetas</button><div id="etiquetas-container" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:16px;"></div><button class="btn btn-verde" id="btn-imprimir-etiquetas" style="display:none;margin-top:12px;" onclick="window.print()">🖨️ Imprimir</button></div></div>
+        <!-- TAB: ETIQUETAS -->
+        <div id="tab-etiquetas" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container" style="text-align:center;">
+                <h3>🏷️ Etiquetas QR</h3>
+                <button class="btn btn-azul" onclick="generarEtiquetas()">Generar Etiquetas</button>
+                <div id="etiquetas-container" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:16px;"></div>
+                <button class="btn btn-verde" id="btn-imprimir-etiquetas" style="display:none;margin-top:12px;" onclick="window.print()">🖨️ Imprimir</button>
+            </div>
+        </div>
     </div>
 
-    <div id="vista-historial" class="vista" style="display:none;"><h2>📋 Historial de Vencimientos</h2><div class="tabla-container"><table><thead><tr><th>Sucursal</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th></tr></thead><tbody id="tabla-historial"></tbody></table></div><button class="btn btn-azul" onclick="exportarCSVHistorial()">📥 CSV</button></div>
+    <!-- VISTA HISTORIAL GLOBAL -->
+    <div id="vista-historial" class="vista" style="display:none;">
+        <h2>📋 Historial de Vencimientos</h2>
+        <div class="tabla-container"><table><thead><tr><th>Sucursal</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th></tr></thead><tbody id="tabla-historial"></tbody></table></div>
+        <button class="btn btn-azul" onclick="exportarCSVHistorial()">📥 CSV</button>
+    </div>
 
-    <div id="vista-checklist-global" class="vista" style="display:none;"><h2>✅ Checklist de Inspección</h2><div class="tabla-container"><form onsubmit="guardarChecklistGlobal(event)"><div class="form-row"><div><label>🏢 Sucursal</label><select id="clg-sucursal" required onchange="cargarExtintoresCLG()"><option value="">Seleccionar...</option></select></div><div><label>🧯 Extintor</label><select id="clg-extintor" required><option value="">Primero sucursal</option></select></div><div><label>👤 Inspector</label><input type="text" id="clg-inspector" required></div><div><label>📸 Foto</label><input type="file" id="clg-foto" accept="image/*" capture="environment"></div></div><div class="progress-bar"><div class="fill" id="clg-progress" style="width:0%;"></div></div><div id="clg-items"></div><div class="form-row" style="margin-top:12px;"><div class="full"><label>Observaciones</label><textarea id="clg-obs" rows="2"></textarea></div></div><div class="gps-info" id="clg-gps">📍 Obteniendo ubicación...</div><div id="clg-mapa"></div><button type="submit" class="btn btn-verde" style="width:100%;margin-top:12px;">✅ Guardar Checklist</button></form></div></div>
+    <!-- VISTA CHECKLIST GLOBAL -->
+    <div id="vista-checklist-global" class="vista" style="display:none;">
+        <h2>✅ Checklist de Inspección</h2>
+        <div class="tabla-container">
+            <form onsubmit="guardarChecklistGlobal(event)">
+                <div class="form-row">
+                    <div><label>🏢 Sucursal</label><select id="clg-sucursal" required onchange="cargarExtintoresCLG()"><option value="">Seleccionar...</option></select></div>
+                    <div><label>🧯 Extintor</label><select id="clg-extintor" required><option value="">Primero sucursal</option></select></div>
+                    <div><label>👤 Inspector</label><input type="text" id="clg-inspector" required></div>
+                    <div><label>📸 Foto</label><input type="file" id="clg-foto" accept="image/*" capture="environment"></div>
+                </div>
+                <div class="progress-bar"><div class="fill" id="clg-progress" style="width:0%;"></div></div>
+                <div id="clg-items"></div>
+                <div class="form-row" style="margin-top:12px;"><div class="full"><label>Observaciones</label><textarea id="clg-obs" rows="2"></textarea></div></div>
+                <div class="gps-info" id="clg-gps">📍 Obteniendo ubicación...</div>
+                <div id="clg-mapa"></div>
+                <button type="submit" class="btn btn-verde" style="width:100%;margin-top:12px;">✅ Guardar Checklist</button>
+            </form>
+        </div>
+    </div>
 </div>
 
+<!-- MODALES -->
 <div class="modal-overlay" id="modal-detalle" style="display:none;" onclick="cerrarModalDetalle()"><div class="modal" onclick="event.stopPropagation()"><div id="modal-detalle-contenido"></div><button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalDetalle()">Cerrar</button></div></div>
 <div class="modal-overlay" id="modal-password" style="display:none;"><div class="modal" onclick="event.stopPropagation()"><h3>🔒 Contraseña</h3><input type="password" id="input-password"><div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-rojo" id="btn-confirmar-eliminar">Eliminar</button><button class="btn" onclick="cerrarModalPassword()">Cancelar</button></div></div></div>
 <div class="modal-overlay" id="modal-cl-detalle" style="display:none;" onclick="cerrarModalCLDetalle()"><div class="modal" onclick="event.stopPropagation()"><div id="modal-cl-detalle-contenido"></div><button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalCLDetalle()">Cerrar</button></div></div>
@@ -207,7 +311,7 @@
         document.querySelectorAll('.nav-principal button')[vistas.indexOf(v)]?.classList.add('activo');
         if (v === 'historial') cargarHistorial();
         if (v === 'checklist-global') { cargarSelectCLG(); generarItemsCLG(); obtenerGPS('clg-gps','clg-mapa'); }
-        if (v === 'sucursales' && sucursalActiva) { sucursalActiva = null; }
+        if (v === 'sucursales') { sucursalActiva = null; document.getElementById('vista-panel-sucursal').style.display = 'none'; }
         detenerEscaner();
     }
 
@@ -231,8 +335,7 @@
     function cerrarSucursal() {
         sucursalActiva = null;
         document.getElementById('vista-panel-sucursal').style.display = 'none';
-        document.getElementById('vista-sucursales').style.display = 'block';
-        document.querySelectorAll('.nav-principal button')[0]?.classList.add('activo');
+        mostrarVista('sucursales');
     }
 
     function cargarHeaderSucursal() {
@@ -309,11 +412,11 @@
     function editarExtintor(id) { const d=datosExtintores[id]; if(!d)return; currentEditId=id;editMode=true; document.getElementById('edit-id').value=id;document.getElementById('ubicacion').value=d.ubicacion||'';document.getElementById('tipo').value=d.tipo||'';document.getElementById('tamano').value=d.tamano||'';document.getElementById('fecha-proxima').value=d.fechaProxima||'';document.getElementById('numero-serie').value=d.numeroSerie||'';document.getElementById('notas').value=d.notas||'';document.getElementById('foto-url').value=d.fotoURL||''; if(d.fotoURL){document.getElementById('foto-preview-img').src=d.fotoURL;document.getElementById('foto-preview-img').style.display='block';document.getElementById('foto-placeholder').style.display='none';} document.getElementById('titulo-form').textContent='✏️ Editar';mostrarTabSucursal('agregar'); }
     function cancelarEdicion() { editMode=false;currentEditId=null;document.getElementById('edit-id').value='';document.getElementById('form-extintor').reset();document.getElementById('foto-preview-img').style.display='none';document.getElementById('foto-placeholder').style.display='block';document.getElementById('titulo-form').textContent='➕ Nuevo'; }
 
-    function pedirPasswordEliminar(id) { document.getElementById('input-password').value='';document.getElementById('modal-password').style.display='flex';document.getElementById('btn-confirmar-eliminar').onclick=()=>{if(document.getElementById('input-password').value===PASSWORD_MAESTRA){db.ref('extintores/'+id).remove();cerrarModalPassword();cerrarModalDetalle();alert('🗑️ Eliminado');}else{alert('❌ Contraseña incorrecta');}}; }
+    function pedirPasswordEliminar(id) { document.getElementById('input-password').value='';document.getElementById('modal-password').style.display='flex';document.getElementById('btn-confirmar-eliminar').onclick=()=>{if(document.getElementById('input-password').value===PASSWORD_MAESTRA){db.ref('extintores/'+id).remove();cerrarModalPassword();alert('🗑️ Eliminado');}else{alert('❌ Contraseña incorrecta');}}; }
     function cerrarModalPassword() { document.getElementById('modal-password').style.display='none'; }
     function mostrarQR(id) { verDetalleExtintor(id); }
 
-    // CHECKLIST
+    // CHECKLIST SUCURSAL
     function cargarSelectExtintoresCL() { if(!sucursalActiva)return; const sel=document.getElementById('cl-extintor'); sel.innerHTML='<option value="">Seleccionar...</option>'; Object.entries(datosExtintores).forEach(([id,d])=>{if(d.sucursal===sucursalActiva)sel.innerHTML+=`<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;}); }
     function generarItemsCL() { document.getElementById('cl-items').innerHTML = CHECKLIST_ITEMS.map(i => `<div class="checklist-item"><span class="nombre">${i}</span><div class="opciones"><button type="button" onclick="marcarCL(this,'ok')">✅ OK</button><button type="button" onclick="marcarCL(this,'nook')">❌ NO OK</button></div></div>`).join(''); actualizarProgresoCL(); }
     function marcarCL(btn,tipo){const p=btn.parentElement;p.querySelectorAll('button').forEach(b=>b.classList.remove('sel-ok','sel-nook'));btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');actualizarProgresoCL();}
@@ -337,20 +440,19 @@
     function cargarHistorialCL() {
         if(!sucursalActiva)return;
         const items=Object.values(datosChecklists).filter(c=>c.tipo==='checklist'&&c.sucursal===sucursalActiva).sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)).slice(0,20);
-        document.getElementById('tabla-historial-cl').innerHTML=items.map(c=>{const ext=datosExtintores[c.extintorId];const ok=Object.values(c.items||{}).every(v=>v==='OK');return`<tr onclick="verDetalleCL('${c.fecha}','${c.extintorId}')"><td>${new Date(c.fecha).toLocaleDateString()}</td><td>${ext?.ubicacion||c.extintorId}</td><td>${c.inspector}</td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'OK':'Fallas'}</span></td></tr>`;}).join('')||'<tr><td colspan="4">Sin checklists</td></tr>';
+        document.getElementById('tabla-historial-cl').innerHTML=items.map(c=>{const ext=datosExtintores[c.extintorId];const ok=Object.values(c.items||{}).every(v=>v==='OK');return`<tr><td>${new Date(c.fecha).toLocaleDateString()}</td><td>${ext?.ubicacion||c.extintorId}</td><td>${c.inspector}</td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'OK':'Fallas'}</span></td><td><button class="btn btn-small btn-azul" onclick="verDetalleCL('${c.fecha}','${c.extintorId}')">🔍 Ver</button></td></tr>`;}).join('')||'<tr><td colspan="5" style="text-align:center;color:#999;">No hay checklists registrados en esta sucursal</td></tr>';
     }
 
     function verDetalleCL(fecha,extintorId) {
         const cl=Object.values(datosChecklists).filter(c=>c.tipo==='checklist'&&c.fecha===fecha&&c.extintorId===extintorId)[0]; if(!cl)return;
         const ext=datosExtintores[cl.extintorId]; const ok=Object.values(cl.items||{}).every(v=>v==='OK');
-        let h=`<h3>📋 Detalle de Checklist</h3><table style="width:100%;"><tr><td><b>Fecha:</b></td><td>${new Date(cl.fecha).toLocaleString()}</td></tr><tr><td><b>Extintor:</b></td><td>${ext?.ubicacion||cl.extintorId} (${ext?.tipo||''} ${ext?.tamano||''})</td></tr><tr><td><b>Inspector:</b></td><td>${cl.inspector}</td></tr><tr><td><b>Resultado:</b></td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ Todo OK':'❌ Con fallas'}</span></td></tr></table><h4>Items</h4><table>`;
+        let h=`<h3>📋 Detalle de Checklist</h3><table style="width:100%;"><tr><td><b>Fecha:</b></td><td>${new Date(cl.fecha).toLocaleString()}</td></tr><tr><td><b>Extintor:</b></td><td>${ext?.ubicacion||cl.extintorId} (${ext?.tipo||''} ${ext?.tamano||''})</td></tr><tr><td><b>Inspector:</b></td><td>${cl.inspector}</td></tr><tr><td><b>Resultado:</b></td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ Todo OK':'❌ Con fallas'}</span></td></tr></table><h4>🔍 Items del Checklist</h4><table>`;
         Object.entries(cl.items||{}).forEach(([k,v])=>{h+=`<tr><td>${k}</td><td><span class="badge ${v==='OK'?'completado':'pendiente'}">${v}</span></td></tr>`;});
         h+=`</table>`;
-        if(cl.fotoURL)h+=`<img src="${cl.fotoURL}" class="modal-detalle-foto">`;
-        if(cl.observaciones)h+=`<p><b>Obs:</b> ${cl.observaciones}</p>`;
-        if(cl.gps)h+=`<p>${cl.gps}</p>`;
+        if(cl.fotoURL)h+=`<h4>📸 Foto</h4><img src="${cl.fotoURL}" class="modal-detalle-foto">`;
+        if(cl.observaciones)h+=`<h4>📝 Observaciones</h4><p>${cl.observaciones}</p>`;
+        if(cl.gps)h+=`<h4>📍 Ubicación</h4><p>${cl.gps}</p>`;
         if(cl.coordenadas){h+=`<div id="mapa-cl-detalle"></div>`;}
-        // Botón compartir WhatsApp
         h+=`<button class="btn btn-wsp" style="width:100%;margin-top:12px;" onclick="compartirChecklistWhatsApp('${cl.fecha}','${cl.extintorId}')">📤 Compartir por WhatsApp</button>`;
         document.getElementById('modal-cl-detalle-contenido').innerHTML=h;
         document.getElementById('modal-cl-detalle').style.display='flex';
@@ -360,10 +462,8 @@
     function compartirChecklistWhatsApp(fecha, extintorId) {
         const cl = Object.values(datosChecklists).filter(c => c.tipo === 'checklist' && c.fecha === fecha && c.extintorId === extintorId)[0];
         if (!cl) return;
-        const ext = datosExtintores[cl.extintorId];
-        const suc = SUCURSALES[cl.sucursal]?.nombre || cl.sucursal;
+        const ext = datosExtintores[cl.extintorId]; const suc = SUCURSALES[cl.sucursal]?.nombre || cl.sucursal;
         const ok = Object.values(cl.items||{}).every(v => v === 'OK');
-        
         let texto = `🧯 *CHECKLIST SUPERSPUMA*%0A%0A`;
         texto += `📅 *Fecha:* ${new Date(cl.fecha).toLocaleString()}%0A`;
         texto += `🏢 *Sucursal:* ${suc}%0A`;
@@ -371,12 +471,9 @@
         texto += `👤 *Inspector:* ${cl.inspector}%0A`;
         texto += `📊 *Resultado:* ${ok ? '✅ TODO OK' : '❌ CON FALLAS'}%0A%0A`;
         texto += `🔍 *Items:*%0A`;
-        Object.entries(cl.items||{}).forEach(([k, v]) => {
-            texto += `${v === 'OK' ? '✅' : '❌'} ${k}: ${v}%0A`;
-        });
+        Object.entries(cl.items||{}).forEach(([k, v]) => { texto += `${v === 'OK' ? '✅' : '❌'} ${k}: ${v}%0A`; });
         if (cl.observaciones) texto += `%0A📝 *Obs:* ${cl.observaciones}%0A`;
         if (cl.gps) texto += `%0A📍 ${cl.gps.replace('📍 ','')}%0A`;
-        
         window.open(`https://wa.me/?text=${texto}`, '_blank');
     }
 
@@ -442,7 +539,7 @@
     // ETIQUETAS
     function generarEtiquetas() { if(!sucursalActiva)return; const items=Object.entries(datosExtintores).filter(([id,d])=>d.sucursal===sucursalActiva); document.getElementById('etiquetas-container').innerHTML=items.map(([id,d])=>{const p=calcularPrioridad(d.fechaProxima);const color={critico:'#FF0000',alta:'#FF6600',media:'#FFCC00',baja:'#33CCFF',normal:'#00CC66'}[p.prioridad];return`<div class="etiqueta-print"><div class="color-bar" style="background:${color};height:8px;border-radius:4px;"></div><strong>${d.ubicacion}</strong><br>${d.tipo} · ${d.tamano}<br>Vence: ${d.fechaProxima||'N/A'}<br><span style="color:${color};">${p.label}</span><div id="qr-et-${id}"></div></div>`;}).join(''); items.forEach(([id,d])=>{new QRCode(document.getElementById('qr-et-'+id),{text:window.location.origin+window.location.pathname+'?id='+id,width:80,height:80});}); document.getElementById('btn-imprimir-etiquetas').style.display='inline-block'; }
 
-    // HISTORIAL
+    // HISTORIAL GLOBAL
     function cargarHistorial() { document.getElementById('tabla-historial').innerHTML=Object.entries(datosExtintores).sort((a,b)=>new Date(a[1].fechaProxima||'9999')-new Date(b[1].fechaProxima||'9999')).map(([id,d])=>{const p=calcularPrioridad(d.fechaProxima);return`<tr><td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal}</td><td>${d.ubicacion||''}</td><td>${d.tipo||''}</td><td>${d.fechaProxima||''}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td></tr>`;}).join(''); }
     function exportarCSVHistorial() { let csv='Sucursal,Ubicación,Tipo,Vence,Prioridad\n'; Object.entries(datosExtintores).forEach(([id,d])=>{csv+=`"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${calcularPrioridad(d.fechaProxima).label}"\n`;}); const blob=new Blob(['\uFEFF'+csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='historial.csv'; a.click(); }
 
