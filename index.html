@@ -3,256 +3,729 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SuperSpuma · Inspector</title>
+    <title>SuperSpuma · Panel Administrador</title>
 
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+    <!-- QR Code Generator + Scanner -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
     <style>
         :root {
             --marron-oscuro: #3E2723;
             --marron-medio: #4E342E;
+            --marron-claro: #5D4037;
             --crema: #FFF8E1;
             --crema-oscuro: #FFECB3;
+            --crema-medio: #FFE0B2;
             --blanco: #FFFFFF;
-            --rojo: #C62828;
-            --verde: #2E7D32;
-            --naranja: #E65100;
+            --rojo-alerta: #C62828;
+            --verde-ok: #2E7D32;
+            --naranja-warn: #E65100;
+            --azul: #1565C0;
+            --texto-primario: #3E2723;
+            --texto-secundario: #5D4037;
+            --sombra: 0 2px 10px rgba(0,0,0,0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
             background: #f5f0e8;
-            color: #3E2723;
-            display: flex;
-            justify-content: center;
+            color: var(--texto-primario);
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            background: rgba(255,255,255,0.9);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-
-        .app-header {
-            background: linear-gradient(135deg, #3E2723, #4E342E);
-            color: #FFF8E1;
-            padding: 14px 16px;
+        /* ===== LOGIN ===== */
+        #login-screen {
             display: flex;
             align-items: center;
-            gap: 10px;
-            position: sticky;
-            top: 0;
-            z-index: 50;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0a0a 0%, #3E2723 50%, #4E342E 100%);
+            padding: 20px;
         }
+        #login-screen.hidden { display: none; }
 
-        .app-header h1 { font-size: 18px; font-weight: 700; }
-        .app-header small { font-size: 10px; opacity: 0.8; display: block; }
-        .app-header .logout-btn {
-            margin-left: auto;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 11px;
-            cursor: pointer;
+        .login-card {
+            background: var(--blanco);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
         }
-
-        .app-content {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-            padding-bottom: 70px;
-        }
-
-        .bottom-nav {
-            position: sticky;
-            bottom: 0;
-            background: #3E2723;
-            display: flex;
-            justify-content: space-around;
+        .login-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            background: var(--crema);
             padding: 8px;
-            z-index: 50;
+            margin-bottom: 16px;
+        }
+        .login-card h2 {
+            color: var(--marron-oscuro);
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .login-card p {
+            color: var(--texto-secundario);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .login-card button {
+            width: 100%;
+            padding: 14px;
+            background: var(--marron-oscuro);
+            color: var(--crema);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .login-card button:hover {
+            background: var(--marron-medio);
+        }
+        .login-card .error {
+            color: var(--rojo-alerta);
+            font-size: 12px;
+            margin-top: 8px;
+            min-height: 18px;
         }
 
-        .bottom-nav button {
-            background: transparent;
-            border: none;
-            color: #FFECB3;
-            font-size: 10px;
-            font-weight: 600;
-            padding: 6px;
+        /* ===== LAYOUT PRINCIPAL ===== */
+        #app-layout {
+            display: none;
+        }
+        #app-layout.visible {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--marron-oscuro), var(--marron-medio));
+            color: var(--crema);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar .logo-area {
+            text-align: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 16px;
+        }
+
+        .sidebar .logo-area img {
+            width: 50px;
+            height: 50px;
             border-radius: 10px;
-            cursor: pointer;
+            background: var(--crema);
+            padding: 4px;
+            margin-bottom: 6px;
+        }
+
+        .sidebar .logo-area h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--crema-medio);
+        }
+
+        .sidebar .logo-area small {
+            font-size: 9px;
+            opacity: 0.7;
+        }
+
+        .sidebar nav {
             flex: 1;
         }
 
-        .bottom-nav button.activo {
-            background: #FFECB3;
-            color: #3E2723;
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            color: var(--crema-oscuro);
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.activo {
+            background: rgba(255,255,255,0.15);
+            color: var(--blanco);
+        }
+
+        .sidebar .user-info {
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 11px;
+        }
+
+        .sidebar .user-info .nombre {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--crema-medio);
+        }
+
+        .sidebar .btn-logout {
+            width: 100%;
+            padding: 8px;
+            margin-top: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: var(--blanco);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 11px;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .sidebar .btn-logout:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .conexion-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #aaa;
+            margin-left: 4px;
+        }
+        .conexion-indicator.online { background: #4CAF50; }
+        .conexion-indicator.offline { background: #f44336; }
+
+        /* ===== CONTENIDO PRINCIPAL ===== */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 24px;
+            background: #f5f0e8;
         }
 
         .seccion { display: none; }
         .seccion.activa { display: block; }
 
-        .tarjeta {
-            background: white;
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-            border-left: 4px solid #3E2723;
-            margin-bottom: 12px;
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .tarjeta .numero { font-size: 24px; font-weight: 700; }
-        .tarjeta .etiqueta { font-size: 11px; color: #5D4037; }
+        .page-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--marron-oscuro);
+        }
 
-        .tabla-container {
-            background: white;
+        /* ===== TARJETAS ===== */
+        .tarjetas {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .tarjeta {
+            background: var(--blanco);
             border-radius: 14px;
-            padding: 14px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            padding: 18px;
+            box-shadow: var(--sombra);
+            border-left: 5px solid var(--marron-medio);
+        }
+
+        .tarjeta .numero {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--marron-oscuro);
+        }
+
+        .tarjeta .etiqueta {
+            font-size: 11px;
+            color: var(--texto-secundario);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .tarjeta.critica { border-left-color: #FF0000; }
+        .tarjeta.critica .numero { color: #FF0000; }
+        .tarjeta.alta { border-left-color: #FF6600; }
+        .tarjeta.alta .numero { color: #FF6600; }
+        .tarjeta.normal { border-left-color: #00CC66; }
+        .tarjeta.normal .numero { color: #00CC66; }
+
+        /* ===== TABLAS ===== */
+        .tabla-container {
+            background: var(--blanco);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: var(--sombra);
+            margin-bottom: 20px;
             overflow-x: auto;
         }
 
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { background: #3E2723; color: #FFF8E1; padding: 8px; text-align: left; font-size: 10px; }
-        td { padding: 8px; border-bottom: 1px solid #eee; }
+        .tabla-container h3 {
+            margin-bottom: 12px;
+            color: var(--marron-oscuro);
+            font-size: 15px;
+        }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th {
+            background: var(--marron-oscuro);
+            color: var(--crema);
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: #fdf8f0;
+        }
+
+        /* ===== BADGES ===== */
         .badge {
             padding: 3px 8px;
             border-radius: 10px;
             font-size: 9px;
             font-weight: 700;
+            display: inline-block;
+            white-space: nowrap;
         }
         .badge.critico { background: #FF0000; color: white; }
         .badge.alta { background: #FF6600; color: white; }
         .badge.media { background: #FFCC00; color: #333; }
+        .badge.baja { background: #33CCFF; color: #333; }
         .badge.normal { background: #00CC66; color: white; }
+        .badge.aprobado { background: var(--verde-ok); color: white; }
+        .badge.rechazado { background: var(--rojo-alerta); color: white; }
 
+        /* ===== BOTONES ===== */
         .btn {
             padding: 8px 14px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
-            background: #4E342E;
-            color: #FFF8E1;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: 0.2s;
+            background: var(--marron-medio);
+            color: var(--crema);
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn-rojo { background: var(--rojo-alerta); }
+        .btn-verde { background: var(--verde-ok); }
+        .btn-azul { background: var(--azul); }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--marron-medio);
+            color: var(--marron-medio);
+        }
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 10px;
         }
 
-        .btn-rojo { background: #C62828; }
-        .btn-verde { background: #2E7D32; }
+        /* ===== FORMULARIOS ===== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-grid .campo-completo {
+            grid-column: 1 / -1;
+        }
 
         input, select, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 10px 12px;
             border: 2px solid #ddd;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 13px;
-            margin-bottom: 10px;
+            color: var(--texto-primario);
         }
 
-        label { font-weight: 600; font-size: 12px; color: #5D4037; display: block; margin-bottom: 4px; }
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--texto-secundario);
+            margin-bottom: 4px;
+        }
 
-        #qr-reader { width: 100%; border-radius: 12px; overflow: hidden; }
+        /* ===== MODALES ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
 
+        .modal {
+            background: var(--blanco);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* ===== ESCANER ===== */
+        #qr-reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* ===== TOAST ===== */
         .toast {
             position: fixed;
-            bottom: 80px;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
-            background: #3E2723;
-            color: #FFF8E1;
-            padding: 10px 20px;
+            background: var(--marron-oscuro);
+            color: var(--crema);
+            padding: 12px 24px;
             border-radius: 20px;
             font-weight: 600;
-            z-index: 999;
+            font-size: 13px;
+            z-index: 2000;
+            animation: fadeIn 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            #app-layout { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 12px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .sidebar .logo-area { width: 100%; }
+            .sidebar nav { display: flex; flex-wrap: wrap; gap: 4px; }
+            .sidebar nav a { flex: 1; min-width: 80px; font-size: 10px; padding: 6px; justify-content: center; }
+            .main-content { margin-left: 0; padding: 12px; }
+            .tarjetas { grid-template-columns: 1fr 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header class="app-header">
-        <div>
-            <h1>SuperSpuma</h1>
-            <small id="sucursal-nombre">Inspector</small>
+<!-- ========== LOGIN SCREEN ========== -->
+<div id="login-screen">
+    <div class="login-card">
+        <img src="https://image.pollinations.ai/prompt/super%20spuma%20red%20fire%20extinguisher%20professional%20logo?width=160&height=160&nofeed=true" alt="SuperSpuma">
+        <h2>SuperSpuma</h2>
+        <p>Seguridad Industrial · Panel Admin</p>
+        <input type="email" id="login-email" placeholder="Correo electrónico">
+        <input type="password" id="login-password" placeholder="Contraseña">
+        <button onclick="login()">Iniciar Sesión</button>
+        <div class="error" id="login-error"></div>
+    </div>
+</div>
+
+<!-- ========== APP LAYOUT ========== -->
+<div id="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo-area">
+            <img src="https://image.pollinations.ai/prompt/super%20spuma%20red%20fire%20extinguisher%20logo?width=100&height=100&nofeed=true" alt="SuperSpuma">
+            <h2>SuperSpuma</h2>
+            <small>Panel Administrador <span class="conexion-indicator" id="conexion-indicator"></span></small>
         </div>
-        <button class="logout-btn" onclick="logout()">Salir</button>
-    </header>
+        <nav>
+            <a class="activo" onclick="mostrarSeccion('dashboard')">📊 Dashboard</a>
+            <a onclick="mostrarSeccion('sucursales')">🏢 Sucursales</a>
+            <a onclick="mostrarSeccion('extintores')">🧯 Extintores</a>
+            <a onclick="mostrarSeccion('agregar')">➕ Agregar</a>
+            <a onclick="mostrarSeccion('escanear')">📷 Escanear</a>
+            <a onclick="mostrarSeccion('inspecciones')">🔍 Inspecciones</a>
+            <a onclick="mostrarSeccion('reportes')">📥 Reportes</a>
+        </nav>
+        <div class="user-info">
+            <div class="nombre" id="user-nombre">Admin</div>
+            <div id="user-email">admin@superspuma.com</div>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </aside>
 
-    <main class="app-content">
-        <section id="inicio" class="seccion activa">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="tarjetas-resumen"></div>
-            <div class="tabla-container" style="margin-top:12px;">
-                <h4>Próximos a Vencer</h4>
-                <table id="tabla-vencimientos">
-                    <thead><tr><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+    <!-- Contenido Principal -->
+    <main class="main-content">
+
+        <!-- ===== DASHBOARD ===== -->
+        <section id="dashboard" class="seccion activa">
+            <div class="page-header">
+                <h1>📊 Dashboard Global</h1>
+                <span style="color:#888;font-size:12px;" id="fecha-actual"></span>
             </div>
-        </section>
-
-        <section id="inventario" class="seccion">
+            <div class="tarjetas" id="tarjetas-resumen"></div>
             <div class="tabla-container">
-                <table id="tabla-inventario">
-                    <thead><tr><th>Ubicación</th><th>Tipo</th><th>Tamaño</th><th>Vence</th><th>Prioridad</th></tr></thead>
+                <h3>Resumen por Sucursal</h3>
+                <table id="tabla-resumen-sucursales">
+                    <thead><tr><th>Sucursal</th><th>Total</th><th>Críticos</th><th>Alta</th><th>Media</th><th>Normal</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
         </section>
 
-        <section id="escanear" class="seccion">
-            <h3>Escanear QR</h3>
-            <div id="qr-reader"></div>
-            <button class="btn btn-rojo" id="btn-detener" onclick="detenerEscaner()" style="display:none;margin-top:8px;">Detener</button>
-            <div id="resultado-escaner" style="margin-top:12px;"></div>
+        <!-- ===== SUCURSALES ===== -->
+        <section id="sucursales" class="seccion">
+            <div class="page-header">
+                <h1>🏢 Sucursales</h1>
+            </div>
+            <div class="tabla-container">
+                <table>
+                    <thead><tr><th>Nombre</th><th>Dirección</th><th>Extintores</th><th>Críticos</th></tr></thead>
+                    <tbody id="tabla-sucursales"></tbody>
+                </table>
+            </div>
         </section>
 
-        <section id="inspeccion" class="seccion">
-            <h3>Registrar Inspección</h3>
-            <form onsubmit="guardarInspeccion(event)">
-                <label>Extintor</label>
-                <select id="extintor-select" required><option value="">Seleccionar...</option></select>
-                <label>Resultado</label>
-                <select id="resultado" required>
-                    <option value="Aprobado">Aprobado</option>
-                    <option value="Rechazado">Rechazado</option>
+        <!-- ===== EXTINTORES ===== -->
+        <section id="extintores" class="seccion">
+            <div class="page-header">
+                <h1>🧯 Inventario de Extintores</h1>
+                <select id="filtro-sucursal" onchange="cargarInventario()" style="width:auto;">
+                    <option value="todas">Todas las sucursales</option>
                 </select>
-                <label>Observaciones</label>
-                <textarea id="obs-inspeccion" rows="2"></textarea>
-                <button type="submit" class="btn btn-verde" style="width:100%;">Registrar</button>
-            </form>
-            <div class="tabla-container" style="margin-top:16px;">
-                <h4>Historial</h4>
-                <table id="tabla-inspecciones">
-                    <thead><tr><th>Fecha</th><th>Extintor</th><th>Resultado</th></tr></thead>
-                    <tbody></tbody>
+            </div>
+            <div class="tabla-container">
+                <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                    <input type="text" id="busqueda" placeholder="🔍 Buscar..." oninput="cargarInventario()" style="flex:1;">
+                    <select id="filtro-prioridad" onchange="cargarInventario()" style="width:auto;">
+                        <option value="todas">Todas las prioridades</option>
+                        <option value="critico">Crítico</option>
+                        <option value="alta">Alta</option>
+                        <option value="media">Media</option>
+                        <option value="baja">Baja</option>
+                        <option value="normal">Normal</option>
+                    </select>
+                </div>
+                <table>
+                    <thead><tr><th>Sucursal</th><th>Ubicación</th><th>Tipo</th><th>Tamaño</th><th>Vence</th><th>Prioridad</th><th>QR</th><th>Acciones</th></tr></thead>
+                    <tbody id="tabla-extintores"></tbody>
                 </table>
             </div>
         </section>
-    </main>
 
-    <nav class="bottom-nav">
-        <button class="activo" onclick="mostrarSeccion('inicio')">Inicio</button>
-        <button onclick="mostrarSeccion('inventario')">Inventario</button>
-        <button onclick="mostrarSeccion('escanear')">Escanear</button>
-        <button onclick="mostrarSeccion('inspeccion')">Inspección</button>
-    </nav>
+        <!-- ===== AGREGAR/EDITAR ===== -->
+        <section id="agregar" class="seccion">
+            <div class="page-header">
+                <h1 id="titulo-form">➕ Nuevo Extintor</h1>
+            </div>
+            <div class="tabla-container">
+                <form id="form-extintor" onsubmit="guardarExtintor(event)">
+                    <input type="hidden" id="edit-id">
+                    <div class="form-grid">
+                        <div>
+                            <label>Sucursal *</label>
+                            <select id="ext-sucursal" required></select>
+                        </div>
+                        <div>
+                            <label>Ubicación *</label>
+                            <input type="text" id="ubicacion" required placeholder="Ej: Nave 3 - Sector B">
+                        </div>
+                        <div>
+                            <label>Tipo *</label>
+                            <select id="tipo" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Espuma mecánica">Espuma mecánica</option>
+                                <option value="PQS">PQS (Polvo químico seco)</option>
+                                <option value="CO2">CO₂</option>
+                                <option value="Carrito de Espuma">Carrito de Espuma</option>
+                                <option value="Alogenado (eco)">Alogenado (eco)</option>
+                                <option value="Otro">Otro (especificar)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Tamaño *</label>
+                            <select id="tamano" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="18 kg">18 kg</option>
+                                <option value="25 kg">25 kg</option>
+                                <option value="50 kg">50 kg</option>
+                                <option value="Otro">Otro (especificar)</option>
+                            </select>
+                        </div>
+                        <div class="campo-completo">
+                            <label>Próxima recarga *</label>
+                            <input type="date" id="fecha-proxima" required>
+                        </div>
+                        <div>
+                            <label>N° serie / Etiqueta</label>
+                            <input type="text" id="numero-serie" placeholder="Opcional">
+                        </div>
+                        <div class="campo-completo">
+                            <label>Notas</label>
+                            <textarea id="notas" rows="2" placeholder="Observaciones..."></textarea>
+                        </div>
+                        <div class="campo-completo">
+                            <button type="submit" class="btn btn-verde" style="width:100%;padding:12px;">💾 Guardar Extintor</button>
+                            <button type="button" class="btn btn-outline" style="width:100%;margin-top:8px;" onclick="cancelarEdicion()">Cancelar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ===== ESCANEAR ===== -->
+        <section id="escanear" class="seccion">
+            <div class="page-header">
+                <h1>📷 Escanear QR</h1>
+            </div>
+            <div class="tabla-container" style="text-align:center;">
+                <button class="btn btn-azul" id="btn-escanear" onclick="iniciarEscaner()">Iniciar Escáner</button>
+                <button class="btn btn-rojo" id="btn-detener" onclick="detenerEscaner()" style="display:none;">Detener</button>
+                <div id="qr-reader" style="margin-top:16px;"></div>
+                <div id="resultado-escaner" style="margin-top:16px;"></div>
+            </div>
+        </section>
+
+        <!-- ===== INSPECCIONES ===== -->
+        <section id="inspecciones" class="seccion">
+            <div class="page-header">
+                <h1>🔍 Inspecciones</h1>
+            </div>
+            <div class="tabla-container" style="margin-bottom:20px;">
+                <h3>Nueva Inspección</h3>
+                <form onsubmit="guardarInspeccion(event)">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div>
+                            <label>Sucursal</label>
+                            <select id="ins-sucursal" onchange="cargarSelectExtintores()"></select>
+                        </div>
+                        <div>
+                            <label>Extintor *</label>
+                            <select id="extintor-select" required><option value="">Seleccionar...</option></select>
+                        </div>
+                        <div>
+                            <label>Inspector</label>
+                            <input type="text" id="inspector" readonly style="background:#f0f0f0;">
+                        </div>
+                        <div>
+                            <label>Resultado *</label>
+                            <select id="resultado" required>
+                                <option value="Aprobado">Aprobado</option>
+                                <option value="Rechazado">Rechazado</option>
+                            </select>
+                        </div>
+                        <div class="campo-completo">
+                            <label>Observaciones</label>
+                            <textarea id="obs-inspeccion" rows="2"></textarea>
+                        </div>
+                        <div class="campo-completo">
+                            <button type="submit" class="btn btn-verde" style="width:100%;">✅ Registrar Inspección</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="tabla-container">
+                <h3>Historial de Inspecciones</h3>
+                <table>
+                    <thead><tr><th>Fecha</th><th>Sucursal</th><th>Extintor</th><th>Inspector</th><th>Resultado</th></tr></thead>
+                    <tbody id="tabla-inspecciones"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===== REPORTES ===== -->
+        <section id="reportes" class="seccion">
+            <div class="page-header">
+                <h1>📥 Reportes</h1>
+            </div>
+            <div class="tabla-container" style="text-align:center;">
+                <h3>Exportar Datos</h3>
+                <p style="color:#888;margin-bottom:16px;">Descargá el inventario completo en diferentes formatos</p>
+                <button class="btn btn-azul" onclick="exportarCSV()" style="margin:6px;">📊 Descargar CSV</button>
+                <button class="btn btn-outline" onclick="window.print()" style="margin:6px;">🖨️ Imprimir PDF</button>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- ========== MODAL QR ========== -->
+<div class="modal-overlay" id="modal-qr" style="display:none;" onclick="cerrarModalQR()">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h3 style="color:var(--marron-oscuro);margin-bottom:12px;">QR del Extintor</h3>
+        <div id="modal-qr-contenido"></div>
+        <button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalQR()">Cerrar</button>
+    </div>
 </div>
 
 <script>
+    // ==========================================
+    // CONFIGURACIÓN FIREBASE
+    // ==========================================
     const firebaseConfig = {
         apiKey: "AIzaSyArNANQ-R-RsiMJz8w401pLkwmNhxXW9UY",
         authDomain: "gestion-extintores-42b55.firebaseapp.com",
@@ -266,6 +739,9 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
+    // ==========================================
+    // SUCURSALES DE SUPERSPUMA
+    // ==========================================
     const SUCURSALES = {
         'paseo_la_galeria': { nombre: 'Paseo La Galería', direccion: 'Avda. Santa Teresa 1827' },
         'villamorra_shopping': { nombre: 'Villamorra Shopping', direccion: 'Charles De Gaulle casi Av. Mariscal López' },
@@ -274,157 +750,384 @@
         'nemby': { nombre: 'Ñemby', direccion: 'Avda. Manuel O. Guerrero casi Av. La Victoria' },
         'mariano_roque_alonso': { nombre: 'Mariano Roque Alonso (Outlet/Saldos)', direccion: 'Calle Corrales' },
         'terminal': { nombre: 'Terminal', direccion: 'Avda. Fernando de la Mora N° 1615' },
-        'villeta': { nombre: 'Villeta (Planta Industrial)', direccion: 'Ruta Ypané-Villeta' },
+        'villeta': { nombre: 'Villeta (Planta Industrial)', direccion: 'Ruta Ypané-Villeta (cuenta con salón de ventas)' },
         'ciudad_del_este': { nombre: 'Ciudad del Este', direccion: 'Avda. Regimiento Mcal. López 1068' },
         'encarnacion': { nombre: 'Encarnación', direccion: 'Ruta Nº 6 Juan León Mallorquín' }
     };
 
+    // ==========================================
+    // VARIABLES GLOBALES
+    // ==========================================
     let usuarioActual = null;
-    let sucursalAsignada = null;
     let datosExtintores = {};
     let html5QrCode = null;
+    let editMode = false;
+    let currentEditId = null;
 
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            db.ref('usuarios/' + user.uid).once('value', snap => {
-                const data = snap.val() || {};
-                if (data.rol === 'admin') {
-                    window.location.href = 'admin.html';
-                    return;
-                }
-                usuarioActual = { uid: user.uid, nombre: data.nombre || user.email, email: user.email, rol: data.rol || 'inspector' };
-                sucursalAsignada = data.sucursal || 'paseo_la_galeria';
-                document.getElementById('sucursal-nombre').textContent = SUCURSALES[sucursalAsignada]?.nombre || sucursalAsignada;
-                iniciarInspector();
-            });
-        } else {
-            window.location.href = 'index.html';
+    // ==========================================
+    // AUTENTICACIÓN
+    // ==========================================
+    function login() {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        const errorEl = document.getElementById('login-error');
+        errorEl.textContent = '';
+
+        if (!email || !password) {
+            errorEl.textContent = 'Completá todos los campos';
+            return;
         }
-    });
+
+        auth.signInWithEmailAndPassword(email, password)
+            .catch(err => {
+                errorEl.textContent = 'Error: ' + (err.code === 'auth/invalid-credential' ? 'Credenciales inválidas' : err.message);
+            });
+    }
 
     function logout() {
         auth.signOut();
     }
 
-    function iniciarInspector() {
-        db.ref('extintores').on('value', snap => {
-            const all = snap.val() || {};
-            datosExtintores = {};
-            Object.entries(all).forEach(([id, d]) => {
-                if (d.sucursal === sucursalAsignada) datosExtintores[id] = d;
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            db.ref('usuarios/' + user.uid).once('value', snap => {
+                const data = snap.val() || {};
+                if (data.rol && data.rol !== 'admin') {
+                    alert('Acceso denegado. Solo administradores.');
+                    auth.signOut();
+                    return;
+                }
+                usuarioActual = {
+                    uid: user.uid,
+                    nombre: data.nombre || user.email,
+                    email: user.email,
+                    rol: 'admin'
+                };
+                document.getElementById('user-nombre').textContent = usuarioActual.nombre;
+                document.getElementById('user-email').textContent = usuarioActual.email;
+                document.getElementById('inspector').value = usuarioActual.nombre;
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-layout').classList.add('visible');
+                iniciarApp();
             });
-            cargarInicio();
+        } else {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('app-layout').classList.remove('visible');
+        }
+    });
+
+    // ==========================================
+    // INICIALIZACIÓN
+    // ==========================================
+    function iniciarApp() {
+        document.getElementById('fecha-actual').textContent = new Date().toLocaleDateString('es-PY', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
+        // Indicador de conexión
+        db.ref('.info/connected').on('value', snap => {
+            document.getElementById('conexion-indicator').className = 'conexion-indicator ' + (snap.val() ? 'online' : 'offline');
+        });
+
+        cargarSelects();
+        cargarDatos();
+    }
+
+    function cargarSelects() {
+        const options = Object.entries(SUCURSALES).map(([id, s]) => `<option value="${id}">${s.nombre}</option>`).join('');
+        document.getElementById('filtro-sucursal').innerHTML = '<option value="todas">Todas las sucursales</option>' + options;
+        document.getElementById('ext-sucursal').innerHTML = options;
+        document.getElementById('ins-sucursal').innerHTML = options;
+    }
+
+    function cargarDatos() {
+        db.ref('extintores').on('value', snap => {
+            datosExtintores = snap.val() || {};
+            cargarDashboard();
+            cargarSucursalesTabla();
             cargarInventario();
             cargarSelectExtintores();
             cargarInspecciones();
         });
     }
 
-    function cargarInicio() {
-        const ext = Object.values(datosExtintores);
-        const total = ext.length;
-        let criticos = 0, altos = 0;
-        ext.forEach(e => {
-            if (!e.fechaProxima) return;
-            const diff = Math.ceil((new Date(e.fechaProxima) - new Date()) / (1000*60*60*24));
-            if (diff < 0) criticos++;
-            else if (diff <= 7) altos++;
-        });
-        document.getElementById('tarjetas-resumen').innerHTML = `
-            <div class="tarjeta"><div class="numero">${total}</div><div class="etiqueta">Total</div></div>
-            <div class="tarjeta" style="border-left-color:#FF0000;"><div class="numero" style="color:#FF0000;">${criticos}</div><div class="etiqueta">Críticos</div></div>
-            <div class="tarjeta" style="border-left-color:#FF6600;"><div class="numero" style="color:#FF6600;">${altos}</div><div class="etiqueta">Alta</div></div>
-            <div class="tarjeta" style="border-left-color:#00CC66;"><div class="numero" style="color:#00CC66;">${total-criticos-altos}</div><div class="etiqueta">En Regla</div></div>
-        `;
-        const tbody = document.querySelector('#tabla-vencimientos tbody');
-        const vencidos = ext.filter(e => e.fechaProxima).sort((a,b) => new Date(a.fechaProxima) - new Date(b.fechaProxima)).slice(0,10);
-        tbody.innerHTML = vencidos.map(e => {
+    // ==========================================
+    // DASHBOARD
+    // ==========================================
+    function cargarDashboard() {
+        const extintores = Object.values(datosExtintores);
+        const total = extintores.length;
+        let criticos = 0, altos = 0, medios = 0, normales = 0;
+
+        extintores.forEach(e => {
             const p = calcularPrioridad(e.fechaProxima);
-            return `<tr><td>${e.ubicacion||'N/A'}</td><td>${e.tipo||'N/A'}</td><td>${e.fechaProxima}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td></tr>`;
-        }).join('') || '<tr><td colspan="4">Todo en orden</td></tr>';
+            if (p.prioridad === 'critico') criticos++;
+            else if (p.prioridad === 'alta') altos++;
+            else if (p.prioridad === 'media') medios++;
+            else normales++;
+        });
+
+        document.getElementById('tarjetas-resumen').innerHTML = `
+            <div class="tarjeta"><div class="numero">${total}</div><div class="etiqueta">Total Extintores</div></div>
+            <div class="tarjeta critica"><div class="numero">${criticos}</div><div class="etiqueta">Críticos (Vencidos)</div></div>
+            <div class="tarjeta alta"><div class="numero">${altos}</div><div class="etiqueta">Alta Prioridad</div></div>
+            <div class="tarjeta normal"><div class="numero">${normales}</div><div class="etiqueta">En Regla</div></div>
+        `;
+
+        const tbody = document.querySelector('#tabla-resumen-sucursales tbody');
+        tbody.innerHTML = Object.entries(SUCURSALES).map(([id, s]) => {
+            const sucExt = extintores.filter(e => e.sucursal === id);
+            const tot = sucExt.length;
+            let cri = 0, alt = 0, med = 0, nor = 0;
+            sucExt.forEach(e => {
+                const p = calcularPrioridad(e.fechaProxima);
+                if (p.prioridad === 'critico') cri++;
+                else if (p.prioridad === 'alta') alt++;
+                else if (p.prioridad === 'media') med++;
+                else nor++;
+            });
+            return `<tr>
+                <td>${s.nombre}</td><td>${tot}</td>
+                <td style="color:red;font-weight:700;">${cri}</td>
+                <td style="color:#FF6600;font-weight:700;">${alt}</td>
+                <td style="color:#CC9900;">${med}</td>
+                <td style="color:green;">${nor}</td>
+            </tr>`;
+        }).join('');
     }
 
+    // ==========================================
+    // SUCURSALES
+    // ==========================================
+    function cargarSucursalesTabla() {
+        const tbody = document.getElementById('tabla-sucursales');
+        tbody.innerHTML = Object.entries(SUCURSALES).map(([id, s]) => {
+            const sucExt = Object.values(datosExtintores).filter(e => e.sucursal === id);
+            const criticos = sucExt.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
+            return `<tr>
+                <td><strong>${s.nombre}</strong></td>
+                <td>${s.direccion}</td>
+                <td>${sucExt.length}</td>
+                <td style="color:red;font-weight:700;">${criticos}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ==========================================
+    // INVENTARIO
+    // ==========================================
     function cargarInventario() {
-        const tbody = document.querySelector('#tabla-inventario tbody');
-        tbody.innerHTML = Object.entries(datosExtintores).map(([id, d]) => {
+        const filtroSucursal = document.getElementById('filtro-sucursal').value;
+        const filtroPrioridad = document.getElementById('filtro-prioridad').value;
+        const busqueda = document.getElementById('busqueda').value.toLowerCase();
+
+        let items = Object.entries(datosExtintores);
+
+        if (filtroSucursal !== 'todas') {
+            items = items.filter(([id, d]) => d.sucursal === filtroSucursal);
+        }
+
+        if (filtroPrioridad !== 'todas') {
+            items = items.filter(([id, d]) => calcularPrioridad(d.fechaProxima).prioridad === filtroPrioridad);
+        }
+
+        if (busqueda) {
+            items = items.filter(([id, d]) => 
+                (d.ubicacion || '').toLowerCase().includes(busqueda) ||
+                (d.tipo || '').toLowerCase().includes(busqueda) ||
+                (d.numeroSerie || '').toLowerCase().includes(busqueda)
+            );
+        }
+
+        // Ordenar por prioridad (críticos primero)
+        items.sort((a, b) => {
+            const pa = calcularPrioridad(a[1].fechaProxima);
+            const pb = calcularPrioridad(b[1].fechaProxima);
+            const orden = { critico: 0, alta: 1, media: 2, baja: 3, normal: 4 };
+            return orden[pa.prioridad] - orden[pb.prioridad];
+        });
+
+        const tbody = document.getElementById('tabla-extintores');
+        tbody.innerHTML = items.map(([id, d]) => {
             const p = calcularPrioridad(d.fechaProxima);
-            return `<tr><td>${d.ubicacion||'N/A'}</td><td>${d.tipo||'N/A'}</td><td>${d.tamano||'N/A'}</td><td>${d.fechaProxima||'N/A'}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td></tr>`;
-        }).join('') || '<tr><td colspan="5">Sin extintores</td></tr>';
+            const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal || 'N/A';
+            return `<tr>
+                <td>${suc}</td>
+                <td>${d.ubicacion || 'N/A'}</td>
+                <td>${d.tipo || 'N/A'}</td>
+                <td>${d.tamano || 'N/A'}</td>
+                <td>${d.fechaProxima || 'N/A'}</td>
+                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                <td><button class="btn btn-small btn-azul" onclick="mostrarQR('${id}')">QR</button></td>
+                <td>
+                    <button class="btn btn-small" onclick="editarExtintor('${id}')">Editar</button>
+                    <button class="btn btn-small btn-rojo" onclick="eliminarExtintor('${id}')">Eliminar</button>
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="8" style="text-align:center;color:#999;">No se encontraron extintores</td></tr>';
     }
 
-    function calcularPrioridad(fecha) {
-        if (!fecha) return { prioridad: 'normal', label: 'Normal' };
-        const diff = Math.ceil((new Date(fecha) - new Date()) / (1000*60*60*24));
-        if (diff < 0) return { prioridad: 'critico', label: 'Crítico' };
-        if (diff <= 7) return { prioridad: 'alta', label: 'Alta' };
-        if (diff <= 15) return { prioridad: 'media', label: 'Media' };
-        return { prioridad: 'normal', label: 'Normal' };
+    // ==========================================
+    // LÓGICA DE PRIORIDAD
+    // ==========================================
+    function calcularPrioridad(fechaProxima) {
+        if (!fechaProxima) return { prioridad: 'normal', label: 'Normal', dias: Infinity };
+        const hoy = new Date();
+        hoy.setHours(0,0,0,0);
+        const fecha = new Date(fechaProxima);
+        fecha.setHours(0,0,0,0);
+        const diff = Math.ceil((fecha - hoy) / (1000 * 60 * 60 * 24));
+        
+        if (diff < 0) return { prioridad: 'critico', label: 'CRÍTICO (Vencido)', dias: diff };
+        if (diff <= 7) return { prioridad: 'alta', label: 'ALTA (' + diff + 'd)', dias: diff };
+        if (diff <= 15) return { prioridad: 'media', label: 'MEDIA (' + diff + 'd)', dias: diff };
+        if (diff <= 30) return { prioridad: 'baja', label: 'BAJA (' + diff + 'd)', dias: diff };
+        return { prioridad: 'normal', label: 'Normal (' + diff + 'd)', dias: diff };
     }
 
-    function cargarSelectExtintores() {
-        const select = document.getElementById('extintor-select');
-        select.innerHTML = '<option value="">Seleccionar...</option>' +
-            Object.entries(datosExtintores).map(([id, d]) => `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`).join('');
+    // ==========================================
+    // CRUD EXTINTORES
+    // ==========================================
+    function editarExtintor(id) {
+        const d = datosExtintores[id];
+        if (!d) return;
+        currentEditId = id;
+        editMode = true;
+        document.getElementById('edit-id').value = id;
+        document.getElementById('ext-sucursal').value = d.sucursal || '';
+        document.getElementById('ubicacion').value = d.ubicacion || '';
+        document.getElementById('tipo').value = d.tipo || '';
+        document.getElementById('tamano').value = d.tamano || '';
+        document.getElementById('fecha-proxima').value = d.fechaProxima || '';
+        document.getElementById('numero-serie').value = d.numeroSerie || '';
+        document.getElementById('notas').value = d.notas || '';
+        document.getElementById('titulo-form').textContent = '✏️ Editar Extintor';
+        mostrarSeccion('agregar');
     }
 
-    function guardarInspeccion(e) {
+    function cancelarEdicion() {
+        editMode = false;
+        currentEditId = null;
+        document.getElementById('edit-id').value = '';
+        document.getElementById('form-extintor').reset();
+        document.getElementById('titulo-form').textContent = '➕ Nuevo Extintor';
+    }
+
+    function guardarExtintor(e) {
         e.preventDefault();
-        const extintorId = document.getElementById('extintor-select').value;
-        if (!extintorId) return alert('Seleccione un extintor');
-        db.ref('inspecciones').push({
-            extintorId, sucursal: sucursalAsignada,
-            inspector: usuarioActual.nombre,
-            inspectorUid: usuarioActual.uid,
-            resultado: document.getElementById('resultado').value,
-            observaciones: document.getElementById('obs-inspeccion').value,
-            fecha: new Date().toISOString()
-        }).then(() => {
-            alert('Inspección registrada');
-            document.getElementById('obs-inspeccion').value = '';
-            cargarInspecciones();
-        });
+        const data = {
+            sucursal: document.getElementById('ext-sucursal').value,
+            ubicacion: document.getElementById('ubicacion').value.trim(),
+            tipo: document.getElementById('tipo').value,
+            tamano: document.getElementById('tamano').value,
+            fechaProxima: document.getElementById('fecha-proxima').value,
+            numeroSerie: document.getElementById('numero-serie').value.trim(),
+            notas: document.getElementById('notas').value.trim(),
+            actualizado: new Date().toISOString()
+        };
+
+        if (!data.sucursal || !data.ubicacion || !data.tipo || !data.tamano || !data.fechaProxima) {
+            mostrarToast('❌ Completá todos los campos obligatorios');
+            return;
+        }
+
+        if (editMode && currentEditId) {
+            db.ref('extintores/' + currentEditId).update(data)
+                .then(() => {
+                    mostrarToast('✅ Extintor actualizado');
+                    cancelarEdicion();
+                });
+        } else {
+            db.ref('extintores').push(data)
+                .then(() => {
+                    mostrarToast('✅ Extintor creado');
+                    cancelarEdicion();
+                    document.getElementById('form-extintor').reset();
+                });
+        }
     }
 
-    function cargarInspecciones() {
-        db.ref('inspecciones').orderByChild('sucursal').equalTo(sucursalAsignada).limitToLast(20).on('value', snap => {
-            const data = snap.val() || {};
-            const items = Object.entries(data).reverse();
-            document.getElementById('tabla-inspecciones').innerHTML = items.map(([id, d]) => {
-                const ext = datosExtintores[d.extintorId];
-                return `<tr><td>${new Date(d.fecha).toLocaleDateString()}</td><td>${ext?.ubicacion||d.extintorId||'N/A'}</td><td>${d.resultado||'N/A'}</td></tr>`;
-            }).join('') || '<tr><td colspan="3">Sin inspecciones</td></tr>';
-        });
+    function eliminarExtintor(id) {
+        if (!confirm('¿Eliminar este extintor?')) return;
+        db.ref('extintores/' + id).remove()
+            .then(() => mostrarToast('🗑️ Extintor eliminado'));
     }
 
-    function mostrarSeccion(id) {
-        document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
-        document.getElementById(id).classList.add('activa');
-        document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('activo'));
-        const btns = document.querySelectorAll('.bottom-nav button');
-        const secciones = ['inicio', 'inventario', 'escanear', 'inspeccion'];
-        const idx = secciones.indexOf(id);
-        if (idx >= 0 && btns[idx]) btns[idx].classList.add('activo');
-        if (id === 'escanear') iniciarEscaner();
-        else detenerEscaner();
+    // ==========================================
+    // QR
+    // ==========================================
+    function mostrarQR(id) {
+        const d = datosExtintores[id];
+        if (!d) return;
+        const url = window.location.origin + window.location.pathname + '?id=' + id;
+        document.getElementById('modal-qr-contenido').innerHTML = `
+            <div style="text-align:center;">
+                <p style="margin-bottom:8px;font-size:12px;">Escaneá este código con cualquier teléfono</p>
+                <div id="qrcode-container" style="display:inline-block;"></div>
+                <p style="margin-top:8px;font-size:11px;color:#888;word-break:break-all;">${url}</p>
+                <p style="font-size:13px;"><strong>${d.tipo} ${d.tamano}</strong> · ${d.ubicacion}</p>
+                <button class="btn btn-small btn-azul" onclick="copiarURL('${url}')">📋 Copiar enlace</button>
+                <button class="btn btn-small" onclick="window.open('${url}')">🔗 Abrir</button>
+            </div>
+        `;
+        document.getElementById('modal-qr').style.display = 'flex';
+        setTimeout(() => {
+            new QRCode(document.getElementById('qrcode-container'), { text: url, width: 180, height: 180 });
+        }, 100);
     }
 
+    function cerrarModalQR() {
+        document.getElementById('modal-qr').style.display = 'none';
+        document.getElementById('modal-qr-contenido').innerHTML = '';
+    }
+
+    function copiarURL(url) {
+        navigator.clipboard.writeText(url).then(() => mostrarToast('📋 Enlace copiado'));
+    }
+
+    // ==========================================
+    // ESCANER
+    // ==========================================
     function iniciarEscaner() {
         detenerEscaner();
+        document.getElementById('btn-escanear').style.display = 'none';
+        document.getElementById('btn-detener').style.display = 'inline-block';
+        document.getElementById('resultado-escaner').innerHTML = '';
+
         html5QrCode = new Html5Qrcode("qr-reader");
-        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } },
-            text => {
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            (decodedText) => {
                 detenerEscaner();
-                const ext = datosExtintores[text];
+                let id = decodedText;
+                if (decodedText.includes('?id=')) {
+                    id = new URLSearchParams(decodedText.split('?')[1]).get('id') || decodedText;
+                }
+                const d = datosExtintores[id];
                 const res = document.getElementById('resultado-escaner');
-                if (ext) {
-                    const p = calcularPrioridad(ext.fechaProxima);
-                    res.innerHTML = `<div class="tarjeta" style="border-left-color:${p.prioridad==='critico'?'#FF0000':p.prioridad==='alta'?'#FF6600':'#00CC66'};"><strong>${ext.ubicacion}</strong><br>${ext.tipo} ${ext.tamano}<br>Vence: ${ext.fechaProxima||'N/A'}<br><span class="badge ${p.prioridad}">${p.label}</span></div>`;
+                if (d) {
+                    const p = calcularPrioridad(d.fechaProxima);
+                    const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal;
+                    res.innerHTML = `
+                        <div class="tabla-container" style="border-left:5px solid ${p.prioridad === 'critico' ? '#FF0000' : p.prioridad === 'alta' ? '#FF6600' : '#00CC66'};">
+                            <h3>✅ Extintor Encontrado</h3>
+                            <p><strong>Sucursal:</strong> ${suc}</p>
+                            <p><strong>Ubicación:</strong> ${d.ubicacion}</p>
+                            <p><strong>Tipo:</strong> ${d.tipo} · ${d.tamano}</p>
+                            <p><strong>Vence:</strong> ${d.fechaProxima || 'N/A'}</p>
+                            <p><strong>Prioridad:</strong> <span class="badge ${p.prioridad}">${p.label}</span></p>
+                            <button class="btn btn-small" onclick="editarExtintor('${id}')">Editar</button>
+                            <button class="btn btn-small btn-azul" onclick="mostrarQR('${id}')">QR</button>
+                        </div>
+                    `;
                 } else {
-                    res.innerHTML = '<div class="tarjeta" style="border-left-color:#FF0000;">Extintor no encontrado</div>';
+                    res.innerHTML = `<div class="tabla-container" style="border-left:5px solid #FF0000;"><h3>❌ No encontrado</h3><p>ID: ${id}</p></div>`;
                 }
             },
-            err => {}
-        ).catch(err => console.warn(err));
+            () => {}
+        ).catch(err => {
+            mostrarToast('❌ Error al acceder a la cámara');
+            detenerEscaner();
+        });
     }
 
     function detenerEscaner() {
@@ -432,14 +1135,119 @@
             html5QrCode.stop().then(() => html5QrCode.clear()).catch(() => {});
             html5QrCode = null;
         }
+        document.getElementById('btn-escanear').style.display = 'inline-block';
+        document.getElementById('btn-detener').style.display = 'none';
+        document.getElementById('qr-reader').innerHTML = '';
     }
 
-    function mostrarToast(msg) {
-        const t = document.createElement('div');
-        t.className = 'toast';
-        t.textContent = msg;
-        document.body.appendChild(t);
-        setTimeout(() => t.remove(), 2500);
+    // ==========================================
+    // INSPECCIONES
+    // ==========================================
+    function cargarSelectExtintores() {
+        const sucursal = document.getElementById('ins-sucursal').value;
+        const select = document.getElementById('extintor-select');
+        select.innerHTML = '<option value="">Seleccionar...</option>';
+        Object.entries(datosExtintores).forEach(([id, d]) => {
+            if (d.sucursal === sucursal) {
+                select.innerHTML += `<option value="${id}">${d.ubicacion || 'N/A'} - ${d.tipo || 'N/A'}</option>`;
+            }
+        });
+    }
+
+    function guardarInspeccion(e) {
+        e.preventDefault();
+        const extintorId = document.getElementById('extintor-select').value;
+        if (!extintorId) { mostrarToast('❌ Seleccioná un extintor'); return; }
+
+        const data = {
+            extintorId,
+            sucursal: document.getElementById('ins-sucursal').value,
+            inspector: document.getElementById('inspector').value || usuarioActual.nombre,
+            inspectorUid: usuarioActual.uid,
+            resultado: document.getElementById('resultado').value,
+            observaciones: document.getElementById('obs-inspeccion').value.trim(),
+            fecha: new Date().toISOString()
+        };
+
+        db.ref('inspecciones').push(data)
+            .then(() => {
+                mostrarToast('✅ Inspección registrada');
+                document.getElementById('obs-inspeccion').value = '';
+            });
+    }
+
+    function cargarInspecciones() {
+        db.ref('inspecciones').orderByChild('fecha').limitToLast(30).on('value', snap => {
+            const data = snap.val() || {};
+            const items = Object.entries(data).reverse();
+            const tbody = document.getElementById('tabla-inspecciones');
+            tbody.innerHTML = items.map(([id, d]) => {
+                const ext = datosExtintores[d.extintorId];
+                const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal || 'N/A';
+                return `<tr>
+                    <td>${new Date(d.fecha).toLocaleString()}</td>
+                    <td>${suc}</td>
+                    <td>${ext?.ubicacion || d.extintorId || 'N/A'}</td>
+                    <td>${d.inspector || 'N/A'}</td>
+                    <td><span class="badge ${d.resultado === 'Aprobado' ? 'aprobado' : 'rechazado'}">${d.resultado}</span></td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="5" style="text-align:center;color:#999;">Sin inspecciones registradas</td></tr>';
+        });
+    }
+
+    // ==========================================
+    // EXPORTAR
+    // ==========================================
+    function exportarCSV() {
+        let csv = 'ID,Sucursal,Ubicación,Tipo,Tamaño,Vence,Prioridad,N° Serie,Notas\n';
+        Object.entries(datosExtintores).forEach(([id, d]) => {
+            const p = calcularPrioridad(d.fechaProxima);
+            const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal || '';
+            csv += `${id},"${suc}","${d.ubicacion||''}","${d.tipo||''}","${d.tamano||''}","${d.fechaProxima||''}","${p.label}","${d.numeroSerie||''}","${d.notas||''}"\n`;
+        });
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `inventario_superspuma_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        mostrarToast('📥 CSV descargado');
+    }
+
+    // ==========================================
+    // UTILIDADES
+    // ==========================================
+    function mostrarSeccion(id) {
+        document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+        document.getElementById(id).classList.add('activa');
+        document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('activo'));
+        const links = document.querySelectorAll('.sidebar nav a');
+        const secciones = ['dashboard', 'sucursales', 'extintores', 'agregar', 'escanear', 'inspecciones', 'reportes'];
+        const idx = secciones.indexOf(id);
+        if (idx >= 0 && links[idx]) links[idx].classList.add('activo');
+        if (id === 'extintores') cargarInventario();
+        if (id === 'sucursales') cargarSucursalesTabla();
+        if (id === 'inspecciones') cargarInspecciones();
+        if (id === 'agregar' && !editMode) cancelarEdicion();
+        if (id !== 'escanear') detenerEscaner();
+    }
+
+    function mostrarToast(mensaje) {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = mensaje;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ==========================================
+    // DETECTAR QR DESDE URL
+    // ==========================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const idDesdeQR = urlParams.get('id');
+    if (idDesdeQR && datosExtintores[idDesdeQR]) {
+        setTimeout(() => mostrarQR(idDesdeQR), 500);
     }
 </script>
 </body>
