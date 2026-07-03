@@ -7,7 +7,6 @@
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
     <!-- QR Code Generator + Scanner -->
@@ -39,92 +38,12 @@
             color: var(--texto-primario);
             min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
-            /* FONDO CON LOGO 1 (Gemini) */
             background: 
                 linear-gradient(rgba(255, 248, 225, 0.80), rgba(255, 248, 225, 0.80)),
-                url('https://insso-ing.github.io/gestion-extintores/Gemini_Generated_Image_wqugb4wqugb4wqug.png') center/cover no-repeat fixed;
+                url('https://i.imgur.com/Y7aUEQa.png') center/cover no-repeat fixed;
         }
 
-        /* ===== LOGIN ===== */
-        #login-screen {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-            background: 
-                linear-gradient(rgba(62, 39, 35, 0.65), rgba(62, 39, 35, 0.75)),
-                url('https://insso-ing.github.io/gestion-extintores/Gemini_Generated_Image_wqugb4wqugb4wqug.png') center/cover no-repeat fixed;
-        }
-        #login-screen.hidden { display: none; }
-
-        .login-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 24px;
-            padding: 36px 28px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-        }
-        .login-card img {
-            width: 110px;
-            height: 110px;
-            border-radius: 20px;
-            object-fit: contain;
-            background: var(--crema);
-            padding: 10px;
-            margin-bottom: 16px;
-        }
-        .login-card h2 {
-            color: var(--marron-oscuro);
-            font-size: 24px;
-            margin-bottom: 4px;
-            font-weight: 800;
-        }
-        .login-card p {
-            color: var(--texto-secundario);
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-        .login-card input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            font-size: 14px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .login-card button {
-            width: 100%;
-            padding: 14px;
-            background: var(--marron-oscuro);
-            color: var(--crema);
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .login-card button:hover {
-            background: var(--marron-medio);
-        }
-        .login-card .error {
-            color: var(--rojo-alerta);
-            font-size: 12px;
-            margin-top: 8px;
-            min-height: 18px;
-        }
-
-        /* ===== LAYOUT PRINCIPAL ===== */
         #app-layout {
-            display: none;
-        }
-        #app-layout.visible {
             display: flex;
             min-height: 100vh;
         }
@@ -198,36 +117,6 @@
             color: var(--blanco);
         }
 
-        .sidebar .user-info {
-            padding-top: 16px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            font-size: 11px;
-        }
-
-        .sidebar .user-info .nombre {
-            font-weight: 700;
-            font-size: 13px;
-            color: var(--crema-medio);
-        }
-
-        .sidebar .btn-logout {
-            width: 100%;
-            padding: 8px;
-            margin-top: 8px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: var(--blanco);
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 11px;
-            text-align: center;
-            transition: 0.2s;
-        }
-
-        .sidebar .btn-logout:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
         .conexion-indicator {
             display: inline-block;
             width: 8px;
@@ -267,7 +156,6 @@
             color: var(--marron-oscuro);
         }
 
-        /* ===== TARJETAS ===== */
         .tarjetas {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -305,7 +193,6 @@
         .tarjeta.normal { border-left-color: #00CC66; }
         .tarjeta.normal .numero { color: #00CC66; }
 
-        /* ===== TABLAS ===== */
         .tabla-container {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(6px);
@@ -349,7 +236,6 @@
             background: rgba(255, 248, 225, 0.5);
         }
 
-        /* ===== BADGES ===== */
         .badge {
             padding: 3px 8px;
             border-radius: 10px;
@@ -366,7 +252,6 @@
         .badge.aprobado { background: var(--verde-ok); color: white; }
         .badge.rechazado { background: var(--rojo-alerta); color: white; }
 
-        /* ===== BOTONES ===== */
         .btn {
             padding: 8px 14px;
             border: none;
@@ -395,7 +280,6 @@
             font-size: 10px;
         }
 
-        /* ===== FORMULARIOS ===== */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -423,7 +307,6 @@
             margin-bottom: 4px;
         }
 
-        /* ===== MODALES ===== */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -445,7 +328,6 @@
             overflow-y: auto;
         }
 
-        /* ===== ESCANER ===== */
         #qr-reader {
             width: 100%;
             max-width: 400px;
@@ -454,7 +336,6 @@
             overflow: hidden;
         }
 
-        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -475,7 +356,6 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             #app-layout { flex-direction: column; }
             .sidebar {
@@ -498,26 +378,11 @@
 </head>
 <body>
 
-<!-- ========== LOGIN SCREEN ========== -->
-<div id="login-screen">
-    <div class="login-card">
-        <img src="https://insso-ing.github.io/gestion-extintores/LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma">
-        <h2>SuperSpuma</h2>
-        <p>Seguridad Industrial · Panel Admin</p>
-        <input type="email" id="login-email" placeholder="Correo electrónico">
-        <input type="password" id="login-password" placeholder="Contraseña">
-        <button onclick="login()">Iniciar Sesión</button>
-        <div class="error" id="login-error"></div>
-        <p style="font-size:10px;color:#999;margin-top:12px;">Primer inicio de sesión crea cuenta admin automáticamente</p>
-    </div>
-</div>
-
-<!-- ========== APP LAYOUT ========== -->
 <div id="app-layout">
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo-area">
-            <img src="https://insso-ing.github.io/gestion-extintores/LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma">
+            <img src="https://i.imgur.com/MbDDBwH.png" alt="SuperSpuma">
             <h2>SuperSpuma</h2>
             <small>Panel Administrador <span class="conexion-indicator" id="conexion-indicator"></span></small>
         </div>
@@ -530,17 +395,12 @@
             <a onclick="mostrarSeccion('inspecciones')">🔍 Inspecciones</a>
             <a onclick="mostrarSeccion('reportes')">📥 Reportes</a>
         </nav>
-        <div class="user-info">
-            <div class="nombre" id="user-nombre">Admin</div>
-            <div id="user-email">admin@superspuma.com</div>
-            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
-        </div>
     </aside>
 
     <!-- Contenido Principal -->
     <main class="main-content">
 
-        <!-- ===== DASHBOARD ===== -->
+        <!-- DASHBOARD -->
         <section id="dashboard" class="seccion activa">
             <div class="page-header">
                 <h1>📊 Dashboard Global</h1>
@@ -556,11 +416,9 @@
             </div>
         </section>
 
-        <!-- ===== SUCURSALES ===== -->
+        <!-- SUCURSALES -->
         <section id="sucursales" class="seccion">
-            <div class="page-header">
-                <h1>🏢 Sucursales</h1>
-            </div>
+            <div class="page-header"><h1>🏢 Sucursales</h1></div>
             <div class="tabla-container">
                 <table>
                     <thead><tr><th>Nombre</th><th>Dirección</th><th>Extintores</th><th>Críticos</th></tr></thead>
@@ -569,7 +427,7 @@
             </div>
         </section>
 
-        <!-- ===== EXTINTORES ===== -->
+        <!-- EXTINTORES -->
         <section id="extintores" class="seccion">
             <div class="page-header">
                 <h1>🧯 Inventario de Extintores</h1>
@@ -596,23 +454,15 @@
             </div>
         </section>
 
-        <!-- ===== AGREGAR/EDITAR ===== -->
+        <!-- AGREGAR/EDITAR -->
         <section id="agregar" class="seccion">
-            <div class="page-header">
-                <h1 id="titulo-form">➕ Nuevo Extintor</h1>
-            </div>
+            <div class="page-header"><h1 id="titulo-form">➕ Nuevo Extintor</h1></div>
             <div class="tabla-container">
                 <form id="form-extintor" onsubmit="guardarExtintor(event)">
                     <input type="hidden" id="edit-id">
                     <div class="form-grid">
-                        <div>
-                            <label>Sucursal *</label>
-                            <select id="ext-sucursal" required></select>
-                        </div>
-                        <div>
-                            <label>Ubicación *</label>
-                            <input type="text" id="ubicacion" required placeholder="Ej: Nave 3 - Sector B">
-                        </div>
+                        <div><label>Sucursal *</label><select id="ext-sucursal" required></select></div>
+                        <div><label>Ubicación *</label><input type="text" id="ubicacion" required placeholder="Ej: Nave 3 - Sector B"></div>
                         <div>
                             <label>Tipo *</label>
                             <select id="tipo" required>
@@ -635,18 +485,9 @@
                                 <option value="Otro">Otro (especificar)</option>
                             </select>
                         </div>
-                        <div class="campo-completo">
-                            <label>Próxima recarga *</label>
-                            <input type="date" id="fecha-proxima" required>
-                        </div>
-                        <div>
-                            <label>N° serie / Etiqueta</label>
-                            <input type="text" id="numero-serie" placeholder="Opcional">
-                        </div>
-                        <div class="campo-completo">
-                            <label>Notas</label>
-                            <textarea id="notas" rows="2" placeholder="Observaciones..."></textarea>
-                        </div>
+                        <div class="campo-completo"><label>Próxima recarga *</label><input type="date" id="fecha-proxima" required></div>
+                        <div><label>N° serie / Etiqueta</label><input type="text" id="numero-serie" placeholder="Opcional"></div>
+                        <div class="campo-completo"><label>Notas</label><textarea id="notas" rows="2" placeholder="Observaciones..."></textarea></div>
                         <div class="campo-completo">
                             <button type="submit" class="btn btn-verde" style="width:100%;padding:12px;">💾 Guardar Extintor</button>
                             <button type="button" class="btn btn-outline" style="width:100%;margin-top:8px;" onclick="cancelarEdicion()">Cancelar</button>
@@ -656,11 +497,9 @@
             </div>
         </section>
 
-        <!-- ===== ESCANEAR ===== -->
+        <!-- ESCANEAR -->
         <section id="escanear" class="seccion">
-            <div class="page-header">
-                <h1>📷 Escanear QR</h1>
-            </div>
+            <div class="page-header"><h1>📷 Escanear QR</h1></div>
             <div class="tabla-container" style="text-align:center;">
                 <button class="btn btn-azul" id="btn-escanear" onclick="iniciarEscaner()">Iniciar Escáner</button>
                 <button class="btn btn-rojo" id="btn-detener" onclick="detenerEscaner()" style="display:none;">Detener</button>
@@ -669,27 +508,16 @@
             </div>
         </section>
 
-        <!-- ===== INSPECCIONES ===== -->
+        <!-- INSPECCIONES -->
         <section id="inspecciones" class="seccion">
-            <div class="page-header">
-                <h1>🔍 Inspecciones</h1>
-            </div>
+            <div class="page-header"><h1>🔍 Inspecciones</h1></div>
             <div class="tabla-container" style="margin-bottom:20px;">
                 <h3>Nueva Inspección</h3>
                 <form onsubmit="guardarInspeccion(event)">
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                        <div>
-                            <label>Sucursal</label>
-                            <select id="ins-sucursal" onchange="cargarSelectExtintores()"></select>
-                        </div>
-                        <div>
-                            <label>Extintor *</label>
-                            <select id="extintor-select" required><option value="">Seleccionar...</option></select>
-                        </div>
-                        <div>
-                            <label>Inspector</label>
-                            <input type="text" id="inspector" readonly style="background:#f0f0f0;">
-                        </div>
+                        <div><label>Sucursal</label><select id="ins-sucursal" onchange="cargarSelectExtintores()"></select></div>
+                        <div><label>Extintor *</label><select id="extintor-select" required><option value="">Seleccionar...</option></select></div>
+                        <div><label>Inspector</label><input type="text" id="inspector" placeholder="Nombre del inspector"></div>
                         <div>
                             <label>Resultado *</label>
                             <select id="resultado" required>
@@ -697,13 +525,8 @@
                                 <option value="Rechazado">Rechazado</option>
                             </select>
                         </div>
-                        <div class="campo-completo">
-                            <label>Observaciones</label>
-                            <textarea id="obs-inspeccion" rows="2"></textarea>
-                        </div>
-                        <div class="campo-completo">
-                            <button type="submit" class="btn btn-verde" style="width:100%;">✅ Registrar Inspección</button>
-                        </div>
+                        <div class="campo-completo"><label>Observaciones</label><textarea id="obs-inspeccion" rows="2"></textarea></div>
+                        <div class="campo-completo"><button type="submit" class="btn btn-verde" style="width:100%;">✅ Registrar Inspección</button></div>
                     </div>
                 </form>
             </div>
@@ -716,11 +539,9 @@
             </div>
         </section>
 
-        <!-- ===== REPORTES ===== -->
+        <!-- REPORTES -->
         <section id="reportes" class="seccion">
-            <div class="page-header">
-                <h1>📥 Reportes</h1>
-            </div>
+            <div class="page-header"><h1>📥 Reportes</h1></div>
             <div class="tabla-container" style="text-align:center;">
                 <h3>Exportar Datos</h3>
                 <p style="color:#888;margin-bottom:16px;">Descargá el inventario completo en diferentes formatos</p>
@@ -732,7 +553,7 @@
     </main>
 </div>
 
-<!-- ========== MODAL QR ========== -->
+<!-- Modal QR -->
 <div class="modal-overlay" id="modal-qr" style="display:none;" onclick="cerrarModalQR()">
     <div class="modal" onclick="event.stopPropagation()">
         <h3 style="color:var(--marron-oscuro);margin-bottom:12px;">QR del Extintor</h3>
@@ -742,9 +563,7 @@
 </div>
 
 <script>
-    // ==========================================
-    // CONFIGURACIÓN FIREBASE
-    // ==========================================
+    // Configuración Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyArNANQ-R-RsiMJz8w401pLkwmNhxXW9UY",
         authDomain: "gestion-extintores-42b55.firebaseapp.com",
@@ -755,12 +574,9 @@
         databaseURL: "https://gestion-extintores-42b55-default-rtdb.firebaseio.com"
     };
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.database();
 
-    // ==========================================
-    // SUCURSALES DE SUPERSPUMA
-    // ==========================================
+    // Sucursales de SuperSpuma
     const SUCURSALES = {
         'paseo_la_galeria': { nombre: 'Paseo La Galería', direccion: 'Avda. Santa Teresa 1827' },
         'villamorra_shopping': { nombre: 'Villamorra Shopping', direccion: 'Charles De Gaulle casi Av. Mariscal López' },
@@ -774,107 +590,12 @@
         'encarnacion': { nombre: 'Encarnación', direccion: 'Ruta Nº 6 Juan León Mallorquín' }
     };
 
-    // ==========================================
-    // VARIABLES GLOBALES
-    // ==========================================
-    let usuarioActual = null;
     let datosExtintores = {};
     let html5QrCode = null;
     let editMode = false;
     let currentEditId = null;
 
-    // ==========================================
-    // AUTENTICACIÓN (CREA ADMIN AUTOMÁTICAMENTE)
-    // ==========================================
-    function login() {
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-        const errorEl = document.getElementById('login-error');
-        errorEl.textContent = '';
-
-        if (!email || !password) {
-            errorEl.textContent = 'Completá todos los campos';
-            return;
-        }
-
-        auth.signInWithEmailAndPassword(email, password)
-            .catch(err => {
-                if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
-                    if (confirm('¿El usuario no existe. Querés crear una cuenta de administrador con este email?\n\nEmail: ' + email)) {
-                        auth.createUserWithEmailAndPassword(email, password)
-                            .then(cred => {
-                                return db.ref('usuarios/' + cred.user.uid).set({
-                                    nombre: email.split('@')[0],
-                                    email: email,
-                                    rol: 'admin',
-                                    sucursal: 'villeta',
-                                    creado: new Date().toISOString()
-                                });
-                            })
-                            .then(() => {
-                                alert('✅ Cuenta de administrador creada. Ya podés ingresar.');
-                            })
-                            .catch(err2 => {
-                                errorEl.textContent = 'Error al crear cuenta: ' + err2.message;
-                            });
-                    }
-                } else {
-                    errorEl.textContent = 'Error: ' + err.message;
-                }
-            });
-    }
-
-    function logout() {
-        auth.signOut();
-    }
-
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            db.ref('usuarios/' + user.uid).once('value', snap => {
-                const data = snap.val() || {};
-                
-                if (!data.rol) {
-                    db.ref('usuarios/' + user.uid).set({
-                        nombre: user.email.split('@')[0],
-                        email: user.email,
-                        rol: 'admin',
-                        sucursal: 'villeta',
-                        creado: new Date().toISOString()
-                    }).then(() => {
-                        console.log('✅ Cuenta admin creada automáticamente');
-                        location.reload();
-                    });
-                    return;
-                }
-                
-                if (data.rol !== 'admin') {
-                    alert('Acceso denegado. Solo administradores.');
-                    auth.signOut();
-                    return;
-                }
-                
-                usuarioActual = {
-                    uid: user.uid,
-                    nombre: data.nombre || user.email,
-                    email: user.email,
-                    rol: 'admin'
-                };
-                document.getElementById('user-nombre').textContent = usuarioActual.nombre;
-                document.getElementById('user-email').textContent = usuarioActual.email;
-                document.getElementById('inspector').value = usuarioActual.nombre;
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('app-layout').classList.add('visible');
-                iniciarApp();
-            });
-        } else {
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('app-layout').classList.remove('visible');
-        }
-    });
-
-    // ==========================================
-    // INICIALIZACIÓN
-    // ==========================================
+    // Iniciar
     function iniciarApp() {
         document.getElementById('fecha-actual').textContent = new Date().toLocaleDateString('es-PY', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         
@@ -904,9 +625,6 @@
         });
     }
 
-    // ==========================================
-    // DASHBOARD
-    // ==========================================
     function cargarDashboard() {
         const extintores = Object.values(datosExtintores);
         const total = extintores.length;
@@ -939,58 +657,28 @@
                 else if (p.prioridad === 'media') med++;
                 else nor++;
             });
-            return `<tr>
-                <td>${s.nombre}</td><td>${tot}</td>
-                <td style="color:red;font-weight:700;">${cri}</td>
-                <td style="color:#FF6600;font-weight:700;">${alt}</td>
-                <td style="color:#CC9900;">${med}</td>
-                <td style="color:green;">${nor}</td>
-            </tr>`;
+            return `<tr><td>${s.nombre}</td><td>${tot}</td><td style="color:red;font-weight:700;">${cri}</td><td style="color:#FF6600;font-weight:700;">${alt}</td><td style="color:#CC9900;">${med}</td><td style="color:green;">${nor}</td></tr>`;
         }).join('');
     }
 
-    // ==========================================
-    // SUCURSALES
-    // ==========================================
     function cargarSucursalesTabla() {
         const tbody = document.getElementById('tabla-sucursales');
         tbody.innerHTML = Object.entries(SUCURSALES).map(([id, s]) => {
             const sucExt = Object.values(datosExtintores).filter(e => e.sucursal === id);
             const criticos = sucExt.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
-            return `<tr>
-                <td><strong>${s.nombre}</strong></td>
-                <td>${s.direccion}</td>
-                <td>${sucExt.length}</td>
-                <td style="color:red;font-weight:700;">${criticos}</td>
-            </tr>`;
+            return `<tr><td><strong>${s.nombre}</strong></td><td>${s.direccion}</td><td>${sucExt.length}</td><td style="color:red;font-weight:700;">${criticos}</td></tr>`;
         }).join('');
     }
 
-    // ==========================================
-    // INVENTARIO
-    // ==========================================
     function cargarInventario() {
         const filtroSucursal = document.getElementById('filtro-sucursal').value;
         const filtroPrioridad = document.getElementById('filtro-prioridad').value;
         const busqueda = document.getElementById('busqueda').value.toLowerCase();
 
         let items = Object.entries(datosExtintores);
-
-        if (filtroSucursal !== 'todas') {
-            items = items.filter(([id, d]) => d.sucursal === filtroSucursal);
-        }
-
-        if (filtroPrioridad !== 'todas') {
-            items = items.filter(([id, d]) => calcularPrioridad(d.fechaProxima).prioridad === filtroPrioridad);
-        }
-
-        if (busqueda) {
-            items = items.filter(([id, d]) => 
-                (d.ubicacion || '').toLowerCase().includes(busqueda) ||
-                (d.tipo || '').toLowerCase().includes(busqueda) ||
-                (d.numeroSerie || '').toLowerCase().includes(busqueda)
-            );
-        }
+        if (filtroSucursal !== 'todas') items = items.filter(([id, d]) => d.sucursal === filtroSucursal);
+        if (filtroPrioridad !== 'todas') items = items.filter(([id, d]) => calcularPrioridad(d.fechaProxima).prioridad === filtroPrioridad);
+        if (busqueda) items = items.filter(([id, d]) => (d.ubicacion||'').toLowerCase().includes(busqueda) || (d.tipo||'').toLowerCase().includes(busqueda) || (d.numeroSerie||'').toLowerCase().includes(busqueda));
 
         items.sort((a, b) => {
             const pa = calcularPrioridad(a[1].fechaProxima);
@@ -1004,32 +692,19 @@
             const p = calcularPrioridad(d.fechaProxima);
             const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal || 'N/A';
             return `<tr>
-                <td>${suc}</td>
-                <td>${d.ubicacion || 'N/A'}</td>
-                <td>${d.tipo || 'N/A'}</td>
-                <td>${d.tamano || 'N/A'}</td>
-                <td>${d.fechaProxima || 'N/A'}</td>
-                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                <td>${suc}</td><td>${d.ubicacion||'N/A'}</td><td>${d.tipo||'N/A'}</td><td>${d.tamano||'N/A'}</td>
+                <td>${d.fechaProxima||'N/A'}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td>
                 <td><button class="btn btn-small btn-azul" onclick="mostrarQR('${id}')">QR</button></td>
-                <td>
-                    <button class="btn btn-small" onclick="editarExtintor('${id}')">Editar</button>
-                    <button class="btn btn-small btn-rojo" onclick="eliminarExtintor('${id}')">Eliminar</button>
-                </td>
+                <td><button class="btn btn-small" onclick="editarExtintor('${id}')">Editar</button> <button class="btn btn-small btn-rojo" onclick="eliminarExtintor('${id}')">Eliminar</button></td>
             </tr>`;
         }).join('') || '<tr><td colspan="8" style="text-align:center;color:#999;">No se encontraron extintores</td></tr>';
     }
 
-    // ==========================================
-    // LÓGICA DE PRIORIDAD
-    // ==========================================
     function calcularPrioridad(fechaProxima) {
         if (!fechaProxima) return { prioridad: 'normal', label: 'Normal', dias: Infinity };
-        const hoy = new Date();
-        hoy.setHours(0,0,0,0);
-        const fecha = new Date(fechaProxima);
-        fecha.setHours(0,0,0,0);
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
+        const fecha = new Date(fechaProxima); fecha.setHours(0,0,0,0);
         const diff = Math.ceil((fecha - hoy) / (1000 * 60 * 60 * 24));
-        
         if (diff < 0) return { prioridad: 'critico', label: 'CRÍTICO (Vencido)', dias: diff };
         if (diff <= 7) return { prioridad: 'alta', label: 'ALTA (' + diff + 'd)', dias: diff };
         if (diff <= 15) return { prioridad: 'media', label: 'MEDIA (' + diff + 'd)', dias: diff };
@@ -1037,14 +712,10 @@
         return { prioridad: 'normal', label: 'Normal (' + diff + 'd)', dias: diff };
     }
 
-    // ==========================================
-    // CRUD EXTINTORES
-    // ==========================================
     function editarExtintor(id) {
         const d = datosExtintores[id];
         if (!d) return;
-        currentEditId = id;
-        editMode = true;
+        currentEditId = id; editMode = true;
         document.getElementById('edit-id').value = id;
         document.getElementById('ext-sucursal').value = d.sucursal || '';
         document.getElementById('ubicacion').value = d.ubicacion || '';
@@ -1058,8 +729,7 @@
     }
 
     function cancelarEdicion() {
-        editMode = false;
-        currentEditId = null;
+        editMode = false; currentEditId = null;
         document.getElementById('edit-id').value = '';
         document.getElementById('form-extintor').reset();
         document.getElementById('titulo-form').textContent = '➕ Nuevo Extintor';
@@ -1077,37 +747,21 @@
             notas: document.getElementById('notas').value.trim(),
             actualizado: new Date().toISOString()
         };
-
         if (!data.sucursal || !data.ubicacion || !data.tipo || !data.tamano || !data.fechaProxima) {
-            mostrarToast('❌ Completá todos los campos obligatorios');
-            return;
+            mostrarToast('❌ Completá todos los campos obligatorios'); return;
         }
-
         if (editMode && currentEditId) {
-            db.ref('extintores/' + currentEditId).update(data)
-                .then(() => {
-                    mostrarToast('✅ Extintor actualizado');
-                    cancelarEdicion();
-                });
+            db.ref('extintores/' + currentEditId).update(data).then(() => { mostrarToast('✅ Extintor actualizado'); cancelarEdicion(); });
         } else {
-            db.ref('extintores').push(data)
-                .then(() => {
-                    mostrarToast('✅ Extintor creado');
-                    cancelarEdicion();
-                    document.getElementById('form-extintor').reset();
-                });
+            db.ref('extintores').push(data).then(() => { mostrarToast('✅ Extintor creado'); cancelarEdicion(); document.getElementById('form-extintor').reset(); });
         }
     }
 
     function eliminarExtintor(id) {
         if (!confirm('¿Eliminar este extintor?')) return;
-        db.ref('extintores/' + id).remove()
-            .then(() => mostrarToast('🗑️ Extintor eliminado'));
+        db.ref('extintores/' + id).remove().then(() => mostrarToast('🗑️ Extintor eliminado'));
     }
 
-    // ==========================================
-    // QR
-    // ==========================================
     function mostrarQR(id) {
         const d = datosExtintores[id];
         if (!d) return;
@@ -1120,91 +774,51 @@
                 <p style="font-size:13px;"><strong>${d.tipo} ${d.tamano}</strong> · ${d.ubicacion}</p>
                 <button class="btn btn-small btn-azul" onclick="copiarURL('${url}')">📋 Copiar enlace</button>
                 <button class="btn btn-small" onclick="window.open('${url}')">🔗 Abrir</button>
-            </div>
-        `;
+            </div>`;
         document.getElementById('modal-qr').style.display = 'flex';
-        setTimeout(() => {
-            new QRCode(document.getElementById('qrcode-container'), { text: url, width: 180, height: 180 });
-        }, 100);
+        setTimeout(() => { new QRCode(document.getElementById('qrcode-container'), { text: url, width: 180, height: 180 }); }, 100);
     }
 
-    function cerrarModalQR() {
-        document.getElementById('modal-qr').style.display = 'none';
-        document.getElementById('modal-qr-contenido').innerHTML = '';
-    }
+    function cerrarModalQR() { document.getElementById('modal-qr').style.display = 'none'; document.getElementById('modal-qr-contenido').innerHTML = ''; }
+    function copiarURL(url) { navigator.clipboard.writeText(url).then(() => mostrarToast('📋 Enlace copiado')); }
 
-    function copiarURL(url) {
-        navigator.clipboard.writeText(url).then(() => mostrarToast('📋 Enlace copiado'));
-    }
-
-    // ==========================================
-    // ESCANER
-    // ==========================================
     function iniciarEscaner() {
         detenerEscaner();
         document.getElementById('btn-escanear').style.display = 'none';
         document.getElementById('btn-detener').style.display = 'inline-block';
         document.getElementById('resultado-escaner').innerHTML = '';
-
         html5QrCode = new Html5Qrcode("qr-reader");
-        html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 250, height: 250 } },
+        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } },
             (decodedText) => {
                 detenerEscaner();
                 let id = decodedText;
-                if (decodedText.includes('?id=')) {
-                    id = new URLSearchParams(decodedText.split('?')[1]).get('id') || decodedText;
-                }
+                if (decodedText.includes('?id=')) id = new URLSearchParams(decodedText.split('?')[1]).get('id') || decodedText;
                 const d = datosExtintores[id];
                 const res = document.getElementById('resultado-escaner');
                 if (d) {
                     const p = calcularPrioridad(d.fechaProxima);
                     const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal;
-                    res.innerHTML = `
-                        <div class="tabla-container" style="border-left:5px solid ${p.prioridad === 'critico' ? '#FF0000' : p.prioridad === 'alta' ? '#FF6600' : '#00CC66'};">
-                            <h3>✅ Extintor Encontrado</h3>
-                            <p><strong>Sucursal:</strong> ${suc}</p>
-                            <p><strong>Ubicación:</strong> ${d.ubicacion}</p>
-                            <p><strong>Tipo:</strong> ${d.tipo} · ${d.tamano}</p>
-                            <p><strong>Vence:</strong> ${d.fechaProxima || 'N/A'}</p>
-                            <p><strong>Prioridad:</strong> <span class="badge ${p.prioridad}">${p.label}</span></p>
-                            <button class="btn btn-small" onclick="editarExtintor('${id}')">Editar</button>
-                            <button class="btn btn-small btn-azul" onclick="mostrarQR('${id}')">QR</button>
-                        </div>
-                    `;
+                    res.innerHTML = `<div class="tabla-container" style="border-left:5px solid ${p.prioridad==='critico'?'#FF0000':p.prioridad==='alta'?'#FF6600':'#00CC66'};"><h3>✅ Extintor Encontrado</h3><p><strong>Sucursal:</strong> ${suc}</p><p><strong>Ubicación:</strong> ${d.ubicacion}</p><p><strong>Tipo:</strong> ${d.tipo} · ${d.tamano}</p><p><strong>Vence:</strong> ${d.fechaProxima||'N/A'}</p><p><strong>Prioridad:</strong> <span class="badge ${p.prioridad}">${p.label}</span></p><button class="btn btn-small" onclick="editarExtintor('${id}')">Editar</button> <button class="btn btn-small btn-azul" onclick="mostrarQR('${id}')">QR</button></div>`;
                 } else {
                     res.innerHTML = `<div class="tabla-container" style="border-left:5px solid #FF0000;"><h3>❌ No encontrado</h3><p>ID: ${id}</p></div>`;
                 }
-            },
-            () => {}
-        ).catch(err => {
-            mostrarToast('❌ Error al acceder a la cámara');
-            detenerEscaner();
-        });
+            }, () => {}
+        ).catch(err => { mostrarToast('❌ Error al acceder a la cámara'); detenerEscaner(); });
     }
 
     function detenerEscaner() {
-        if (html5QrCode) {
-            html5QrCode.stop().then(() => html5QrCode.clear()).catch(() => {});
-            html5QrCode = null;
-        }
+        if (html5QrCode) { html5QrCode.stop().then(() => html5QrCode.clear()).catch(() => {}); html5QrCode = null; }
         document.getElementById('btn-escanear').style.display = 'inline-block';
         document.getElementById('btn-detener').style.display = 'none';
         document.getElementById('qr-reader').innerHTML = '';
     }
 
-    // ==========================================
-    // INSPECCIONES
-    // ==========================================
     function cargarSelectExtintores() {
         const sucursal = document.getElementById('ins-sucursal').value;
         const select = document.getElementById('extintor-select');
         select.innerHTML = '<option value="">Seleccionar...</option>';
         Object.entries(datosExtintores).forEach(([id, d]) => {
-            if (d.sucursal === sucursal) {
-                select.innerHTML += `<option value="${id}">${d.ubicacion || 'N/A'} - ${d.tipo || 'N/A'}</option>`;
-            }
+            if (d.sucursal === sucursal) select.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
         });
     }
 
@@ -1212,22 +826,14 @@
         e.preventDefault();
         const extintorId = document.getElementById('extintor-select').value;
         if (!extintorId) { mostrarToast('❌ Seleccioná un extintor'); return; }
-
-        const data = {
+        db.ref('inspecciones').push({
             extintorId,
             sucursal: document.getElementById('ins-sucursal').value,
-            inspector: document.getElementById('inspector').value || usuarioActual.nombre,
-            inspectorUid: usuarioActual.uid,
+            inspector: document.getElementById('inspector').value || 'Admin',
             resultado: document.getElementById('resultado').value,
             observaciones: document.getElementById('obs-inspeccion').value.trim(),
             fecha: new Date().toISOString()
-        };
-
-        db.ref('inspecciones').push(data)
-            .then(() => {
-                mostrarToast('✅ Inspección registrada');
-                document.getElementById('obs-inspeccion').value = '';
-            });
+        }).then(() => { mostrarToast('✅ Inspección registrada'); document.getElementById('obs-inspeccion').value = ''; });
     }
 
     function cargarInspecciones() {
@@ -1238,20 +844,11 @@
             tbody.innerHTML = items.map(([id, d]) => {
                 const ext = datosExtintores[d.extintorId];
                 const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal || 'N/A';
-                return `<tr>
-                    <td>${new Date(d.fecha).toLocaleString()}</td>
-                    <td>${suc}</td>
-                    <td>${ext?.ubicacion || d.extintorId || 'N/A'}</td>
-                    <td>${d.inspector || 'N/A'}</td>
-                    <td><span class="badge ${d.resultado === 'Aprobado' ? 'aprobado' : 'rechazado'}">${d.resultado}</span></td>
-                </tr>`;
+                return `<tr><td>${new Date(d.fecha).toLocaleString()}</td><td>${suc}</td><td>${ext?.ubicacion||d.extintorId||'N/A'}</td><td>${d.inspector||'N/A'}</td><td><span class="badge ${d.resultado==='Aprobado'?'aprobado':'rechazado'}">${d.resultado}</span></td></tr>`;
             }).join('') || '<tr><td colspan="5" style="text-align:center;color:#999;">Sin inspecciones registradas</td></tr>';
         });
     }
 
-    // ==========================================
-    // EXPORTAR
-    // ==========================================
     function exportarCSV() {
         let csv = 'ID,Sucursal,Ubicación,Tipo,Tamaño,Vence,Prioridad,N° Serie,Notas\n';
         Object.entries(datosExtintores).forEach(([id, d]) => {
@@ -1267,9 +864,6 @@
         mostrarToast('📥 CSV descargado');
     }
 
-    // ==========================================
-    // UTILIDADES
-    // ==========================================
     function mostrarSeccion(id) {
         document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
         document.getElementById(id).classList.add('activa');
@@ -1295,14 +889,8 @@
         setTimeout(() => toast.remove(), 3000);
     }
 
-    // ==========================================
-    // DETECTAR QR DESDE URL
-    // ==========================================
-    const urlParams = new URLSearchParams(window.location.search);
-    const idDesdeQR = urlParams.get('id');
-    if (idDesdeQR && datosExtintores[idDesdeQR]) {
-        setTimeout(() => mostrarQR(idDesdeQR), 500);
-    }
+    // Iniciar
+    iniciarApp();
 </script>
 </body>
 </html>
