@@ -40,7 +40,6 @@
         .grid-sucursales { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 20px; }
         .card-sucursal { background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px; padding: 16px; cursor: pointer; transition: 0.2s; border-left: 5px solid #4E342E; box-shadow: var(--sombra); }
         .card-sucursal:hover { transform: translateY(-3px); }
-        .card-sucursal.activa { border-left-color: #2E7D32; }
 
         .sucursal-activa { background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px; padding: 20px; margin-bottom: 16px; border-left: 6px solid var(--marron); box-shadow: var(--sombra); }
         .stats { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
@@ -55,7 +54,6 @@
         table { width: 100%; border-collapse: collapse; font-size: 11px; }
         th { background: var(--marron); color: #FFF8E1; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; }
         td { padding: 7px 10px; border-bottom: 1px solid #eee; color: var(--text); cursor: pointer; }
-        tr:hover { background: rgba(0,0,0,0.04); }
         .badge { padding: 3px 7px; border-radius: 8px; font-size: 9px; font-weight: 700; }
         .badge.critico { background: #FF0000; color: white; } .badge.alta { background: #FF6600; color: white; }
         .badge.media { background: #FFCC00; color: #333; } .badge.baja { background: #33CCFF; color: #333; } .badge.normal { background: #00CC66; color: white; }
@@ -63,7 +61,6 @@
 
         .btn { padding: 7px 12px; border: none; border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; background: #4E342E; color: #FFF8E1; }
         .btn-rojo { background: #C62828; } .btn-verde { background: #2E7D32; } .btn-azul { background: #1565C0; }
-        .btn-small { padding: 3px 7px; font-size: 9px; }
 
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .form-row .full { grid-column: 1 / -1; }
@@ -72,12 +69,11 @@
 
         .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #eee; }
         .checklist-item .nombre { flex: 1; font-weight: 600; font-size: 12px; }
-        .checklist-item .opciones { display: flex; gap: 8px; }
         .checklist-item .opciones button { padding: 5px 14px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 2px solid #ccc; cursor: pointer; background: white; color: #333; }
         .checklist-item .opciones button.sel-ok { background: #2E7D32; color: white; border-color: #2E7D32; }
         .checklist-item .opciones button.sel-nook { background: #C62828; color: white; border-color: #C62828; }
 
-        .foto-preview { width: 100px; height: 100px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin-top: 4px; }
+        .foto-preview { width: 100px; height: 100px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
         .foto-preview img { width: 100%; height: 100%; object-fit: contain; background: #f0f0f0; }
         .foto-mini { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; cursor: pointer; background: #f0f0f0; }
 
@@ -86,20 +82,17 @@
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:1000; }
         .modal { background: white; border-radius: 16px; padding: 24px; max-width: 650px; width: 90%; max-height: 90vh; overflow-y: auto; }
         .modal-detalle-foto { width: 100%; max-height: 300px; object-fit: contain; background: #f5f5f5; border-radius: 10px; margin-bottom: 12px; }
-        .modal-detalle-qr { text-align: center; margin: 12px 0; }
-        .modal-detalle-qr canvas { display: inline-block !important; }
         .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #3E2723; color: #FFF8E1; padding: 10px 20px; border-radius: 20px; font-weight: 600; z-index: 2000; font-size: 13px; }
 
-        @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
-            .header { flex-direction: column; text-align: center; }
-        }
+        /* PANTALLA DE ESCANEO EXTERNO */
+        .ficha-externa { max-width: 500px; margin: 20px auto; background: white; border-radius: 20px; padding: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+        .ficha-externa img { width: 100%; max-height: 250px; object-fit: contain; background: #f5f5f5; border-radius: 12px; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="header">
+<div class="app-container" id="app-container">
+    <div class="header" id="header-principal">
         <img src="https://i.imgur.com/MbDDBwH.png" alt="SuperSpuma">
         <div><h1>SuperSpuma</h1><small>Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small></div>
         <div class="header-right">
@@ -135,96 +128,35 @@
 
         <div id="tab-extintores" class="tab-content">
             <div class="tabla-container">
-                <div style="display:flex;gap:8px;margin-bottom:12px;">
-                    <input type="text" id="busqueda" placeholder="🔍 Buscar..." oninput="cargarExtintoresSucursal()" style="flex:1;">
-                    <select id="filtro-prioridad" onchange="cargarExtintoresSucursal()"><option value="todas">Todas</option><option value="critico">Crítico</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option><option value="normal">Normal</option></select>
-                </div>
+                <div style="display:flex;gap:8px;margin-bottom:12px;"><input type="text" id="busqueda" placeholder="🔍 Buscar..." oninput="cargarExtintoresSucursal()" style="flex:1;"><select id="filtro-prioridad" onchange="cargarExtintoresSucursal()"><option value="todas">Todas</option><option value="critico">Crítico</option><option value="alta">Alta</option><option value="media">Media</option><option value="baja">Baja</option><option value="normal">Normal</option></select></div>
                 <table><thead><tr><th>Foto</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th><th>Checklist</th></tr></thead><tbody id="tabla-extintores-sucursal"></tbody></table>
                 <p style="font-size:10px;color:#888;margin-top:8px;">💡 Hacé clic en cualquier fila para ver todos los detalles</p>
             </div>
         </div>
 
         <div id="tab-agregar" class="tab-content" style="display:none;">
-            <div class="tabla-container">
-                <h3 id="titulo-form">➕ Nuevo Extintor</h3>
-                <form id="form-extintor" onsubmit="guardarExtintor(event)">
-                    <input type="hidden" id="edit-id"><input type="hidden" id="foto-url">
-                    <div class="form-row">
-                        <div><label>Ubicación *</label><input type="text" id="ubicacion" required></div>
-                        <div><label>Tipo *</label><select id="tipo" required><option value="">Seleccionar...</option><option value="Espuma mecánica">Espuma mecánica</option><option value="PQS">PQS</option><option value="CO2">CO₂</option><option value="Carrito de Espuma">Carrito de Espuma</option><option value="Alogenado (eco)">Alogenado (eco)</option><option value="Otro">Otro</option></select></div>
-                        <div><label>Tamaño *</label><select id="tamano" required><option value="">Seleccionar...</option><option value="18 kg">18 kg</option><option value="25 kg">25 kg</option><option value="50 kg">50 kg</option><option value="Otro">Otro</option></select></div>
-                        <div><label>Próxima recarga *</label><input type="date" id="fecha-proxima" required></div>
-                        <div><label>N° serie</label><input type="text" id="numero-serie"></div>
-                        <div><label>📸 Foto</label><input type="file" id="foto-input" accept="image/*" capture="environment" onchange="previsualizarFoto(event)"><div class="foto-preview" onclick="document.getElementById('foto-input').click()"><span id="foto-placeholder">📷</span><img id="foto-preview-img" style="display:none;"></div></div>
-                        <div class="full"><label>Notas</label><textarea id="notas" rows="2"></textarea></div>
-                        <div class="full"><button type="submit" class="btn btn-verde" style="width:100%;padding:12px;">💾 Guardar</button></div>
-                    </div>
-                </form>
-            </div>
-        </div>
+            <div class="tabla-container"><h3 id="titulo-form">➕ Nuevo Extintor</h3>
+                <form id="form-extintor" onsubmit="guardarExtintor(event)"><input type="hidden" id="edit-id"><input type="hidden" id="foto-url">
+                    <div class="form-row"><div><label>Ubicación *</label><input type="text" id="ubicacion" required></div><div><label>Tipo *</label><select id="tipo" required><option value="">Seleccionar...</option><option value="Espuma mecánica">Espuma mecánica</option><option value="PQS">PQS</option><option value="CO2">CO₂</option><option value="Carrito de Espuma">Carrito de Espuma</option><option value="Alogenado (eco)">Alogenado (eco)</option><option value="Otro">Otro</option></select></div><div><label>Tamaño *</label><select id="tamano" required><option value="">Seleccionar...</option><option value="18 kg">18 kg</option><option value="25 kg">25 kg</option><option value="50 kg">50 kg</option><option value="Otro">Otro</option></select></div><div><label>Próxima recarga *</label><input type="date" id="fecha-proxima" required></div><div><label>N° serie</label><input type="text" id="numero-serie"></div><div><label>📸 Foto</label><input type="file" id="foto-input" accept="image/*" capture="environment" onchange="previsualizarFoto(event)"><div class="foto-preview" onclick="document.getElementById('foto-input').click()"><span id="foto-placeholder">📷</span><img id="foto-preview-img" style="display:none;"></div></div><div class="full"><label>Notas</label><textarea id="notas" rows="2"></textarea></div><div class="full"><button type="submit" class="btn btn-verde" style="width:100%;padding:12px;">💾 Guardar</button></div></div></form></div></div>
 
-        <div id="tab-checklist" class="tab-content" style="display:none;">
-            <div class="tabla-container">
-                <h3>✅ Checklist</h3>
-                <form onsubmit="guardarChecklist(event)">
-                    <div class="form-row">
-                        <div><label>Sucursal</label><select id="checklist-sucursal" onchange="cargarExtintoresChecklist()"><option value="">Seleccionar...</option></select></div>
-                        <div><label>Extintor *</label><select id="checklist-extintor" required><option value="">Primero sucursal</option></select></div>
-                        <div><label>Inspector *</label><input type="text" id="checklist-inspector" required></div>
-                    </div>
-                    <div id="checklist-items"></div>
-                    <div class="form-row" style="margin-top:12px;"><div><label>Observaciones</label><textarea id="checklist-obs" rows="2"></textarea></div><div><label>📸 Foto</label><input type="file" id="checklist-foto" accept="image/*" capture="environment"></div></div>
-                    <button type="submit" class="btn btn-verde" style="width:100%;margin-top:12px;">✅ Guardar</button>
-                </form>
-            </div>
-        </div>
+        <div id="tab-checklist" class="tab-content" style="display:none;"><div class="tabla-container"><h3>✅ Checklist</h3><form onsubmit="guardarChecklist(event)"><div class="form-row"><div><label>Sucursal</label><select id="checklist-sucursal" onchange="cargarExtintoresChecklist()"><option value="">Seleccionar...</option></select></div><div><label>Extintor *</label><select id="checklist-extintor" required><option value="">Primero sucursal</option></select></div><div><label>Inspector *</label><input type="text" id="checklist-inspector" required></div></div><div id="checklist-items"></div><div class="form-row" style="margin-top:12px;"><div><label>Observaciones</label><textarea id="checklist-obs" rows="2"></textarea></div><div><label>📸 Foto</label><input type="file" id="checklist-foto" accept="image/*" capture="environment"></div></div><button type="submit" class="btn btn-verde" style="width:100%;margin-top:12px;">✅ Guardar</button></form></div></div>
 
-        <div id="tab-historial-checklist" class="tab-content" style="display:none;">
-            <div class="tabla-container">
-                <h3>📋 Historial</h3>
-                <select id="filtro-estado-checklist" onchange="cargarHistorialChecklists()" style="width:auto;margin-bottom:10px;"><option value="todos">Todos</option><option value="completado">✅ OK</option><option value="pendiente">❌ Fallas</option></select>
-                <table><thead><tr><th>Fecha</th><th>Extintor</th><th>Inspector</th><th>Resultado</th><th>Foto</th></tr></thead><tbody id="tabla-historial-checklists"></tbody></table>
-            </div>
-        </div>
+        <div id="tab-historial-checklist" class="tab-content" style="display:none;"><div class="tabla-container"><h3>📋 Historial</h3><select id="filtro-estado-checklist" onchange="cargarHistorialChecklists()" style="width:auto;margin-bottom:10px;"><option value="todos">Todos</option><option value="completado">✅ OK</option><option value="pendiente">❌ Fallas</option></select><table><thead><tr><th>Fecha</th><th>Extintor</th><th>Inspector</th><th>Resultado</th><th>Foto</th></tr></thead><tbody id="tabla-historial-checklists"></tbody></table></div></div>
 
-        <div id="tab-escanear" class="tab-content" style="display:none;">
-            <div class="tabla-container" style="text-align:center;">
-                <button class="btn btn-azul" id="btn-escanear" onclick="iniciarEscaner()">Iniciar</button>
-                <button class="btn btn-rojo" id="btn-detener" onclick="detenerEscaner()" style="display:none;">Detener</button>
-                <div id="qr-reader"></div><div id="resultado-escaner"></div>
-            </div>
-        </div>
+        <div id="tab-escanear" class="tab-content" style="display:none;"><div class="tabla-container" style="text-align:center;"><button class="btn btn-azul" id="btn-escanear" onclick="iniciarEscaner()">Iniciar</button><button class="btn btn-rojo" id="btn-detener" onclick="detenerEscaner()" style="display:none;">Detener</button><div id="qr-reader"></div><div id="resultado-escaner"></div></div></div>
 
-        <div id="tab-etiquetas" class="tab-content" style="display:none;">
-            <div class="tabla-container" style="text-align:center;">
-                <h3>🏷️ Etiquetas</h3>
-                <button class="btn btn-azul" onclick="generarEtiquetas()">Generar</button>
-                <div id="etiquetas-container" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:16px;"></div>
-                <button class="btn btn-verde" id="btn-imprimir-etiquetas" style="display:none;margin-top:12px;" onclick="window.print()">🖨️ Imprimir</button>
-            </div>
-        </div>
+        <div id="tab-etiquetas" class="tab-content" style="display:none;"><div class="tabla-container" style="text-align:center;"><h3>🏷️ Etiquetas</h3><button class="btn btn-azul" onclick="generarEtiquetas()">Generar</button><div id="etiquetas-container" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:16px;"></div><button class="btn btn-verde" id="btn-imprimir-etiquetas" style="display:none;margin-top:12px;" onclick="window.print()">🖨️ Imprimir</button></div></div>
     </div>
 </div>
 
-<!-- Modal DETALLE COMPLETO -->
-<div class="modal-overlay" id="modal-detalle" style="display:none;" onclick="cerrarModalDetalle()">
-    <div class="modal" onclick="event.stopPropagation()">
-        <div id="modal-detalle-contenido"></div>
-        <button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalDetalle()">Cerrar</button>
-    </div>
-</div>
-
-<!-- Modal Contraseña -->
+<div class="modal-overlay" id="modal-detalle" style="display:none;" onclick="cerrarModalDetalle()"><div class="modal" onclick="event.stopPropagation()"><div id="modal-detalle-contenido"></div><button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalDetalle()">Cerrar</button></div></div>
 <div class="modal-overlay" id="modal-password" style="display:none;"><div class="modal" onclick="event.stopPropagation()"><h3>🔒 Contraseña</h3><input type="password" id="input-password" placeholder="Contraseña"><div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-rojo" id="btn-confirmar-eliminar">Eliminar</button><button class="btn" onclick="cerrarModalPassword()">Cancelar</button></div></div></div>
 
 <script>
     const firebaseConfig = {
-        apiKey: "AIzaSyArNANQ-R-RsiMJz8w401pLkwmNhxXW9UY",
-        authDomain: "gestion-extintores-42b55.firebaseapp.com",
-        projectId: "gestion-extintores-42b55",
-        storageBucket: "gestion-extintores-42b55.firebasestorage.app",
-        messagingSenderId: "420148708853",
-        appId: "1:420148708853:web:3d90792c1b3c83be904cbc",
+        apiKey: "AIzaSyArNANQ-R-RsiMJz8w401pLkwmNhxXW9UY", authDomain: "gestion-extintores-42b55.firebaseapp.com",
+        projectId: "gestion-extintores-42b55", storageBucket: "gestion-extintores-42b55.firebasestorage.app",
+        messagingSenderId: "420148708853", appId: "1:420148708853:web:3d90792c1b3c83be904cbc",
         databaseURL: "https://gestion-extintores-42b55-default-rtdb.firebaseio.com"
     };
     firebase.initializeApp(firebaseConfig);
@@ -253,13 +185,58 @@
     if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
 
     function cargarDatos() {
-        db.ref('extintores').on('value', snap => { datosExtintores = snap.val() || {}; actualizarTodo(); });
+        db.ref('extintores').on('value', snap => { datosExtintores = snap.val() || {}; actualizarTodo(); verificarQRexterno(); });
         db.ref('inspecciones').on('value', snap => { datosChecklists = snap.val() || {}; actualizarTodo(); });
     }
 
     function actualizarTodo() {
         cargarGridSucursales(); cargarSelectSucursales(); cargarChecklistSucursales();
         if (sucursalActiva) { cargarPanelSucursalActiva(); cargarExtintoresSucursal(); cargarExtintoresChecklist(); cargarChecklistItems(); cargarHistorialChecklists(); }
+    }
+
+    // DETECTAR QR EXTERNO (cuando alguien escanea con otro teléfono)
+    function verificarQRexterno() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        if (id && datosExtintores[id]) {
+            // Ocultar app normal y mostrar ficha
+            document.getElementById('app-container').style.display = 'none';
+            mostrarFichaExterna(id);
+        }
+    }
+
+    function mostrarFichaExterna(id) {
+        const d = datosExtintores[id];
+        if (!d) return;
+        const p = calcularPrioridad(d.fechaProxima);
+        const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal;
+        const cl = Object.values(datosChecklists).filter(c => c.extintorId === id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
+        const url = window.location.origin + window.location.pathname + '?id=' + id;
+
+        document.body.innerHTML = `
+            <div class="ficha-externa">
+                <div style="text-align:center;margin-bottom:12px;">
+                    <img src="https://i.imgur.com/MbDDBwH.png" style="width:60px;height:60px;border-radius:10px;">
+                    <h2>SuperSpuma</h2>
+                    <p style="color:#888;">Seguridad Industrial</p>
+                </div>
+                ${d.fotoURL ? `<img src="${d.fotoURL}" style="width:100%;max-height:250px;object-fit:contain;background:#f5f5f5;border-radius:12px;margin-bottom:12px;">` : '<div style="background:#eee;height:150px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#999;">Sin foto</div>'}
+                <h3>Extintor ${d.tipo||'N/A'} - ${d.tamano||'N/A'}</h3>
+                <table style="width:100%;margin-top:12px;">
+                    <tr><td style="font-weight:700;">ID:</td><td style="word-break:break-all;">${id}</td></tr>
+                    <tr><td style="font-weight:700;">Sucursal:</td><td>${suc}</td></tr>
+                    <tr><td style="font-weight:700;">Ubicación:</td><td>${d.ubicacion||'N/A'}</td></tr>
+                    <tr><td style="font-weight:700;">Próx. recarga:</td><td>${d.fechaProxima||'N/A'}</td></tr>
+                    <tr><td style="font-weight:700;">Prioridad:</td><td><span class="badge ${p.prioridad}" style="padding:3px 7px;border-radius:8px;font-size:10px;font-weight:700;background:${p.prioridad==='critico'?'#FF0000':p.prioridad==='alta'?'#FF6600':'#00CC66'};color:white;">${p.label}</span></td></tr>
+                    <tr><td style="font-weight:700;">N° Serie:</td><td>${d.numeroSerie||'N/A'}</td></tr>
+                    <tr><td style="font-weight:700;">Checklist:</td><td>${cl ? 'Hecho: '+new Date(cl.fecha).toLocaleDateString()+' - '+cl.inspector : 'Pendiente'}</td></tr>
+                    <tr><td style="font-weight:700;">Notas:</td><td>${d.notas||'N/A'}</td></tr>
+                </table>
+                <div style="text-align:center;margin-top:16px;" id="qr-ficha-externa"></div>
+                <p style="text-align:center;font-size:10px;color:#888;margin-top:8px;">Este QR fue generado por SuperSpuma</p>
+            </div>
+        `;
+        setTimeout(() => { new QRCode(document.getElementById('qr-ficha-externa'), { text: url, width: 100, height: 100 }); }, 200);
     }
 
     function mostrarVista(v) {
@@ -276,7 +253,7 @@
         document.getElementById('tabla-historial').innerHTML = Object.entries(datosExtintores).sort((a,b) => new Date(a[1].fechaProxima||'9999') - new Date(b[1].fechaProxima||'9999')).map(([id,d]) => {
             const p = calcularPrioridad(d.fechaProxima);
             const cl = Object.values(datosChecklists).filter(c => c.extintorId === id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
-            return `<tr onclick="verDetalleExtintor('${id}')"><td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal}</td><td>${d.ubicacion||''}</td><td>${d.tipo||''}</td><td>${d.fechaProxima||''}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td><td>${cl ? '<span class="badge completado">✅</span>' : '<span class="badge pendiente">❌</span>'}</td></tr>`;
+            return `<tr onclick="verDetalleExtintor('${id}')"><td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal}</td><td>${d.ubicacion||''}</td><td>${d.tipo||''}</td><td>${d.fechaProxima||''}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td><td>${cl ? '<span class="badge completado">Hecho</span>' : '<span class="badge pendiente">Pendiente</span>'}</td></tr>`;
         }).join('');
     }
 
@@ -315,12 +292,7 @@
         document.getElementById('tabla-extintores-sucursal').innerHTML = items.map(([id,d]) => {
             const p = calcularPrioridad(d.fechaProxima);
             const cl = Object.values(datosChecklists).filter(c => c.extintorId === id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
-            return `<tr onclick="verDetalleExtintor('${id}')">
-                <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini" style="width:40px;height:40px;">` : '-'}</td>
-                <td>${d.ubicacion||'N/A'}</td><td>${d.tipo||'N/A'}</td><td>${d.fechaProxima||'N/A'}</td>
-                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
-                <td>${cl ? '<span class="badge completado">✅</span>' : '<span class="badge pendiente">❌</span>'}</td>
-            </tr>`;
+            return `<tr onclick="verDetalleExtintor('${id}')"><td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '-'}</td><td>${d.ubicacion||'N/A'}</td><td>${d.tipo||'N/A'}</td><td>${d.fechaProxima||'N/A'}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td><td>${cl ? '<span class="badge completado">Hecho</span>' : '<span class="badge pendiente">Pendiente</span>'}</td></tr>`;
         }).join('') || '<tr><td colspan="6">No hay extintores</td></tr>';
     }
 
@@ -335,167 +307,75 @@
     }
 
     function verDetalleExtintor(id) {
-        const d = datosExtintores[id];
-        if (!d) return;
+        const d = datosExtintores[id]; if (!d) return;
         const p = calcularPrioridad(d.fechaProxima);
         const suc = SUCURSALES[d.sucursal]?.nombre || d.sucursal;
         const url = window.location.origin + window.location.pathname + '?id=' + id;
         const cl = Object.values(datosChecklists).filter(c => c.extintorId === id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
-
         document.getElementById('modal-detalle-contenido').innerHTML = `
             <h3>Ficha del Extintor</h3>
-            ${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto" alt="Foto del extintor">` : '<div style="background:#eee;height:150px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#999;">Sin foto</div>'}
-            <table style="margin-top:12px;width:100%;">
-                <tr><td style="font-weight:700;">ID:</td><td style="word-break:break-all;">${id}</td></tr>
-                <tr><td style="font-weight:700;">Sucursal:</td><td>${suc}</td></tr>
-                <tr><td style="font-weight:700;">Ubicación:</td><td>${d.ubicacion||'N/A'}</td></tr>
-                <tr><td style="font-weight:700;">Tipo:</td><td>${d.tipo||'N/A'}</td></tr>
-                <tr><td style="font-weight:700;">Tamaño:</td><td>${d.tamano||'N/A'}</td></tr>
-                <tr><td style="font-weight:700;">Próx. recarga:</td><td>${d.fechaProxima||'N/A'}</td></tr>
-                <tr><td style="font-weight:700;">Prioridad:</td><td><span class="badge ${p.prioridad}">${p.label}</span></td></tr>
-                <tr><td style="font-weight:700;">N° Serie:</td><td>${d.numeroSerie||'N/A'}</td></tr>
-                <tr><td style="font-weight:700;">Notas:</td><td>${d.notas||'N/A'}</td></tr>
-                <tr><td style="font-weight:700;">Checklist:</td><td>${cl ? '<span class="badge completado">Hecho: '+new Date(cl.fecha).toLocaleDateString()+' - '+cl.inspector+'</span>' : '<span class="badge pendiente">Pendiente</span>'}</td></tr>
-            </table>
-            <div class="modal-detalle-qr"><p style="font-size:11px;color:#888;margin-bottom:4px;">QR del extintor</p><div id="qr-detalle"></div></div>
-            <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
-                <button class="btn btn-small btn-azul" onclick="window.open('${url}')">🔗 Abrir enlace</button>
-                <button class="btn btn-small" onclick="editarExtintor('${id}');cerrarModalDetalle();">✏️ Editar</button>
-                <button class="btn btn-small btn-rojo" onclick="pedirPasswordEliminar('${id}')">🗑️ Eliminar</button>
-            </div>
-        `;
-        document.getElementById('modal-detalle').style.display = 'flex';
-        setTimeout(() => { new QRCode(document.getElementById('qr-detalle'), { text: url, width: 120, height: 120 }); }, 100);
+            ${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto"><div style="text-align:center;"><button class="btn btn-small btn-azul" onclick="descargarImagen('${d.fotoURL}','${id}')">📥 Descargar foto (extintor_${id}.jpg)</button></div>` : '<div style="background:#eee;height:150px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#999;">Sin foto</div>'}
+            <table style="margin-top:12px;width:100%;"><tr><td><b>ID:</b></td><td>${id}</td></tr><tr><td><b>Sucursal:</b></td><td>${suc}</td></tr><tr><td><b>Ubicación:</b></td><td>${d.ubicacion||'N/A'}</td></tr><tr><td><b>Tipo:</b></td><td>${d.tipo||'N/A'}</td></tr><tr><td><b>Tamaño:</b></td><td>${d.tamano||'N/A'}</td></tr><tr><td><b>Próx. recarga:</b></td><td>${d.fechaProxima||'N/A'}</td></tr><tr><td><b>Prioridad:</b></td><td><span class="badge ${p.prioridad}">${p.label}</span></td></tr><tr><td><b>N° Serie:</b></td><td>${d.numeroSerie||'N/A'}</td></tr><tr><td><b>Notas:</b></td><td>${d.notas||'N/A'}</td></tr><tr><td><b>Checklist:</b></td><td>${cl?'<span class="badge completado">Hecho: '+new Date(cl.fecha).toLocaleDateString()+' - '+cl.inspector+'</span>':'<span class="badge pendiente">Pendiente</span>'}</td></tr></table>
+            <div style="text-align:center;margin:12px 0;"><div id="qr-detalle"></div></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-small btn-azul" onclick="window.open('${url}')">🔗 Abrir</button>${d.fotoURL?`<button class="btn btn-small" onclick="descargarImagen('${d.fotoURL}','${id}')">📥 Foto</button>`:''}<button class="btn btn-small" onclick="editarExtintor('${id}');cerrarModalDetalle();">✏️ Editar</button><button class="btn btn-small btn-rojo" onclick="pedirPasswordEliminar('${id}')">🗑️ Eliminar</button></div>`;
+        document.getElementById('modal-detalle').style.display='flex';
+        setTimeout(()=>{new QRCode(document.getElementById('qr-detalle'),{text:url,width:120,height:120});},100);
     }
 
-    function cerrarModalDetalle() { document.getElementById('modal-detalle').style.display = 'none'; document.getElementById('modal-detalle-contenido').innerHTML = ''; }
+    function cerrarModalDetalle() { document.getElementById('modal-detalle').style.display='none'; }
+    async function descargarImagen(url, id) { try { const r=await fetch(url); const b=await r.blob(); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`extintor_${id}.jpg`; a.click(); } catch(e) { window.open(url,'_blank'); } }
 
-    function previsualizarFoto(event) {
-        const file = event.target.files[0]; if (!file) return;
-        const reader = new FileReader();
-        reader.onload = e => { document.getElementById('foto-preview-img').src = e.target.result; document.getElementById('foto-preview-img').style.display = 'block'; document.getElementById('foto-placeholder').style.display = 'none'; };
-        reader.readAsDataURL(file);
-    }
+    function previsualizarFoto(e) { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{document.getElementById('foto-preview-img').src=ev.target.result;document.getElementById('foto-preview-img').style.display='block';document.getElementById('foto-placeholder').style.display='none';}; r.readAsDataURL(f); }
 
-    async function subirFotoImgBB(file, nombre) {
-        const formData = new FormData(); formData.append('image', file, nombre || file.name);
-        const resp = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-        const data = await resp.json(); if (data.success) return data.data.url;
-        throw new Error('Error al subir imagen');
-    }
+    async function subirFotoImgBB(file,nombre) { const fd=new FormData(); fd.append('image',file,nombre||file.name); const r=await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,{method:'POST',body:fd}); const d=await r.json(); if(d.success) return d.data.url; throw new Error('Error'); }
 
     async function guardarExtintor(e) {
-        e.preventDefault();
-        let id = document.getElementById('edit-id').value;
-        const esNuevo = !id;
-        if (esNuevo) { const ref = db.ref('extintores').push(); id = ref.key; document.getElementById('edit-id').value = id; }
-        const fotoInput = document.getElementById('foto-input');
-        let fotoURL = document.getElementById('foto-url').value;
-        if (fotoInput.files[0]) {
-            try { fotoURL = await subirFotoImgBB(fotoInput.files[0], `extintor_${id}`); document.getElementById('foto-url').value = fotoURL; }
-            catch (err) { alert('Error al subir foto'); return; }
-        }
-        const data = { sucursal: sucursalActiva, ubicacion: document.getElementById('ubicacion').value.trim(), tipo: document.getElementById('tipo').value, tamano: document.getElementById('tamano').value, fechaProxima: document.getElementById('fecha-proxima').value, numeroSerie: document.getElementById('numero-serie').value.trim(), notas: document.getElementById('notas').value.trim(), fotoURL, actualizado: new Date().toISOString() };
-        if (!data.ubicacion||!data.tipo||!data.tamano||!data.fechaProxima) return alert('Completá todos los campos');
-        if (esNuevo) { await db.ref('extintores/'+id).set(data); alert('✅ Creado - ID: '+id); }
-        else { await db.ref('extintores/'+id).update(data); alert('✅ Actualizado'); }
-        cancelarEdicion(); document.getElementById('form-extintor').reset();
+        e.preventDefault(); let id=document.getElementById('edit-id').value; const esNuevo=!id;
+        if(esNuevo){const ref=db.ref('extintores').push();id=ref.key;document.getElementById('edit-id').value=id;}
+        const fi=document.getElementById('foto-input'); let fotoURL=document.getElementById('foto-url').value;
+        if(fi.files[0]){try{fotoURL=await subirFotoImgBB(fi.files[0],`extintor_${id}`);document.getElementById('foto-url').value=fotoURL;}catch(err){alert('Error al subir foto');return;}}
+        const data={sucursal:sucursalActiva,ubicacion:document.getElementById('ubicacion').value.trim(),tipo:document.getElementById('tipo').value,tamano:document.getElementById('tamano').value,fechaProxima:document.getElementById('fecha-proxima').value,numeroSerie:document.getElementById('numero-serie').value.trim(),notas:document.getElementById('notas').value.trim(),fotoURL,actualizado:new Date().toISOString()};
+        if(!data.ubicacion||!data.tipo||!data.tamano||!data.fechaProxima)return alert('Completá todos los campos');
+        if(esNuevo){await db.ref('extintores/'+id).set(data);alert('✅ Creado - ID: '+id);}else{await db.ref('extintores/'+id).update(data);alert('✅ Actualizado');}
+        cancelarEdicion();document.getElementById('form-extintor').reset();
     }
 
-    function editarExtintor(id) {
-        const d = datosExtintores[id]; if (!d) return; currentEditId=id; editMode=true;
-        document.getElementById('edit-id').value=id; document.getElementById('ubicacion').value=d.ubicacion||''; document.getElementById('tipo').value=d.tipo||''; document.getElementById('tamano').value=d.tamano||''; document.getElementById('fecha-proxima').value=d.fechaProxima||''; document.getElementById('numero-serie').value=d.numeroSerie||''; document.getElementById('notas').value=d.notas||''; document.getElementById('foto-url').value=d.fotoURL||'';
-        if (d.fotoURL) { document.getElementById('foto-preview-img').src=d.fotoURL; document.getElementById('foto-preview-img').style.display='block'; document.getElementById('foto-placeholder').style.display='none'; }
-        document.getElementById('titulo-form').textContent='✏️ Editar'; mostrarTab('agregar');
-    }
+    function editarExtintor(id) { const d=datosExtintores[id]; if(!d)return; currentEditId=id;editMode=true; document.getElementById('edit-id').value=id;document.getElementById('ubicacion').value=d.ubicacion||'';document.getElementById('tipo').value=d.tipo||'';document.getElementById('tamano').value=d.tamano||'';document.getElementById('fecha-proxima').value=d.fechaProxima||'';document.getElementById('numero-serie').value=d.numeroSerie||'';document.getElementById('notas').value=d.notas||'';document.getElementById('foto-url').value=d.fotoURL||''; if(d.fotoURL){document.getElementById('foto-preview-img').src=d.fotoURL;document.getElementById('foto-preview-img').style.display='block';document.getElementById('foto-placeholder').style.display='none';} document.getElementById('titulo-form').textContent='✏️ Editar';mostrarTab('agregar'); }
+    function cancelarEdicion() { editMode=false;currentEditId=null;document.getElementById('edit-id').value='';document.getElementById('form-extintor').reset();document.getElementById('foto-preview-img').style.display='none';document.getElementById('foto-placeholder').style.display='block';document.getElementById('titulo-form').textContent='➕ Nuevo'; }
 
-    function cancelarEdicion() { editMode=false; currentEditId=null; document.getElementById('edit-id').value=''; document.getElementById('form-extintor').reset(); document.getElementById('foto-preview-img').style.display='none'; document.getElementById('foto-placeholder').style.display='block'; document.getElementById('titulo-form').textContent='➕ Nuevo'; }
+    function pedirPasswordEliminar(id) { document.getElementById('input-password').value='';document.getElementById('modal-password').style.display='flex';document.getElementById('btn-confirmar-eliminar').onclick=()=>{if(document.getElementById('input-password').value===PASSWORD_MAESTRA){db.ref('extintores/'+id).remove();cerrarModalPassword();cerrarModalDetalle();alert('🗑️ Eliminado');}else{alert('❌ Contraseña incorrecta');}}; }
+    function cerrarModalPassword() { document.getElementById('modal-password').style.display='none'; }
 
-    function pedirPasswordEliminar(id) {
-        document.getElementById('input-password').value = ''; document.getElementById('modal-password').style.display = 'flex';
-        document.getElementById('btn-confirmar-eliminar').onclick = () => {
-            if (document.getElementById('input-password').value === PASSWORD_MAESTRA) { db.ref('extintores/'+id).remove(); cerrarModalPassword(); cerrarModalDetalle(); alert('🗑️ Eliminado'); }
-            else { alert('❌ Contraseña incorrecta'); }
-        };
-    }
-    function cerrarModalPassword() { document.getElementById('modal-password').style.display = 'none'; }
-
-    function cargarExtintoresChecklist() {
-        const suc = document.getElementById('checklist-sucursal').value;
-        document.getElementById('checklist-extintor').innerHTML = '<option value="">Seleccionar...</option>';
-        if (!suc) return;
-        Object.entries(datosExtintores).forEach(([id,d]) => { if (d.sucursal === suc) document.getElementById('checklist-extintor').innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`; });
-    }
-
-    function cargarChecklistItems() {
-        document.getElementById('checklist-items').innerHTML = CHECKLIST_ITEMS.map(i => `<div class="checklist-item"><span class="nombre">${i}</span><div class="opciones"><button type="button" onclick="toggleCheck(this,'ok')">OK</button><button type="button" onclick="toggleCheck(this,'nook')">NO OK</button></div></div>`).join('');
-    }
-
-    function toggleCheck(btn, tipo) { const p = btn.parentElement; p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok','sel-nook')); btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook'); }
+    function cargarExtintoresChecklist() { const suc=document.getElementById('checklist-sucursal').value; document.getElementById('checklist-extintor').innerHTML='<option value="">Seleccionar...</option>'; if(!suc)return; Object.entries(datosExtintores).forEach(([id,d])=>{if(d.sucursal===suc)document.getElementById('checklist-extintor').innerHTML+=`<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;}); }
+    function cargarChecklistItems() { document.getElementById('checklist-items').innerHTML=CHECKLIST_ITEMS.map(i=>`<div class="checklist-item"><span class="nombre">${i}</span><div class="opciones"><button type="button" onclick="toggleCheck(this,'ok')">OK</button><button type="button" onclick="toggleCheck(this,'nook')">NO OK</button></div></div>`).join(''); }
+    function toggleCheck(btn,tipo){const p=btn.parentElement;p.querySelectorAll('button').forEach(b=>b.classList.remove('sel-ok','sel-nook'));btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');}
 
     async function guardarChecklist(e) {
-        e.preventDefault();
-        const extintorId = document.getElementById('checklist-extintor').value;
-        if (!extintorId) return alert('Seleccioná extintor');
-        const inspector = document.getElementById('checklist-inspector').value.trim();
-        if (!inspector) return alert('Ingresá inspector');
-        const items = {};
-        document.querySelectorAll('.checklist-item').forEach((item,i) => { const sel = item.querySelector('.sel-ok,.sel-nook'); items[CHECKLIST_ITEMS[i]] = sel ? (sel.classList.contains('sel-ok')?'OK':'NO OK') : 'No verificado'; });
-        let fotoURL = ''; const fi = document.getElementById('checklist-foto');
-        if (fi.files[0]) { try { fotoURL = await subirFotoImgBB(fi.files[0], `checklist_${extintorId}_${Date.now()}`); } catch(err) {} }
-        await db.ref('inspecciones').push({ extintorId, sucursal: document.getElementById('checklist-sucursal').value, tipo:'checklist', inspector, items, observaciones: document.getElementById('checklist-obs').value.trim(), fotoURL, fecha: new Date().toISOString() });
-        alert('✅ Guardado'); document.getElementById('checklist-obs').value=''; document.getElementById('checklist-foto').value=''; document.getElementById('checklist-inspector').value='';
-        document.querySelectorAll('.checklist-item button').forEach(b => b.classList.remove('sel-ok','sel-nook'));
+        e.preventDefault(); const extintorId=document.getElementById('checklist-extintor').value; if(!extintorId)return alert('Seleccioná extintor');
+        const inspector=document.getElementById('checklist-inspector').value.trim(); if(!inspector)return alert('Ingresá inspector');
+        const items={}; document.querySelectorAll('.checklist-item').forEach((item,i)=>{const sel=item.querySelector('.sel-ok,.sel-nook');items[CHECKLIST_ITEMS[i]]=sel?(sel.classList.contains('sel-ok')?'OK':'NO OK'):'No verificado';});
+        let fotoURL=''; const fi=document.getElementById('checklist-foto'); if(fi.files[0]){try{fotoURL=await subirFotoImgBB(fi.files[0],`checklist_${extintorId}_${Date.now()}`);}catch(err){}}
+        await db.ref('inspecciones').push({extintorId,sucursal:document.getElementById('checklist-sucursal').value,tipo:'checklist',inspector,items,observaciones:document.getElementById('checklist-obs').value.trim(),fotoURL,fecha:new Date().toISOString()});
+        alert('✅ Guardado');document.getElementById('checklist-obs').value='';document.getElementById('checklist-foto').value='';document.getElementById('checklist-inspector').value='';document.querySelectorAll('.checklist-item button').forEach(b=>b.classList.remove('sel-ok','sel-nook'));
     }
 
     function cargarHistorialChecklists() {
-        if (!sucursalActiva) return;
-        const filtro = document.getElementById('filtro-estado-checklist')?.value || 'todos';
-        let items = Object.entries(datosChecklists).filter(([id,c]) => c.tipo==='checklist' && c.sucursal===sucursalActiva);
-        if (filtro==='completado') items = items.filter(([id,c]) => Object.values(c.items||{}).every(v=>v==='OK'));
-        if (filtro==='pendiente') items = items.filter(([id,c]) => Object.values(c.items||{}).some(v=>v!=='OK'));
-        items.sort((a,b) => new Date(b[1].fecha) - new Date(a[1].fecha));
-        document.getElementById('tabla-historial-checklists').innerHTML = items.map(([id,c]) => {
-            const ext = datosExtintores[c.extintorId];
-            const todoOK = Object.values(c.items||{}).every(v=>v==='OK');
-            return `<tr onclick="verDetalleExtintor('${c.extintorId}')">
-                <td>${new Date(c.fecha).toLocaleDateString()}</td><td>${ext?.ubicacion||c.extintorId}</td><td>${c.inspector}</td>
-                <td><span class="badge ${todoOK?'completado':'pendiente'}">${todoOK?'OK':'Fallas'}</span></td>
-                <td>${c.fotoURL ? `<img src="${c.fotoURL}" class="foto-mini" onclick="event.stopPropagation();window.open('${c.fotoURL}')">` : '-'}</td>
-            </tr>`;
-        }).join('') || '<tr><td colspan="5">Sin registros</td></tr>';
+        if(!sucursalActiva)return; const filtro=document.getElementById('filtro-estado-checklist')?.value||'todos';
+        let items=Object.entries(datosChecklists).filter(([id,c])=>c.tipo==='checklist'&&c.sucursal===sucursalActiva);
+        if(filtro==='completado')items=items.filter(([id,c])=>Object.values(c.items||{}).every(v=>v==='OK'));
+        if(filtro==='pendiente')items=items.filter(([id,c])=>Object.values(c.items||{}).some(v=>v!=='OK'));
+        items.sort((a,b)=>new Date(b[1].fecha)-new Date(a[1].fecha));
+        document.getElementById('tabla-historial-checklists').innerHTML=items.map(([id,c])=>{const ext=datosExtintores[c.extintorId];const todoOK=Object.values(c.items||{}).every(v=>v==='OK');return`<tr onclick="verDetalleExtintor('${c.extintorId}')"><td>${new Date(c.fecha).toLocaleDateString()}</td><td>${ext?.ubicacion||c.extintorId}</td><td>${c.inspector}</td><td><span class="badge ${todoOK?'completado':'pendiente'}">${todoOK?'OK':'Fallas'}</span></td><td>${c.fotoURL?`<img src="${c.fotoURL}" class="foto-mini" onclick="event.stopPropagation();window.open('${c.fotoURL}')">`:'-'}</td></tr>`;}).join('')||'<tr><td colspan="5">Sin registros</td></tr>';
     }
 
-    function generarEtiquetas() {
-        if (!sucursalActiva) return;
-        const items = Object.entries(datosExtintores).filter(([id,d]) => d.sucursal===sucursalActiva);
-        document.getElementById('etiquetas-container').innerHTML = items.map(([id,d]) => { const p=calcularPrioridad(d.fechaProxima); const color={critico:'#FF0000',alta:'#FF6600',media:'#FFCC00',baja:'#33CCFF',normal:'#00CC66'}[p.prioridad]; return `<div class="etiqueta-print"><div class="color-bar" style="background:${color};"></div><strong>${d.ubicacion}</strong><br>${d.tipo} · ${d.tamano}<br>Vence: ${d.fechaProxima||'N/A'}<br><span style="color:${color};">${p.label}</span><div id="qr-et-${id}"></div></div>`; }).join('');
-        items.forEach(([id,d]) => { new QRCode(document.getElementById('qr-et-'+id), {text:window.location.origin+window.location.pathname+'?id='+id,width:80,height:80}); });
-        document.getElementById('btn-imprimir-etiquetas').style.display='inline-block';
-    }
+    function generarEtiquetas() { if(!sucursalActiva)return; const items=Object.entries(datosExtintores).filter(([id,d])=>d.sucursal===sucursalActiva); document.getElementById('etiquetas-container').innerHTML=items.map(([id,d])=>{const p=calcularPrioridad(d.fechaProxima);const color={critico:'#FF0000',alta:'#FF6600',media:'#FFCC00',baja:'#33CCFF',normal:'#00CC66'}[p.prioridad];return`<div class="etiqueta-print"><div class="color-bar" style="background:${color};"></div><strong>${d.ubicacion}</strong><br>${d.tipo} · ${d.tamano}<br>Vence: ${d.fechaProxima||'N/A'}<br><span style="color:${color};">${p.label}</span><div id="qr-et-${id}"></div></div>`;}).join(''); items.forEach(([id,d])=>{new QRCode(document.getElementById('qr-et-'+id),{text:window.location.origin+window.location.pathname+'?id='+id,width:80,height:80});}); document.getElementById('btn-imprimir-etiquetas').style.display='inline-block'; }
 
-    function iniciarEscaner() {
-        detenerEscaner(); document.getElementById('btn-escanear').style.display='none'; document.getElementById('btn-detener').style.display='inline-block';
-        html5QrCode = new Html5Qrcode("qr-reader"); html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:250}},text=>{detenerEscaner(); let id=text; if(text.includes('?id='))id=new URLSearchParams(text.split('?')[1]).get('id')||text; verDetalleExtintor(id);},()=>{}).catch(()=>{alert('Error cámara');detenerEscaner();});
-    }
-    function detenerEscaner() { if(html5QrCode){html5QrCode.stop().then(()=>html5QrCode.clear()).catch(()=>{});html5QrCode=null;} document.getElementById('btn-escanear').style.display='inline-block'; document.getElementById('btn-detener').style.display='none'; }
+    function iniciarEscaner() { detenerEscaner();document.getElementById('btn-escanear').style.display='none';document.getElementById('btn-detener').style.display='inline-block'; html5QrCode=new Html5Qrcode("qr-reader");html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:250}},text=>{detenerEscaner();let id=text;if(text.includes('?id='))id=new URLSearchParams(text.split('?')[1]).get('id')||text;verDetalleExtintor(id);},()=>{}).catch(()=>{alert('Error cámara');detenerEscaner();}); }
+    function detenerEscaner() { if(html5QrCode){html5QrCode.stop().then(()=>html5QrCode.clear()).catch(()=>{});html5QrCode=null;} document.getElementById('btn-escanear').style.display='inline-block';document.getElementById('btn-detener').style.display='none'; }
 
-    function mostrarTab(tab) {
-        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-        document.getElementById('tab-'+tab).style.display = 'block';
-        document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('activo'));
-        const tabs = ['extintores','agregar','checklist','historial-checklist','escanear','etiquetas'];
-        document.querySelectorAll('.tabs button')[tabs.indexOf(tab)]?.classList.add('activo');
-        if (tab !== 'escanear') detenerEscaner();
-        if (tab === 'checklist') { cargarChecklistSucursales(); cargarChecklistItems(); }
-        if (tab === 'historial-checklist') cargarHistorialChecklists();
-    }
+    function mostrarTab(tab) { document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');document.getElementById('tab-'+tab).style.display='block';document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('activo'));const tabs=['extintores','agregar','checklist','historial-checklist','escanear','etiquetas'];document.querySelectorAll('.tabs button')[tabs.indexOf(tab)]?.classList.add('activo');if(tab!=='escanear')detenerEscaner();if(tab==='checklist'){cargarChecklistSucursales();cargarChecklistItems();}if(tab==='historial-checklist')cargarHistorialChecklists(); }
 
-    function exportarCSVHistorial() {
-        let csv = 'ID,Sucursal,Ubicación,Tipo,Vence,Prioridad,Checklist\n';
-        Object.entries(datosExtintores).forEach(([id,d]) => { const p=calcularPrioridad(d.fechaProxima); const cl=Object.values(datosChecklists).filter(c=>c.extintorId===id).sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0]; csv+=`${id},"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${p.label}","${cl?'Completado '+new Date(cl.fecha).toLocaleDateString()+' por '+cl.inspector:'Pendiente'}"\n`; });
-        const blob=new Blob(['\uFEFF'+csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='historial_superspuma.csv'; a.click();
-    }
+    function exportarCSVHistorial() { let csv='ID,Sucursal,Ubicación,Tipo,Vence,Prioridad,Checklist\n'; Object.entries(datosExtintores).forEach(([id,d])=>{const p=calcularPrioridad(d.fechaProxima);const cl=Object.values(datosChecklists).filter(c=>c.extintorId===id).sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0];csv+=`${id},"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${p.label}","${cl?'Completado '+new Date(cl.fecha).toLocaleDateString()+' por '+cl.inspector:'Pendiente'}"\n`;}); const blob=new Blob(['\uFEFF'+csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='historial_superspuma.csv';a.click(); }
 
     cargarDatos();
 </script>
