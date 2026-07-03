@@ -44,7 +44,8 @@
         .tabla-container { background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px; padding: 16px; box-shadow: var(--sombra); margin-bottom: 16px; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 11px; }
         th { background: var(--marron); color: #FFF8E1; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; }
-        td { padding: 7px 10px; border-bottom: 1px solid #eee; color: var(--text); }
+        td { padding: 7px 10px; border-bottom: 1px solid #eee; color: var(--text); cursor: pointer; }
+        tr:hover { background: rgba(0,0,0,0.04); }
         .badge { padding: 3px 7px; border-radius: 8px; font-size: 9px; font-weight: 700; }
         .badge.critico { background: #FF0000; color: white; } .badge.alta { background: #FF6600; color: white; }
         .badge.media { background: #FFCC00; color: #333; } .badge.baja { background: #33CCFF; color: #333; } .badge.normal { background: #00CC66; color: white; }
@@ -73,8 +74,10 @@
         .mapa-mini { width: 100%; height: 150px; border-radius: 10px; margin-top: 8px; border: 1px solid #ddd; }
         .mapa-link { font-size: 10px; color: #1565C0; cursor: pointer; text-decoration: underline; display: block; margin-top: 4px; }
 
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:1000; }
-        .modal { background: white; border-radius: 16px; padding: 24px; max-width: 650px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:1000; padding: 16px; }
+        .modal { background: white; border-radius: 16px; padding: 24px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal-detalle-foto { width: 100%; max-height: 250px; object-fit: contain; background: #f5f5f5; border-radius: 10px; margin-bottom: 10px; }
+        .modal-firma { max-width: 100%; max-height: 100px; border: 1px solid #ddd; border-radius: 8px; }
 
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
@@ -107,16 +110,16 @@
 
     <!-- INSPECCIÓN RÁPIDA -->
     <div id="vista-inspeccion-rapida" class="vista" style="display:none;">
-        <h2 style="margin-bottom:16px;">✅ Inspección Rápida de Extintores</h2>
+        <h2 style="margin-bottom:16px;">✅ Inspección Rápida</h2>
         <div class="tabla-container">
             <form onsubmit="guardarInspeccionRapida(event)">
                 <div class="form-row">
                     <div><label>🏢 Sucursal</label><select id="ir-sucursal" required onchange="cargarExtintoresIR()"><option value="">Seleccionar...</option></select></div>
-                    <div><label>🧯 Extintor</label><select id="ir-extintor" required><option value="">Primero seleccioná sucursal</option></select></div>
+                    <div><label>🧯 Extintor</label><select id="ir-extintor" required><option value="">Primero sucursal</option></select></div>
                 </div>
                 <div id="ir-info-extintor" style="background:#f9f9f9;border-radius:10px;padding:12px;margin-bottom:12px;display:none;"></div>
                 <div class="form-row">
-                    <div><label>👤 Inspector</label><input type="text" id="ir-inspector" required placeholder="Tu nombre"></div>
+                    <div><label>👤 Inspector</label><input type="text" id="ir-inspector" required></div>
                     <div><label>📸 Foto</label><input type="file" id="ir-foto" accept="image/*" capture="environment"></div>
                 </div>
                 <div class="progress-bar"><div class="fill" id="ir-progress" style="width:0%;"></div></div>
@@ -128,10 +131,18 @@
                 <button type="submit" class="btn btn-verde" style="width:100%;padding:14px;font-size:14px;margin-top:12px;">✅ Guardar Inspección</button>
             </form>
             <div style="margin-top:20px;padding-top:16px;border-top:2px solid #eee;">
-                <h4>📋 Últimas inspecciones</h4>
-                <table><thead><tr><th>Fecha</th><th>Extintor</th><th>Inspector</th><th>Resultado</th><th>GPS</th></tr></thead><tbody id="ir-ultimos"></tbody></table>
+                <h4>📋 Últimas inspecciones (clic para ver detalle)</h4>
+                <table><thead><tr><th>Fecha</th><th>Extintor</th><th>Inspector</th><th>Resultado</th></tr></thead><tbody id="ir-ultimos"></tbody></table>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Modal DETALLE DE INSPECCIÓN -->
+<div class="modal-overlay" id="modal-detalle-inspeccion" style="display:none;" onclick="cerrarModalDetalleInspeccion()">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div id="modal-detalle-inspeccion-contenido"></div>
+        <button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalDetalleInspeccion()">Cerrar</button>
     </div>
 </div>
 
@@ -182,7 +193,7 @@
     }
 
     function cargarGridSucursales() {
-        document.getElementById('grid-sucursales-container').innerHTML = Object.entries(SUCURSALES).map(([id,s]) => `<div class="card-sucursal" onclick="document.getElementById('sucursal-select').value='${id}'"><h3>${s.nombre}</h3><div style="font-size:10px;color:#888;">📍 ${s.direccion}</div></div>`).join('');
+        document.getElementById('grid-sucursales-container').innerHTML = Object.entries(SUCURSALES).map(([id,s]) => `<div class="card-sucursal"><h3>${s.nombre}</h3><div style="font-size:10px;color:#888;">📍 ${s.direccion}</div></div>`).join('');
     }
 
     function cargarSelectSucursales() {
@@ -215,9 +226,9 @@
         throw new Error('Error');
     }
 
-    // INSPECCIÓN RÁPIDA
+    // ========== INSPECCIÓN RÁPIDA ==========
     function cargarIRSelects() {
-        document.getElementById('ir-sucursal').innerHTML = '<option value="">Seleccionar sucursal...</option>' + Object.entries(SUCURSALES).map(([id,s]) => `<option value="${id}">${s.nombre}</option>`).join('');
+        document.getElementById('ir-sucursal').innerHTML = '<option value="">Seleccionar...</option>' + Object.entries(SUCURSALES).map(([id,s]) => `<option value="${id}">${s.nombre}</option>`).join('');
     }
 
     function cargarExtintoresIR() {
@@ -244,55 +255,46 @@
         actualizarProgreso();
     }
 
-    function marcarIR(btn, tipo) {
-        const p = btn.parentElement; p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok','sel-nook'));
-        btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook'); actualizarProgreso();
-    }
-
+    function marcarIR(btn, tipo) { const p = btn.parentElement; p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok','sel-nook')); btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook'); actualizarProgreso(); }
     function actualizarProgreso() {
         const total = CHECKLIST_ITEMS.length;
         const marcados = document.querySelectorAll('#ir-checklist-items .sel-ok, #ir-checklist-items .sel-nook').length;
         document.getElementById('ir-progress').style.width = ((marcados/total)*100) + '%';
     }
 
-    // GPS
     function obtenerGPS() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
                 coordenadasActuales = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                 document.getElementById('ir-gps').innerHTML = `📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-                mostrarMiniMapa(pos.coords.latitude, pos.coords.longitude);
+                mostrarMiniMapa(pos.coords.latitude, pos.coords.longitude, 'ir-mapa-container');
             }, () => { document.getElementById('ir-gps').textContent = '📍 GPS no disponible'; });
         }
     }
 
-    function mostrarMiniMapa(lat, lng) {
+    function mostrarMiniMapa(lat, lng, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
         const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.002},${lat-0.001},${lng+0.002},${lat+0.001}&layer=mapnik&marker=${lat},${lng}`;
-        document.getElementById('ir-mapa-container').innerHTML = `
+        container.innerHTML = `
             <iframe class="mapa-mini" src="${mapUrl}" frameborder="0" scrolling="no"></iframe>
-            <a class="mapa-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">📍 Ver en Google Maps</a>
-            <a class="mapa-link" href="https://waze.com/ul?ll=${lat},${lng}&navigate=yes" target="_blank">🚗 Abrir en Waze</a>
+            <a class="mapa-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">📍 Google Maps</a>
+            <a class="mapa-link" href="https://waze.com/ul?ll=${lat},${lng}&navigate=yes" target="_blank">🚗 Waze</a>
         `;
     }
 
-    // Firma
     function initFirma() {
-        const c = document.getElementById('ir-firma-canvas');
-        const ctx = c.getContext('2d');
-        let dibujando = false;
+        const c = document.getElementById('ir-firma-canvas'); const ctx = c.getContext('2d'); let d = false;
         c.width = c.offsetWidth;
-        c.onmousedown = e => { dibujando=true; ctx.beginPath(); ctx.moveTo(e.offsetX,e.offsetY); };
-        c.onmousemove = e => { if(dibujando){ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();} };
-        c.onmouseup = () => dibujando=false;
-        c.ontouchstart = e => { e.preventDefault(); const t=e.touches[0]; dibujando=true; ctx.beginPath(); ctx.moveTo(t.clientX-c.getBoundingClientRect().left,t.clientY-c.getBoundingClientRect().top); };
-        c.ontouchmove = e => { e.preventDefault(); if(dibujando){const t=e.touches[0];ctx.lineTo(t.clientX-c.getBoundingClientRect().left,t.clientY-c.getBoundingClientRect().top);ctx.stroke();} };
-        c.ontouchend = () => dibujando=false;
+        c.onmousedown = e => { d=true; ctx.beginPath(); ctx.moveTo(e.offsetX,e.offsetY); };
+        c.onmousemove = e => { if(d){ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();} };
+        c.onmouseup = () => d=false;
+        c.ontouchstart = e => { e.preventDefault(); const t=e.touches[0]; d=true; ctx.beginPath(); ctx.moveTo(t.clientX-c.getBoundingClientRect().left,t.clientY-c.getBoundingClientRect().top); };
+        c.ontouchmove = e => { e.preventDefault(); if(d){const t=e.touches[0];ctx.lineTo(t.clientX-c.getBoundingClientRect().left,t.clientY-c.getBoundingClientRect().top);ctx.stroke();} };
+        c.ontouchend = () => d=false;
     }
 
-    function limpiarFirma() {
-        const c = document.getElementById('ir-firma-canvas');
-        c.getContext('2d').clearRect(0,0,c.width,c.height);
-    }
+    function limpiarFirma() { const c = document.getElementById('ir-firma-canvas'); c.getContext('2d').clearRect(0,0,c.width,c.height); }
 
     async function guardarInspeccionRapida(e) {
         e.preventDefault();
@@ -326,29 +328,81 @@
     }
 
     function cargarIRUltimos() {
-        const items = Object.values(datosChecklists).filter(c => c.tipo === 'inspeccion-rapida').sort((a,b) => new Date(b.fecha) - new Date(a.fecha)).slice(0,5);
-        document.getElementById('ir-ultimos').innerHTML = items.map((c, i) => {
+        const items = Object.values(datosChecklists).filter(c => c.tipo === 'inspeccion-rapida').sort((a,b) => new Date(b.fecha) - new Date(a.fecha)).slice(0,10);
+        document.getElementById('ir-ultimos').innerHTML = items.map(c => {
             const ext = datosExtintores[c.extintorId];
             const todoOK = Object.values(c.items||{}).every(v => v === 'OK');
-            return `<tr>
+            return `<tr onclick="verDetalleInspeccion('${c.fecha}','${c.extintorId}')" style="cursor:pointer;">
                 <td>${new Date(c.fecha).toLocaleDateString()}</td>
                 <td>${ext?.ubicacion||c.extintorId}</td><td>${c.inspector}</td>
                 <td><span class="badge ${todoOK?'completado':'pendiente'}">${todoOK?'OK':'Fallas'}</span></td>
-                <td>
-                    ${c.gps ? `<span style="font-size:10px;">${c.gps.replace('📍 ','')}</span>` : '-'}
-                    ${c.coordenadas ? `<div id="mapa-hist-${i}" style="width:100px;height:60px;margin-top:4px;"></div>` : ''}
-                </td>
             </tr>`;
-        }).join('') || '<tr><td colspan="5">Sin inspecciones</td></tr>';
-        setTimeout(() => {
-            items.forEach((c, i) => {
-                if (c.coordenadas) {
-                    const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${c.coordenadas.lng-0.002},${c.coordenadas.lat-0.001},${c.coordenadas.lng+0.002},${c.coordenadas.lat+0.001}&layer=mapnik&marker=${c.coordenadas.lat},${c.coordenadas.lng}`;
-                    const div = document.getElementById(`mapa-hist-${i}`);
-                    if (div) div.innerHTML = `<iframe style="width:100%;height:60px;border-radius:6px;" src="${mapUrl}" frameborder="0"></iframe>`;
-                }
-            });
-        }, 300);
+        }).join('') || '<tr><td colspan="4">Sin inspecciones</td></tr>';
+    }
+
+    // ========== DETALLE DE INSPECCIÓN ==========
+    function verDetalleInspeccion(fecha, extintorId) {
+        const inspecciones = Object.values(datosChecklists).filter(c => c.tipo === 'inspeccion-rapida' && c.fecha === fecha && c.extintorId === extintorId);
+        if (inspecciones.length === 0) return;
+        const c = inspecciones[0];
+        const ext = datosExtintores[c.extintorId];
+        const suc = SUCURSALES[c.sucursal]?.nombre || c.sucursal;
+        const todoOK = Object.values(c.items||{}).every(v => v === 'OK');
+
+        let html = `
+            <h3>📋 Detalle de Inspección</h3>
+            <table style="width:100%;margin-bottom:12px;">
+                <tr><td style="font-weight:700;">Fecha:</td><td>${new Date(c.fecha).toLocaleString()}</td></tr>
+                <tr><td style="font-weight:700;">Sucursal:</td><td>${suc}</td></tr>
+                <tr><td style="font-weight:700;">Extintor:</td><td>${ext?.ubicacion||c.extintorId} (${ext?.tipo||''} ${ext?.tamano||''})</td></tr>
+                <tr><td style="font-weight:700;">Inspector:</td><td>${c.inspector}</td></tr>
+                <tr><td style="font-weight:700;">Resultado:</td><td><span class="badge ${todoOK?'completado':'pendiente'}">${todoOK?'✅ Todo OK':'❌ Con fallas'}</span></td></tr>
+            </table>
+        `;
+
+        // Checklist items
+        html += `<h4>🔍 Items del Checklist</h4><table style="width:100%;margin-bottom:12px;"><thead><tr><th>Item</th><th>Resultado</th></tr></thead><tbody>`;
+        Object.entries(c.items||{}).forEach(([k,v]) => {
+            html += `<tr><td>${k}</td><td><span class="badge ${v==='OK'?'completado':'pendiente'}">${v}</span></td></tr>`;
+        });
+        html += `</tbody></table>`;
+
+        // Foto
+        if (c.fotoURL) {
+            html += `<h4>📸 Foto</h4><img src="${c.fotoURL}" class="modal-detalle-foto" alt="Foto de inspección">`;
+        }
+
+        // Observaciones
+        if (c.observaciones) {
+            html += `<h4>📝 Observaciones</h4><p>${c.observaciones}</p>`;
+        }
+
+        // GPS y mapa
+        if (c.gps) {
+            html += `<h4>📍 Ubicación</h4><p style="font-size:12px;">${c.gps}</p>`;
+            if (c.coordenadas) {
+                html += `<div id="mapa-detalle-inspeccion"></div>`;
+            }
+        }
+
+        // Firma
+        if (c.firma) {
+            html += `<h4>✍️ Firma</h4><img src="${c.firma}" class="modal-firma" alt="Firma">`;
+        }
+
+        document.getElementById('modal-detalle-inspeccion-contenido').innerHTML = html;
+        document.getElementById('modal-detalle-inspeccion').style.display = 'flex';
+
+        // Cargar mapa después
+        if (c.coordenadas) {
+            setTimeout(() => {
+                mostrarMiniMapa(c.coordenadas.lat, c.coordenadas.lng, 'mapa-detalle-inspeccion');
+            }, 200);
+        }
+    }
+
+    function cerrarModalDetalleInspeccion() {
+        document.getElementById('modal-detalle-inspeccion').style.display = 'none';
     }
 
     cargarDatos();
