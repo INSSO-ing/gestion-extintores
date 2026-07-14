@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SuperSpuma · Gestión de Extintores</title>
+    <title>INSSO · Gestión de Extintores</title>
+
+    <!-- ============================================================
+         META TAGS PARA PWA
+         ============================================================ -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="INSSO Extintores">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo-insso.png">
+    <meta name="theme-color" content="#C62828">
+    <meta name="description" content="Sistema de gestión de extintores INSSO">
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -15,29 +26,28 @@
 
     <style>
         :root {
-            --marron-oscuro: #3E2723;
-            --marron-medio: #4E342E;
-            --marron-claro: #5D4037;
-            --crema: #FFF8E1;
-            --crema-oscuro: #FFECB3;
-            --crema-medio: #FFE0B2;
-            --blanco: #FFFFFF;
-            --rojo-alerta: #C62828;
-            --verde-ok: #2E7D32;
-            --naranja-warn: #E65100;
-            --gris-oscuro: #212121;
-            --texto-primario: #3E2723;
-            --texto-secundario: #5D4037;
-            --fondo-app: #FFF8E1;
+            --primary: #C62828;
+            --primary-dark: #B71C1C;
+            --primary-light: #EF5350;
+            --success: #2E7D32;
+            --warning: #E65100;
+            --danger: #C62828;
+            --bg: #f5f0e8;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --text: #1a1a1a;
+            --text-sec: #5D4037;
+            --header-bg: linear-gradient(135deg, #C62828, #B71C1C);
             --sombra: 0 2px 8px rgba(0,0,0,0.1);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
-            background: #f5f0e8;
-            color: var(--texto-primario);
+            background: var(--bg);
+            color: var(--text);
             display: flex;
             justify-content: center;
             min-height: 100vh;
@@ -48,7 +58,7 @@
         .app-container {
             width: 100%;
             max-width: 480px;
-            background: var(--crema);
+            background: var(--bg);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -56,37 +66,49 @@
             position: relative;
         }
 
+        /* ============================================================
+           HEADER
+           ============================================================ */
         .app-header {
-            background: linear-gradient(135deg, var(--marron-oscuro), var(--marron-medio));
-            color: var(--crema);
+            background: var(--header-bg);
+            color: #FFF8E1;
             padding: 12px 16px;
             display: flex;
             align-items: center;
             gap: 10px;
-            border-bottom: 3px solid var(--marron-claro);
+            border-bottom: 3px solid var(--primary-dark);
             position: sticky;
             top: 0;
             z-index: 50;
         }
 
-        .app-header img {
+        .app-header .logo-icon {
             width: 42px;
             height: 42px;
             border-radius: 8px;
-            object-fit: cover;
-            background: var(--crema);
+            background: #FFF8E1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
             padding: 4px;
+        }
+
+        .app-header .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .app-header h1 {
             font-size: 18px;
             font-weight: 700;
-            color: var(--crema-medio);
+            color: #FFF8E1;
         }
 
         .app-header small {
             font-size: 10px;
-            color: var(--crema-oscuro);
+            color: rgba(255,248,225,0.8);
             display: block;
         }
 
@@ -95,27 +117,30 @@
             width: 12px; height: 12px;
             border-radius: 50%;
             background: #aaa;
+            box-shadow: 0 0 8px rgba(0,0,0,0.2);
         }
-        .conexion-indicator.online { background: #4CAF50; }
-        .conexion-indicator.offline { background: #f44336; }
+        .conexion-indicator.online { background: #4CAF50; box-shadow: 0 0 12px rgba(76,175,80,0.5); }
+        .conexion-indicator.offline { background: #f44336; box-shadow: 0 0 12px rgba(244,67,54,0.5); }
 
         .app-content {
             flex: 1;
             padding: 16px;
             overflow-y: auto;
             padding-bottom: 80px;
-            background: var(--fondo-app);
         }
 
+        /* ============================================================
+           BOTTOM NAV
+           ============================================================ */
         .bottom-nav {
             position: sticky;
             bottom: 0;
-            background: var(--marron-oscuro);
+            background: var(--primary-dark);
             display: flex;
             justify-content: space-around;
             align-items: center;
             padding: 8px 4px;
-            border-top: 2px solid var(--marron-claro);
+            border-top: 2px solid var(--primary);
             z-index: 50;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
         }
@@ -123,10 +148,10 @@
         .bottom-nav button {
             background: transparent;
             border: none;
-            color: var(--crema-oscuro);
-            font-size: 12px;
+            color: rgba(255,248,225,0.6);
+            font-size: 11px;
             font-weight: 600;
-            padding: 6px 10px;
+            padding: 6px 8px;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
@@ -134,14 +159,23 @@
             text-align: center;
         }
 
+        .bottom-nav button .icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
         .bottom-nav button.activo {
-            color: var(--marron-oscuro);
-            background: var(--crema-medio);
+            color: #FFF8E1;
+            background: rgba(255,255,255,0.15);
         }
 
         .seccion { display: none; }
         .seccion.activa { display: block; }
 
+        /* ============================================================
+           CARDS Y TARJETAS
+           ============================================================ */
         .tarjetas-resumen {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -150,29 +184,37 @@
         }
 
         .tarjeta-resumen {
-            background: var(--blanco);
-            border-radius: 16px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
             padding: 16px;
             box-shadow: var(--sombra);
-            border-left: 5px solid var(--marron-medio);
+            border-left: 5px solid var(--primary);
+            backdrop-filter: blur(10px);
         }
 
         .tarjeta-resumen .numero {
             font-size: 28px;
             font-weight: 700;
-            color: var(--marron-oscuro);
+            color: var(--primary);
         }
 
         .tarjeta-resumen .etiqueta {
-            font-size: 14px;
-            color: var(--texto-secundario);
+            font-size: 12px;
+            color: var(--text-sec);
             font-weight: 500;
         }
 
+        .tarjeta-resumen.verde { border-left-color: var(--success); }
+        .tarjeta-resumen.naranja { border-left-color: var(--warning); }
+        .tarjeta-resumen.rojo { border-left-color: var(--danger); }
+
+        /* ============================================================
+           TIPOS DE EXTINTORES (SOLO EMOJIS)
+           ============================================================ */
         .tipos-extintores h3 {
             font-size: 16px;
             margin-bottom: 12px;
-            color: var(--marron-oscuro);
+            color: var(--primary);
             font-weight: 600;
         }
 
@@ -184,58 +226,78 @@
         }
 
         .tarjeta-tipo {
-            background: var(--blanco);
-            border-radius: 16px;
-            overflow: hidden;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 16px 8px;
             box-shadow: var(--sombra);
             text-align: center;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
         }
 
-        .tarjeta-tipo img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            background: #f0f0f0;
+        .tarjeta-tipo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        .tarjeta-tipo .icono {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 4px;
         }
 
         .tarjeta-tipo .tipo-nombre {
-            padding: 8px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
-            color: var(--marron-oscuro);
+            color: var(--text);
         }
 
+        /* ============================================================
+           TABLA
+           ============================================================ */
         .tabla-container {
-            background: var(--blanco);
-            border-radius: 16px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
             padding: 16px;
             box-shadow: var(--sombra);
             margin-bottom: 20px;
             overflow-x: auto;
+            backdrop-filter: blur(10px);
         }
 
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th {
-            background: var(--marron-medio);
-            color: var(--crema);
-            padding: 8px 6px;
+            background: var(--primary);
+            color: #FFF8E1;
+            padding: 8px 10px;
             text-align: left;
-            font-size: 11px;
-            text-transform: uppercase;
-        }
-        td { padding: 8px 6px; border-bottom: 1px solid var(--crema-oscuro); vertical-align: middle; }
-
-        .badge {
-            padding: 3px 8px;
-            border-radius: 12px;
             font-size: 10px;
-            font-weight: 600;
-            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .badge.operativo { background: var(--verde-ok); color: white; }
-        .badge.vencido { background: var(--rojo-alerta); color: white; }
-        .badge.proximo { background: var(--naranja-warn); color: white; }
+        td { padding: 8px 10px; border-bottom: 1px solid rgba(0,0,0,0.05); vertical-align: middle; }
 
+        /* ============================================================
+           BADGES
+           ============================================================ */
+        .badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .badge.operativo { background: var(--success); color: white; }
+        .badge.vencido { background: var(--danger); color: white; }
+        .badge.proximo { background: var(--warning); color: white; }
+        .badge.aprobado { background: var(--success); color: white; }
+        .badge.rechazado { background: var(--danger); color: white; }
+
+        /* ============================================================
+           BOTONES
+           ============================================================ */
         .btn {
             padding: 10px 16px;
             border: none;
@@ -246,179 +308,124 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: 0.2s;
-            background: var(--marron-medio);
-            color: var(--crema);
+            transition: var(--transition);
+            background: var(--primary);
+            color: #FFF8E1;
         }
-        .btn-rojo { background: var(--rojo-alerta); }
-        .btn-verde { background: var(--verde-ok); }
-        .btn-marron { background: var(--marron-oscuro); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(198,40,40,0.3); }
+        .btn-rojo { background: var(--danger); }
+        .btn-verde { background: var(--success); }
+        .btn-marron { background: var(--primary-dark); }
         .btn-outline {
             background: transparent;
-            border: 2px solid var(--marron-medio);
-            color: var(--marron-medio);
+            border: 2px solid var(--primary);
+            color: var(--primary);
         }
-        .btn-outline:hover { background: var(--marron-medio); color: var(--crema); }
+        .btn-outline:hover { background: var(--primary); color: #FFF8E1; }
 
+        /* ============================================================
+           FORMULARIOS
+           ============================================================ */
         .form-grid { display: flex; flex-direction: column; gap: 14px; }
         input, select, textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid var(--crema-oscuro);
+            border: 2px solid rgba(198,40,40,0.15);
             border-radius: 12px;
-            background: var(--blanco);
+            background: var(--card-bg);
             font-size: 14px;
-            color: var(--marron-oscuro);
+            color: var(--text);
+            transition: var(--transition);
         }
-        label { font-size: 13px; font-weight: 600; color: var(--marron-medio); margin-bottom: 4px; display: block; }
-
-        .preview-imagen {
-            text-align: center;
-            margin: 8px 0;
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(198,40,40,0.1);
         }
+        label { font-size: 13px; font-weight: 600; color: var(--text-sec); margin-bottom: 4px; display: block; }
 
-        .preview-imagen img {
-            width: 120px;
-            height: 120px;
-            object-fit: contain;
-            background: #f9f9f9;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-        }
-
+        /* ============================================================
+           FOTO PREVIEW
+           ============================================================ */
         .foto-preview-container {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
             margin: 8px 0;
         }
 
         .foto-preview {
-            width: 120px;
-            height: 120px;
-            border: 2px dashed var(--crema-oscuro);
+            width: 100px;
+            height: 100px;
+            border: 2px dashed rgba(198,40,40,0.2);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             cursor: pointer;
-            transition: 0.2s;
-            background: var(--blanco);
-            position: relative;
+            transition: var(--transition);
+            background: var(--card-bg);
         }
 
-        .foto-preview:hover {
-            border-color: var(--marron-medio);
-        }
-
-        .foto-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .foto-preview .placeholder {
-            font-size: 40px;
-            opacity: 0.3;
-            text-align: center;
-        }
-
-        .foto-preview .placeholder span {
-            display: block;
-            font-size: 10px;
-            color: var(--texto-secundario);
-            opacity: 0.6;
-        }
+        .foto-preview:hover { border-color: var(--primary); }
+        .foto-preview img { width: 100%; height: 100%; object-fit: contain; }
+        .foto-preview .placeholder { font-size: 32px; opacity: 0.4; text-align: center; }
+        .foto-preview .placeholder span { display: block; font-size: 9px; color: var(--text-sec); }
 
         .btn-camara {
-            background: var(--marron-medio);
-            color: var(--crema);
+            background: var(--primary);
+            color: #FFF8E1;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
+            transition: var(--transition);
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
+        .btn-camara:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(198,40,40,0.3); }
 
-        .btn-camara:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
+        /* ============================================================
+           GPS
+           ============================================================ */
         .gps-info {
             background: rgba(0,0,0,0.03);
             padding: 8px 12px;
             border-radius: 8px;
             font-size: 12px;
-            color: var(--texto-secundario);
-            margin: 8px 0;
+            color: var(--text-sec);
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--marron-oscuro);
-            color: var(--crema);
-            padding: 12px 24px;
-            border-radius: 24px;
-            font-weight: 600;
-            z-index: 999;
-            animation: fadeIn 0.3s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal {
-            background: var(--blanco);
-            border-radius: 20px;
-            padding: 20px;
-            max-width: 400px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
+        /* ============================================================
+           ESCÁNER
+           ============================================================ */
         #qr-reader { width: 100%; border-radius: 16px; overflow: hidden; }
         .escaner-box {
-            background: var(--marron-oscuro);
-            border-radius: 16px;
+            background: var(--primary-dark);
+            border-radius: var(--border-radius);
             padding: 16px;
             text-align: center;
-            color: var(--crema);
+            color: #FFF8E1;
         }
+        .escaner-box p { opacity: 0.7; font-size: 14px; }
 
-        .qr-mini {
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-        }
-
+        /* ============================================================
+           QR
+           ============================================================ */
         .qr-container {
             background: white;
-            padding: 8px;
+            padding: 4px;
             border-radius: 8px;
             display: inline-block;
         }
+        .qr-container img { display: block; }
 
         .info-grid {
             display: grid;
@@ -426,55 +433,185 @@
             gap: 8px;
             margin: 12px 0;
         }
-
         .info-grid .item {
-            background: var(--crema);
+            background: var(--bg);
             padding: 8px 12px;
             border-radius: 8px;
         }
-
         .info-grid .item .label {
-            font-size: 10px;
-            color: var(--texto-secundario);
+            font-size: 9px;
+            color: var(--text-sec);
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
-
         .info-grid .item .value {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
         }
 
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+        .modal h3 { color: var(--primary); font-size: 18px; margin-bottom: 12px; }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-dark);
+            color: #FFF8E1;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-weight: 600;
+            z-index: 999;
+            animation: slideUp 0.3s ease-out;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+        /* ============================================================
+           BANNER DE INSTALACIÓN PWA
+           ============================================================ */
+        .install-banner {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--header-bg);
+            color: #FFF8E1;
+            padding: 16px 20px;
+            z-index: 999;
+            box-shadow: 0 -4px 20px rgba(198,40,40,0.4);
+            animation: slideUp 0.5s ease-out;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-top: 2px solid rgba(255,255,255,0.15);
+        }
+        .install-banner.show { display: flex; }
+        .install-banner .install-text { flex: 1; font-size: 13px; }
+        .install-banner .install-text strong { font-size: 15px; display: block; }
+        .install-banner .install-buttons { display: flex; gap: 8px; }
+        .install-banner .btn-install {
+            background: #FFF8E1;
+            color: var(--primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .install-banner .btn-install:hover { transform: scale(1.05); }
+        .install-banner .btn-close-install {
+            background: rgba(255,255,255,0.15);
+            color: #FFF8E1;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+        .install-banner .btn-close-install:hover { background: rgba(255,255,255,0.25); }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
         @media (min-width: 481px) {
             .app-container { max-width: 800px; }
             .tarjetas-resumen { grid-template-columns: repeat(4, 1fr); }
             .grid-tipos { grid-template-columns: repeat(6, 1fr); }
         }
+
+        @media (max-width: 480px) {
+            .app-content { padding: 12px; }
+            .tarjetas-resumen { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .tarjeta-resumen { padding: 12px; }
+            .tarjeta-resumen .numero { font-size: 22px; }
+            .grid-tipos { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .tarjeta-tipo { padding: 12px 4px; }
+            .tarjeta-tipo .icono { font-size: 24px; }
+            .foto-preview { width: 80px; height: 80px; }
+            .bottom-nav button { font-size: 9px; padding: 4px 6px; }
+            .bottom-nav button .icon { font-size: 16px; }
+        }
     </style>
 </head>
 <body>
+
+<!-- ============================================================
+     BANNER DE INSTALACIÓN PWA
+     ============================================================ -->
+<div class="install-banner" id="installBanner">
+    <div class="install-text">
+        <strong>🧯 Instalar INSSO Extintores</strong>
+        <span>Instalá la app para acceso rápido</span>
+    </div>
+    <div class="install-buttons">
+        <button class="btn-install" id="btnInstall">📲 Instalar</button>
+        <button class="btn-close-install" id="btnCloseInstall">✕</button>
+    </div>
+</div>
+
+<!-- ============================================================
+     APP
+     ============================================================ -->
 <div class="app-container">
-    <!-- Header con logo -->
+    <!-- HEADER -->
     <header class="app-header">
-        <img src="https://image.pollinations.ai/prompt/fire%20extinguisher%20isolated%20on%20white%20background?width=100&height=100&nofeed=true" alt="Extintor">
+        <div class="logo-icon">
+            <img src="logo-insso.png" alt="INSSO" onerror="this.style.display='none'; this.parentElement.textContent='🧯'">
+        </div>
         <div>
-            <h1>SuperSpuma</h1>
-            <small>Seguridad Industrial · Extintores</small>
+            <h1>INSSO Extintores</h1>
+            <small>Seguridad Industrial</small>
         </div>
         <div class="conexion-indicator" id="conexion-indicator" title="Estado de conexión"></div>
     </header>
 
+    <!-- CONTENIDO -->
     <main class="app-content" id="app-content">
         <!-- Dashboard -->
         <section id="dashboard" class="seccion activa">
             <div class="tarjetas-resumen" id="tarjetas-resumen"></div>
 
             <div class="tipos-extintores">
-                <h3>Tipos de Extintores</h3>
+                <h3>🧯 Tipos de Extintores</h3>
                 <div class="grid-tipos" id="grid-tipos"></div>
             </div>
 
             <div class="tabla-container">
-                <h3 style="margin-bottom:12px;">Próximos a vencer</h3>
+                <h3 style="margin-bottom:12px; color:var(--primary);">⚠️ Próximos a vencer</h3>
                 <table id="tabla-vencimientos">
                     <thead><tr><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Estado</th></tr></thead>
                     <tbody></tbody>
@@ -485,12 +622,12 @@
         <!-- Inventario -->
         <section id="inventario" class="seccion">
             <div style="display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;">
-                <input type="text" id="busqueda" placeholder="Buscar..." oninput="cargarInventario()" style="flex:1; min-width:120px;">
+                <input type="text" id="busqueda" placeholder="🔍 Buscar..." oninput="cargarInventario()" style="flex:1; min-width:120px;">
                 <select id="filtro-estado" onchange="cargarInventario()" style="flex:1; min-width:100px;">
                     <option value="todos">Todos</option>
-                    <option value="Operativo">Operativo</option>
-                    <option value="Vencido">Vencido</option>
-                    <option value="Próximo a vencer">Próximo</option>
+                    <option value="Operativo">✅ Operativo</option>
+                    <option value="Vencido">❌ Vencido</option>
+                    <option value="Próximo a vencer">⚠️ Próximo</option>
                 </select>
             </div>
             <div class="tabla-container">
@@ -502,24 +639,24 @@
             <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
                 <button class="btn btn-marron" onclick="exportarCSV()">📥 CSV</button>
                 <button class="btn btn-outline" onclick="imprimirInventario()">🖨️ PDF</button>
-                <button class="btn btn-verde" onclick="regenerarTodosQR()">🔄 Regenerar QR</button>
+                <button class="btn btn-verde" onclick="regenerarTodosQR()">🔄 QR</button>
             </div>
         </section>
 
         <!-- Agregar/Editar -->
         <section id="agregar" class="seccion">
-            <h2 id="titulo-form" style="color:var(--marron-oscuro); margin-bottom:12px;">Nuevo Extintor</h2>
+            <h2 id="titulo-form" style="color:var(--primary); margin-bottom:12px;">➕ Nuevo Extintor</h2>
             <form id="form-extintor" onsubmit="guardarExtintor(event)" class="form-grid">
                 <input type="hidden" id="edit-id">
                 
                 <div>
-                    <label>Ubicación *</label>
+                    <label>📍 Ubicación *</label>
                     <input type="text" id="ubicacion" required placeholder="Ej: Nave 3 - Sector B">
                 </div>
 
                 <div>
-                    <label>Tipo *</label>
-                    <select id="tipo" required onchange="actualizarImagenTipo(); manejarOtro('tipo')">
+                    <label>🧯 Tipo *</label>
+                    <select id="tipo" required onchange="manejarOtro('tipo')">
                         <option value="">Seleccionar...</option>
                         <option value="Espuma mecánica">Espuma mecánica</option>
                         <option value="PQS">PQS (Polvo químico seco)</option>
@@ -532,7 +669,7 @@
                 </div>
 
                 <div>
-                    <label>Tamaño *</label>
+                    <label>📏 Tamaño *</label>
                     <select id="tamano" required onchange="manejarOtro('tamano')">
                         <option value="">Seleccionar...</option>
                         <option value="25 kg">25 kg</option>
@@ -541,10 +678,6 @@
                         <option value="Otro">Otro (especificar)</option>
                     </select>
                     <input type="text" id="otro-tamano" placeholder="Especificar tamaño" style="display:none; margin-top:8px;">
-                </div>
-
-                <div class="preview-imagen">
-                    <img id="tipo-imagen-preview" src="https://image.pollinations.ai/prompt/fire%20extinguisher?width=200&height=200&nofeed=true" alt="Vista previa">
                 </div>
 
                 <!-- FOTO REAL DEL EXTINTOR -->
@@ -559,46 +692,46 @@
                         </div>
                         <input type="file" id="foto-input" accept="image/*" capture="environment" style="display:none;" onchange="previsualizarFoto(event)">
                         <button type="button" class="btn-camara" onclick="document.getElementById('foto-input').click()">📷 Cámara</button>
-                        <button type="button" class="btn-outline" onclick="limpiarFoto()" style="padding:8px 16px;">🗑️ Quitar</button>
+                        <button type="button" class="btn-outline" onclick="limpiarFoto()" style="padding:8px 14px; font-size:12px;">🗑️</button>
                     </div>
                 </div>
 
                 <!-- GPS -->
-                <div class="gps-info" id="gps-info">
+                <div class="gps-info">
                     <span>📍</span>
                     <span id="gps-text">Obteniendo ubicación...</span>
                 </div>
 
                 <div>
-                    <label>Próxima recarga</label>
+                    <label>📅 Próxima recarga</label>
                     <input type="date" id="fecha-proxima">
                 </div>
 
                 <div>
-                    <label>N° serie / Etiqueta</label>
+                    <label>🔢 N° serie / Etiqueta</label>
                     <input type="text" id="numero-serie" placeholder="Etiqueta o lote">
                 </div>
 
                 <div>
-                    <label>Notas</label>
+                    <label>📝 Notas</label>
                     <textarea id="notas" rows="2"></textarea>
                 </div>
 
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button type="submit" class="btn btn-marron" style="flex:1;">💾 Guardar Extintor</button>
+                    <button type="submit" class="btn btn-marron" style="flex:1;">💾 Guardar</button>
                     <button type="button" class="btn btn-outline" onclick="cancelarEdicion()">Cancelar</button>
                 </div>
 
-                <span id="estado-guardado" style="font-size:13px; text-align:center;"></span>
+                <span id="estado-guardado" style="font-size:13px; text-align:center; color:var(--text-sec);"></span>
             </form>
         </section>
 
         <!-- Escanear -->
         <section id="escanear" class="seccion">
-            <h2 style="color:var(--marron-oscuro); margin-bottom:12px;">Escanear</h2>
+            <h2 style="color:var(--primary); margin-bottom:12px;">📷 Escanear</h2>
             <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
-                <button class="btn btn-marron" id="btn-escanear-qr" onclick="iniciarEscanerQR()">📷 Escanear QR</button>
-                <button class="btn btn-outline" id="btn-escanear-etiqueta" onclick="iniciarEscanerEtiqueta()">🏷️ Escanear Etiqueta</button>
+                <button class="btn btn-marron" id="btn-escanear-qr" onclick="iniciarEscanerQR()">📷 QR</button>
+                <button class="btn btn-outline" id="btn-escanear-etiqueta" onclick="iniciarEscanerEtiqueta()">🏷️ Etiqueta</button>
                 <button class="btn btn-rojo" id="btn-detener" onclick="detenerEscaner()" style="display:none;">⏹ Detener</button>
             </div>
             <div class="escaner-box">
@@ -610,28 +743,28 @@
 
         <!-- Inspecciones -->
         <section id="inspecciones" class="seccion">
-            <h2 style="color:var(--marron-oscuro);">Inspecciones</h2>
+            <h2 style="color:var(--primary);">✅ Inspecciones</h2>
             <form id="form-inspeccion" onsubmit="guardarInspeccion(event)" class="form-grid" style="margin-bottom:20px;">
                 <div>
-                    <label>Extintor *</label>
+                    <label>🧯 Extintor *</label>
                     <select id="extintor-select" required><option value="">Cargando...</option></select>
                 </div>
                 <div>
-                    <label>Inspector *</label>
+                    <label>👤 Inspector *</label>
                     <input type="text" id="inspector" required>
                 </div>
                 <div>
-                    <label>Resultado</label>
+                    <label>📊 Resultado</label>
                     <select id="resultado" required>
                         <option value="Aprobado">✅ Aprobado</option>
                         <option value="Rechazado">❌ Rechazado</option>
                     </select>
                 </div>
                 <div>
-                    <label>Observaciones</label>
+                    <label>📝 Observaciones</label>
                     <textarea id="obs-inspeccion" rows="2"></textarea>
                 </div>
-                <button type="submit" class="btn btn-verde" style="width:100%;">✅ Registrar Inspección</button>
+                <button type="submit" class="btn btn-verde" style="width:100%;">✅ Registrar</button>
             </form>
             <div class="tabla-container">
                 <table id="tabla-inspecciones">
@@ -642,21 +775,24 @@
         </section>
     </main>
 
+    <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
-        <button class="activo" onclick="mostrarSeccion('dashboard')">🏠 Inicio</button>
-        <button onclick="mostrarSeccion('inventario')">📋 Inventario</button>
-        <button onclick="mostrarSeccion('agregar')">➕ Agregar</button>
-        <button onclick="mostrarSeccion('escanear')">📷 Escanear</button>
-        <button onclick="mostrarSeccion('inspecciones')">✅ Inspecciones</button>
+        <button class="activo" onclick="mostrarSeccion('dashboard')"><span class="icon">🏠</span>Inicio</button>
+        <button onclick="mostrarSeccion('inventario')"><span class="icon">📋</span>Inventario</button>
+        <button onclick="mostrarSeccion('agregar')"><span class="icon">➕</span>Agregar</button>
+        <button onclick="mostrarSeccion('escanear')"><span class="icon">📷</span>Escanear</button>
+        <button onclick="mostrarSeccion('inspecciones')"><span class="icon">✅</span>Inspecciones</button>
     </nav>
 </div>
 
-<!-- Modal QR -->
+<!-- ============================================================
+     MODAL QR
+     ============================================================ -->
 <div class="modal-overlay" id="modal-qr" style="display:none;" onclick="cerrarModal()">
     <div class="modal" onclick="event.stopPropagation()">
-        <h3 style="color:var(--marron-oscuro);">QR del Extintor</h3>
+        <h3>📱 QR del Extintor</h3>
         <div id="modal-contenido"></div>
-        <button class="btn btn-rojo" style="width:100%; margin-top:12px;" onclick="cerrarModal()">Cerrar</button>
+        <button class="btn btn-rojo" style="width:100%; margin-top:16px;" onclick="cerrarModal()">Cerrar</button>
     </div>
 </div>
 
@@ -686,6 +822,62 @@
     let fotoDataURL = null;
     let coordenadasActuales = null;
     let ubicacionTexto = null;
+
+    // ============================================================
+    // PWA - INSTALACIÓN
+    // ============================================================
+    let deferredPrompt = null;
+    const installBanner = document.getElementById('installBanner');
+    const btnInstall = document.getElementById('btnInstall');
+    const btnCloseInstall = document.getElementById('btnCloseInstall');
+
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        if (installBanner) installBanner.style.display = 'none';
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBanner) installBanner.classList.add('show');
+    });
+
+    if (btnInstall) {
+        btnInstall.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const result = await deferredPrompt.userChoice;
+                if (result.outcome === 'accepted') {
+                    if (installBanner) installBanner.classList.remove('show');
+                }
+                deferredPrompt = null;
+            } else {
+                alert('📱 Para instalar: Abrí el menú del navegador (3 puntos) y seleccioná "Instalar aplicación"');
+            }
+        });
+    }
+
+    if (btnCloseInstall) {
+        btnCloseInstall.addEventListener('click', () => {
+            if (installBanner) installBanner.classList.remove('show');
+        });
+    }
+
+    window.addEventListener('appinstalled', () => {
+        if (installBanner) installBanner.classList.remove('show');
+    });
+
+    // Registrar Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js')
+                .then(function(registration) {
+                    console.log('✅ Service Worker registrado con éxito:', registration.scope);
+                })
+                .catch(function(error) {
+                    console.log('❌ Error al registrar Service Worker:', error);
+                });
+        });
+    }
 
     // ============================================================
     // CONEXIÓN
@@ -800,10 +992,9 @@
     function resetFormulario() {
         document.getElementById('form-extintor').reset();
         document.getElementById('edit-id').value = '';
-        document.getElementById('titulo-form').textContent = 'Nuevo Extintor';
+        document.getElementById('titulo-form').textContent = '➕ Nuevo Extintor';
         document.getElementById('otro-tipo').style.display = 'none';
         document.getElementById('otro-tamano').style.display = 'none';
-        document.getElementById('tipo-imagen-preview').src = 'https://image.pollinations.ai/prompt/fire%20extinguisher?width=200&height=200&nofeed=true';
         limpiarFoto();
         editMode = false;
         currentEditId = null;
@@ -812,7 +1003,7 @@
 
     function cancelarEdicion() { 
         resetFormulario(); 
-        mostrarToast('Edición cancelada'); 
+        mostrarToast('❌ Edición cancelada'); 
     }
 
     function manejarOtro(tipo) {
@@ -821,21 +1012,6 @@
         } else {
             document.getElementById('otro-tamano').style.display = document.getElementById('tamano').value === 'Otro' ? 'block' : 'none';
         }
-    }
-
-    function actualizarImagenTipo() {
-        const tipo = document.getElementById('tipo').value;
-        const img = document.getElementById('tipo-imagen-preview');
-        const prompts = {
-            'Espuma mecánica': 'mechanical foam fire extinguisher',
-            'PQS': 'dry powder fire extinguisher',
-            'CO2': 'CO2 fire extinguisher',
-            'Carrito de Espuma': 'wheeled foam fire extinguisher',
-            'Alogenado (eco)': 'halotron fire extinguisher',
-            'Otro': 'generic fire extinguisher'
-        };
-        const prompt = prompts[tipo] || 'fire extinguisher';
-        img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=200&height=200&nofeed=true&t=${Date.now()}`;
     }
 
     // ============================================================
@@ -852,23 +1028,24 @@
         const proximos = extintores.filter(e => e.estado === 'Próximo a vencer').length;
 
         document.getElementById('tarjetas-resumen').innerHTML = `
-            <div class="tarjeta-resumen"><div class="numero">${total}</div><div class="etiqueta">Total Extintores</div></div>
-            <div class="tarjeta-resumen" style="border-left-color: var(--verde-ok);"><div class="numero">${operativos}</div><div class="etiqueta">Operativos</div></div>
-            <div class="tarjeta-resumen" style="border-left-color: var(--naranja-warn);"><div class="numero">${proximos}</div><div class="etiqueta">Próximos a vencer</div></div>
-            <div class="tarjeta-resumen" style="border-left-color: var(--rojo-alerta);"><div class="numero">${vencidos}</div><div class="etiqueta">Vencidos</div></div>
+            <div class="tarjeta-resumen"><div class="numero">${total}</div><div class="etiqueta">📦 Total</div></div>
+            <div class="tarjeta-resumen verde"><div class="numero">${operativos}</div><div class="etiqueta">✅ Operativos</div></div>
+            <div class="tarjeta-resumen naranja"><div class="numero">${proximos}</div><div class="etiqueta">⚠️ Próximos</div></div>
+            <div class="tarjeta-resumen rojo"><div class="numero">${vencidos}</div><div class="etiqueta">❌ Vencidos</div></div>
         `;
 
+        // Tipos con emojis
         const tipos = [
-            { nombre: 'Espuma', prompt: 'mechanical foam fire extinguisher' },
-            { nombre: 'PQS', prompt: 'dry powder fire extinguisher' },
-            { nombre: 'CO2', prompt: 'CO2 fire extinguisher' },
-            { nombre: 'Carrito', prompt: 'wheeled foam fire extinguisher' },
-            { nombre: 'Alogenado', prompt: 'halotron fire extinguisher' },
-            { nombre: 'Otro', prompt: 'generic fire extinguisher' }
+            { nombre: 'Espuma', emoji: '🧼' },
+            { nombre: 'PQS', emoji: '🧯' },
+            { nombre: 'CO2', emoji: '💨' },
+            { nombre: 'Carrito', emoji: '🛒' },
+            { nombre: 'Alogenado', emoji: '🔬' },
+            { nombre: 'Otro', emoji: '📦' }
         ];
         document.getElementById('grid-tipos').innerHTML = tipos.map(t => `
             <div class="tarjeta-tipo">
-                <img src="https://image.pollinations.ai/prompt/${encodeURIComponent(t.prompt)}?width=200&height=200&nofeed=true" alt="${t.nombre}">
+                <span class="icono">${t.emoji}</span>
                 <div class="tipo-nombre">${t.nombre}</div>
             </div>
         `).join('');
@@ -878,7 +1055,7 @@
         tbody.innerHTML = lista.map(e => `
             <tr><td>${e.ubicacion}</td><td>${e.tipo}</td><td>${e.fechaProxima || '-'}</td>
             <td><span class="badge ${e.estado==='Vencido'?'vencido':'proximo'}">${e.estado}</span></td></tr>
-        `).join('') || '<tr><td colspan="4" style="text-align:center;">✅ Todo en orden</td></tr>';
+        `).join('') || '<tr><td colspan="4" style="text-align:center;padding:20px;">✅ Todo en orden</td></tr>';
     }
 
     // ============================================================
@@ -907,7 +1084,7 @@
                              onclick="mostrarQR('${e.id}','${e.qrURL || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${e.id}`}','${e.ubicacion}','${e.tipo}','${e.tamano||''}','${e.fechaProxima||''}','${e.numeroSerie||''}')">
                     </div>
                 </td>
-                <td onclick="editarExtintor('${e.id}')" style="cursor:pointer;">${e.ubicacion}</td>
+                <td onclick="editarExtintor('${e.id}')" style="cursor:pointer; color:var(--primary);">${e.ubicacion}</td>
                 <td>${e.tipo} ${e.tamano ? `(${e.tamano})` : ''}</td>
                 <td><span class="badge ${e.estado==='Operativo'?'operativo':(e.estado==='Vencido'?'vencido':'proximo')}">${e.estado}</span></td>
                 <td>
@@ -919,7 +1096,7 @@
     }
 
     // ============================================================
-    // GUARDAR EXTINTOR (CON FOTO Y GPS)
+    // GUARDAR EXTINTOR
     // ============================================================
     async function guardarExtintor(e) {
         e.preventDefault();
@@ -1015,13 +1192,11 @@
             document.getElementById('otro-tamano').style.display = 'block';
         }
 
-        // Cargar foto si existe
         if (ext.fotoURL) {
             const preview = document.getElementById('foto-preview');
             preview.innerHTML = `<img src="${ext.fotoURL}" alt="Foto extintor">`;
         }
 
-        actualizarImagenTipo();
         document.getElementById('titulo-form').textContent = '✏️ Editar Extintor';
         mostrarSeccion('agregar');
     }
@@ -1048,14 +1223,14 @@
                 <img src="${qrMostrar}" width="200" style="border-radius:12px; background:white; padding:8px;">
             </div>
             <div class="info-grid">
-                <div class="item"><div class="label">Tipo</div><div class="value">${tipo}</div></div>
-                <div class="item"><div class="label">Tamaño</div><div class="value">${tamano || '-'}</div></div>
-                <div class="item"><div class="label">Ubicación</div><div class="value">${ubicacion}</div></div>
-                ${serie ? `<div class="item"><div class="label">Serie</div><div class="value">${serie}</div></div>` : ''}
-                ${fecha ? `<div class="item"><div class="label">Próx. recarga</div><div class="value">${fecha}</div></div>` : ''}
+                <div class="item"><div class="label">🧯 Tipo</div><div class="value">${tipo}</div></div>
+                <div class="item"><div class="label">📏 Tamaño</div><div class="value">${tamano || '-'}</div></div>
+                <div class="item"><div class="label">📍 Ubicación</div><div class="value">${ubicacion}</div></div>
+                ${serie ? `<div class="item"><div class="label">🔢 Serie</div><div class="value">${serie}</div></div>` : ''}
+                ${fecha ? `<div class="item"><div class="label">📅 Recarga</div><div class="value">${fecha}</div></div>` : ''}
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
-                <button class="btn btn-marron" onclick="descargarQR('${qrMostrar}','${id}','${ubicacion}','${tipo}','${tamano}')">📥 Descargar QR</button>
+                <button class="btn btn-marron" onclick="descargarQR('${qrMostrar}','${id}','${ubicacion}','${tipo}','${tamano}')">📥 Descargar</button>
                 <button class="btn btn-outline" onclick="compartirWhatsApp('${qrMostrar}','${id}','${ubicacion}','${tipo}','${tamano}')">💬 WhatsApp</button>
                 <button class="btn btn-outline" onclick="copiarID('${id}')">📋 Copiar ID</button>
             </div>
@@ -1077,19 +1252,19 @@
             ctx.fillStyle = 'white'; ctx.fillRect(0,0,canvas.width,canvas.height);
             ctx.drawImage(img, 20, 20, 300, 300);
             ctx.fillStyle = '#3E2723'; ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center';
-            ctx.fillText(`SuperSpuma · ${tipo} ${tamano}`, 170, 350);
-            ctx.font = '12px Arial'; ctx.fillText(`Ubicación: ${ubicacion}`, 170, 375);
+            ctx.fillText(`INSSO · ${tipo} ${tamano}`, 170, 350);
+            ctx.font = '12px Arial'; ctx.fillText(`📍 ${ubicacion}`, 170, 375);
             ctx.fillText(`ID: ${id}`, 170, 395);
             const a = document.createElement('a');
-            a.download = `QR_SuperSpuma_${id}.png`;
+            a.download = `QR_INSSO_${id}.png`;
             a.href = canvas.toDataURL();
             a.click();
         };
         img.src = qrURL;
     }
 
-    async function compartirWhatsApp(qrURL, id, ubicacion, tipo, tamano) {
-        window.open(`https://wa.me/?text=🧯%20Extintor%20SuperSpuma%0A%0A📌%20${encodeURIComponent(tipo)}%20${encodeURIComponent(tamano)}%0A📍%20${encodeURIComponent(ubicacion)}%0A🆔%20${id}`, '_blank');
+    function compartirWhatsApp(qrURL, id, ubicacion, tipo, tamano) {
+        window.open(`https://wa.me/?text=🧯%20INSSO%20Extintor%0A%0A📌%20${encodeURIComponent(tipo)}%20${encodeURIComponent(tamano)}%0A📍%20${encodeURIComponent(ubicacion)}%0A🆔%20${id}`, '_blank');
     }
 
     function copiarID(id) { 
@@ -1236,7 +1411,7 @@
                 <td>${new Date(i.fecha).toLocaleDateString()}</td>
                 <td>${i.extintorId?.slice(0,8)}</td>
                 <td>${i.inspector}</td>
-                <td><span class="badge ${i.resultado==='Aprobado'?'operativo':'vencido'}">${i.resultado}</span></td>
+                <td><span class="badge ${i.resultado==='Aprobado'?'aprobado':'rechazado'}">${i.resultado}</span></td>
             </tr>
         `).join('') || '<tr><td colspan="4" style="text-align:center;padding:20px;">📋 Sin inspecciones</td></tr>';
     }
@@ -1253,7 +1428,7 @@
         const blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `inventario_superspuma_${new Date().toISOString().slice(0,10)}.csv`;
+        a.download = `inventario_insso_${new Date().toISOString().slice(0,10)}.csv`;
         a.click();
         mostrarToast('📥 CSV exportado');
     }
@@ -1269,12 +1444,12 @@
             .join('');
         ventana.document.write(`
             <html><head>
-                <title>Inventario SuperSpuma</title>
+                <title>Inventario INSSO Extintores</title>
                 <style>
                     body{font-family:Arial;padding:20px;background:#f5f0e8;}
-                    h2{color:#3E2723;text-align:center;}
+                    h2{color:#C62828;text-align:center;}
                     table{width:100%;border-collapse:collapse;margin-top:16px;}
-                    th{background:#4E342E;color:white;padding:10px;text-align:left;}
+                    th{background:#C62828;color:white;padding:10px;text-align:left;}
                     td{padding:8px;border-bottom:1px solid #ddd;}
                     .badge{padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;}
                     .operativo{background:#2E7D32;color:white;}
@@ -1282,13 +1457,13 @@
                     .proximo{background:#E65100;color:white;}
                 </style>
             </head><body>
-                <h2>🧯 Inventario SuperSpuma</h2>
+                <h2>🧯 Inventario INSSO Extintores</h2>
                 <p style="text-align:center;color:#5D4037;">Generado: ${new Date().toLocaleString()}</p>
                 <table>
                     <thead><tr><th>Ubicación</th><th>Tipo</th><th>Tamaño</th><th>Próx. recarga</th><th>Estado</th></tr></thead>
                     <tbody>${filas}</tbody>
                 </table>
-                <p style="margin-top:20px;text-align:center;color:#888;font-size:12px;">SuperSpuma - Seguridad Industrial</p>
+                <p style="margin-top:20px;text-align:center;color:#888;font-size:12px;">INSSO - Seguridad Industrial</p>
             </body></html>
         `);
         ventana.document.close();
@@ -1302,9 +1477,9 @@
     resetFormulario();
     obtenerGPS();
 
-    console.log('🔥 SuperSpuma · Gestión de Extintores');
+    console.log('🔥 INSSO - Gestión de Extintores');
     console.log('📸 Foto y GPS integrados');
-    console.log('📱 App lista para usar');
+    console.log('📱 PWA lista para instalar');
 </script>
 </body>
 </html>
