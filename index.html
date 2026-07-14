@@ -2,1487 +2,789 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="INSSO - Soluciones integrales en ingeniería y seguridad industrial en Villeta, Paraguay. Servicios de electricidad, mantenimiento mecánico, PCI, SySO y capacitaciones técnicas.">
-    <meta name="keywords" content="INSSO, ingeniería industrial, seguridad industrial, Villeta Paraguay, protección contra incendios, PCI, SySO, capacitaciones técnicas, mantenimiento industrial">
-    <meta name="author" content="INSSO Consultora">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SuperSpuma · Gestión de Extintores</title>
     
-    <!-- ===== CONFIGURACIÓN PARA APP ===== -->
-    <!-- iOS / Safari -->
+    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="INSSO">
-    <link rel="apple-touch-icon" href="photo-removebg-preview.png">
-    <!-- Android / Chrome -->
-    <link rel="manifest" href="data:application/json;charset=utf-8,{
-        &quot;name&quot;:&quot;INSSO Consultora&quot;,
-        &quot;short_name&quot;:&quot;INSSO&quot;,
-        &quot;description&quot;:&quot;Soluciones en ingeniería y seguridad industrial&quot;,
-        &quot;start_url&quot;:&quot;/&quot;,
-        &quot;display&quot;:&quot;standalone&quot;,
-        &quot;background_color&quot;:&quot;#0f172a&quot;,
-        &quot;theme_color&quot;:&quot;#0f172a&quot;,
-        &quot;icons&quot;:[
-            {&quot;src&quot;:&quot;photo-removebg-preview.png&quot;,&quot;sizes&quot;:&quot;512x512&quot;,&quot;type&quot;:&quot;image/png&quot;,&quot;purpose&quot;:&quot;any maskable&quot;}
-        ]
-    }">
-    
-    <title>INSSO | Soluciones Integrales en Ingeniería y Seguridad Industrial</title>
+    <meta name="apple-mobile-web-app-title" content="SuperSpuma">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/MbDDBwH.png">
+    <meta name="theme-color" content="#3E2723">
+    <meta name="description" content="Sistema de gestión de extintores SuperSpuma">
 
-    <!-- Bootstrap 5.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
     <style>
         :root {
-            --primary-color: #0f172a;
-            --secondary-color: #f59e0b;
-            --accent-color: #3b82f6;
-            --text-dark: #1e293b;
-            --text-light: #f1f5f9;
+            --bg: #f5f0e8; --card-bg: rgba(255,255,255,0.92); --text: #3E2723;
+            --text-sec: #5D4037; --header-bg: linear-gradient(135deg, #3E2723, #4E342E);
+            --sombra: 0 2px 10px rgba(0,0,0,0.08); --marron: #3E2723; --marron-medio: #4E342E; --crema: #FFF8E1;
+        }
+        .dark-mode {
+            --bg: #1a1a1a; --card-bg: rgba(30,30,30,0.95); --text: #FFF8E1;
+            --text-sec: #ccc; --header-bg: linear-gradient(135deg, #111, #222); --sombra: 0 2px 10px rgba(255,255,255,0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: 0.3s; }
+        .app-container { max-width: 1200px; margin: 0 auto; padding: 16px; }
+
+        .header { background: var(--header-bg); color: #FFF8E1; padding: 14px 20px; border-radius: 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+        .header img { width: 45px; height: 45px; border-radius: 10px; background: #FFF8E1; padding: 3px; }
+        .header h1 { font-size: 20px; font-weight: 800; }
+        .header .header-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+        .btn-icon { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #FFF8E1; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+        .conexion-dot { width: 10px; height: 10px; border-radius: 50%; background: #4CAF50; display: inline-block; }
+
+        .nav-principal { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .nav-principal button { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 600; font-size: 12px; cursor: pointer; background: #eee; color: #333; }
+        .nav-principal button.activo { background: var(--marron); color: #FFF8E1; }
+
+        .grid-sucursales { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 20px; }
+        .card-sucursal { background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px; padding: 16px; cursor: pointer; transition: 0.2s; border-left: 5px solid #4E342E; box-shadow: var(--sombra); }
+        .card-sucursal:hover { transform: translateY(-3px); }
+
+        .sucursal-header { background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px; padding: 20px; margin-bottom: 16px; border-left: 6px solid var(--marron); box-shadow: var(--sombra); }
+        .stats { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
+        .stat { text-align: center; background: var(--crema); padding: 10px 14px; border-radius: 12px; min-width: 70px; }
+        .stat .num { font-size: 24px; font-weight: 800; }
+        .stat .lbl { font-size: 9px; color: #5D4037; text-transform: uppercase; }
+
+        .tabs { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
+        .tabs button { padding: 8px 14px; border: none; border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; background: #eee; color: #333; }
+        .tabs button.activo { background: var(--marron); color: #FFF8E1; }
+
+        .tabla-container { background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px; padding: 16px; box-shadow: var(--sombra); margin-bottom: 16px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th { background: var(--marron); color: #FFF8E1; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; }
+        td { padding: 7px 10px; border-bottom: 1px solid #eee; color: var(--text); }
+        tr:hover { background: rgba(0,0,0,0.04); }
+        .badge { padding: 3px 7px; border-radius: 8px; font-size: 9px; font-weight: 700; }
+        .badge.critico { background: #FF0000; color: white; } .badge.alta { background: #FF6600; color: white; }
+        .badge.media { background: #FFCC00; color: #333; } .badge.baja { background: #33CCFF; color: #333; } .badge.normal { background: #00CC66; color: white; }
+        .badge.completado { background: #2E7D32; color: white; } .badge.pendiente { background: #C62828; color: white; }
+
+        .btn { padding: 7px 12px; border: none; border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; background: #4E342E; color: #FFF8E1; }
+        .btn-rojo { background: #C62828; } .btn-verde { background: #2E7D32; } .btn-azul { background: #1565C0; }
+        .btn-wsp { background: #25D366; color: white; }
+        .btn-small { padding: 3px 7px; font-size: 9px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .form-row .full { grid-column: 1 / -1; }
+        input, select, textarea { width: 100%; padding: 9px; border: 2px solid #ddd; border-radius: 8px; font-size: 12px; background: var(--card-bg); color: var(--text); }
+        label { display: block; font-weight: 600; font-size: 10px; color: var(--text-sec); margin-bottom: 2px; }
+
+        .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .checklist-item .nombre { flex: 1; font-weight: 600; font-size: 12px; }
+        .checklist-item .opciones button { padding: 5px 14px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 2px solid #ccc; cursor: pointer; background: white; color: #333; }
+        .checklist-item .opciones button.sel-ok { background: #2E7D32; color: white; border-color: #2E7D32; }
+        .checklist-item .opciones button.sel-nook { background: #C62828; color: white; border-color: #C62828; }
+
+        .progress-bar { width: 100%; height: 8px; background: #eee; border-radius: 4px; margin: 10px 0; overflow: hidden; }
+        .progress-bar .fill { height: 100%; background: #2E7D32; transition: width 0.3s; border-radius: 4px; }
+
+        .foto-preview { width: 100px; height: 100px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
+        .foto-preview img { width: 100%; height: 100%; object-fit: contain; background: #f0f0f0; }
+        .foto-mini { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; cursor: pointer; background: #f0f0f0; }
+
+        .mapa-mini { width: 100%; height: 150px; border-radius: 10px; margin-top: 8px; border: 1px solid #ddd; }
+        .mapa-link { font-size: 10px; color: #1565C0; cursor: pointer; text-decoration: underline; display: block; margin-top: 4px; }
+
+        .etiqueta-print { background: white; border: 2px solid #333; border-radius: 10px; padding: 12px; width: 280px; display: inline-block; margin: 8px; font-family: Arial; }
+
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:1000; padding: 16px; }
+        .modal { background: white; border-radius: 16px; padding: 24px; max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        .modal-detalle-foto { width: 100%; max-height: 250px; object-fit: contain; background: #f5f5f5; border-radius: 10px; margin-bottom: 10px; }
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #3E2723; color: #FFF8E1; padding: 10px 20px; border-radius: 20px; font-weight: 600; z-index: 2000; font-size: 13px; }
+
+        .qr-container-sucursal { 
+            background: white; 
+            padding: 8px; 
+            border-radius: 8px; 
+            display: inline-block; 
+            margin: 4px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-width: 100px;
+            min-height: 100px;
+            text-align: center;
+        }
+        .qr-container-sucursal canvas {
+            display: block !important;
+            margin: 0 auto !important;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            color: var(--text-dark);
-            overflow-x: hidden;
-            min-height: 100vh;
-            transition: background 1.2s ease;
-            position: relative;
-        }
-
-        /* ===== LOGO DE FONDO (marca de agua) ===== */
-        body::before {
-            content: '';
+        /* Banner de instalación PWA */
+        .install-banner {
+            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('photo-removebg-preview.png');
-            background-repeat: repeat;
-            background-size: 180px 180px;
-            background-position: center;
-            opacity: 0.04;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .container, section, .hero, .navbar, footer {
-            position: relative;
-            z-index: 1;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-        }
-
-        /* ===== SPLASH SCREEN ===== */
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--primary-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-
-        #splash-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        #splash-screen .splash-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            animation: splashZoom 1.5s ease-out forwards;
-        }
-
-        #splash-screen .splash-logo {
-            width: 300px;
-            max-width: 60vw;
-            height: auto;
-            filter: brightness(0) invert(1);
-            animation: splashPulse 1.5s ease-in-out infinite;
-            margin-bottom: 20px;
-        }
-
-        #splash-screen .splash-text {
-            color: white;
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 6px;
-            opacity: 0.9;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        #splash-screen .splash-text span {
-            color: var(--secondary-color);
-        }
-
-        @keyframes splashZoom {
-            0% { transform: scale(0.5); opacity: 0; }
-            60% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes splashPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
-
-        /* ===== NAVBAR ===== */
-        .navbar {
-            transition: all 0.4s ease;
-            padding: 1rem 0;
-        }
-        .navbar.scrolled {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            padding: 0.5rem 0;
-        }
-        .navbar-brand {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 800;
-            font-size: 1.8rem;
-            color: var(--secondary-color) !important;
-            letter-spacing: -1px;
-        }
-        .navbar-brand img {
-            height: 40px;
-            width: auto;
-            filter: brightness(0) invert(1);
-            margin-right: 10px;
-        }
-        .nav-link {
-            color: var(--text-light) !important;
-            font-weight: 500;
-            margin: 0 0.5rem;
-            position: relative;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
             bottom: 0;
             left: 0;
-            background-color: var(--secondary-color);
-            transition: width 0.3s;
-        }
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        /* ===== BOTÓN INSTALAR APP ===== */
-        #installBanner {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(12px);
-            padding: 16px 24px;
-            border-radius: 60px;
-            color: white;
-            display: none;
-            align-items: center;
-            gap: 16px;
+            right: 0;
+            background: linear-gradient(135deg, #3E2723, #4E342E);
+            color: #FFF8E1;
+            padding: 16px 20px;
             z-index: 999;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 90%;
-            animation: slideUp 0.5s ease;
-        }
-        #installBanner.show {
-            display: flex;
-        }
-        @keyframes slideUp {
-            from { transform: translateX(-50%) translateY(30px); opacity: 0; }
-            to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-        #installBanner .banner-icon {
-            width: 44px;
-            height: 44px;
-            background: var(--secondary-color);
-            border-radius: 12px;
-            display: flex;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+            animation: slideUp 0.5s ease-out;
             align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            color: var(--primary-color);
-            flex-shrink: 0;
-        }
-        #installBanner .banner-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
-        #installBanner .banner-text strong {
-            font-size: 1rem;
-            color: white;
-        }
-        #installBanner .banner-text small {
-            font-size: 0.75rem;
-            opacity: 0.7;
-        }
-        #installBanner .btn-install {
-            background: var(--secondary-color);
-            color: var(--primary-color);
-            border: none;
-            padding: 10px 22px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        #installBanner .btn-install:hover {
-            transform: scale(1.05);
-            background: #d97706;
-            color: white;
-        }
-        #installBanner .btn-close-banner {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 4px 8px;
-            transition: color 0.3s;
-        }
-        #installBanner .btn-close-banner:hover {
-            color: white;
-        }
-
-        /* ===== HERO ===== */
-        .hero {
-            min-height: 100vh;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.72)), 
-                        url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=2070') center/cover no-repeat fixed;
-            display: flex;
-            align-items: center;
-            position: relative;
-            color: white;
-            padding: 80px 0 40px;
-        }
-        .hero-content h1 {
-            font-size: 3.5rem;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-        }
-        .hero-content .highlight {
-            color: var(--secondary-color);
-        }
-        .btn-custom {
-            background: var(--secondary-color);
-            color: var(--primary-color);
-            font-weight: 700;
-            padding: 0.8rem 2rem;
-            border-radius: 50px;
-            border: none;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .btn-custom:hover {
-            background: #d97706;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
-            color: white;
-        }
-        .btn-outline-custom {
-            border: 2px solid var(--text-light);
-            color: var(--text-light);
-            font-weight: 600;
-            padding: 0.8rem 2rem;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .btn-outline-custom:hover {
-            background: var(--text-light);
-            color: var(--primary-color);
-        }
-
-        /* ===== SECTIONS ===== */
-        section {
-            padding: 5rem 0;
-        }
-        .section-title {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            position: relative;
-            display: inline-block;
-            margin-bottom: 1rem;
-        }
-        .section-title h2::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 4px;
-            background: var(--secondary-color);
-            margin: 0.5rem auto 0;
-            border-radius: 2px;
-        }
-        .section-title p {
-            color: #64748b;
-        }
-
-        /* ===== CARDS ===== */
-        .service-card {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(4px);
-            border-radius: 16px;
-            padding: 2rem;
-            height: 100%;
-            border: 1px solid rgba(0,0,0,0.05);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        .service-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
-            transform: scaleX(0);
-            transition: transform 0.4s ease;
-        }
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .service-card:hover::before {
-            transform: scaleX(1);
-        }
-        .service-icon {
-            width: 60px;
-            height: 60px;
-            background: rgba(245, 158, 11, 0.1);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--secondary-color);
-            margin-bottom: 1.5rem;
-        }
-        .service-card ul {
-            list-style: none;
-            padding: 0;
-        }
-        .service-card ul li {
-            padding: 4px 0;
-            font-size: 0.95rem;
-            color: var(--text-dark);
-        }
-        .service-card ul li strong {
-            color: var(--primary-color);
-        }
-
-        /* ===== TIMELINE ===== */
-        .timeline {
-            position: relative;
-            padding: 2rem 0;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 100%;
-            background: var(--secondary-color);
-        }
-        .timeline-item {
-            margin-bottom: 3rem;
-            position: relative;
-        }
-        .timeline-content {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(4px);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            width: 45%;
-            position: relative;
-        }
-        .timeline-item:nth-child(odd) .timeline-content {
-            margin-left: auto;
-        }
-        .timeline-dot {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
-            background: var(--secondary-color);
-            border-radius: 50%;
-            border: 4px solid white;
-            box-shadow: 0 0 0 4px var(--secondary-color);
-        }
-
-        /* ===== GALLERY ===== */
-        .gallery-item {
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-            cursor: pointer;
-            height: 250px;
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        .gallery-item:hover img {
-            transform: scale(1.1);
-        }
-        .gallery-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .gallery-item:hover .gallery-overlay {
-            opacity: 1;
-        }
-
-        /* ===== SOCIAL SECTION ===== */
-        .social-section {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            padding: 40px 20px;
-            border-radius: 16px;
-            text-align: center;
-            margin: 20px 0 30px;
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.06);
-        }
-        .social-section h3 {
-            color: var(--primary-color);
-            font-size: 1.6rem;
-            margin-bottom: 25px;
-            font-weight: 800;
-        }
-        .social-section h3 span {
-            color: var(--secondary-color);
-        }
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
+            justify-content: space-between;
+            gap: 12px;
             flex-wrap: wrap;
         }
-        .social-links a {
+        .install-banner.show {
             display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 32px;
-            border-radius: 60px;
-            text-decoration: none;
+        }
+        .install-banner .install-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        .install-banner .install-text strong {
+            font-size: 16px;
+        }
+        .install-banner .install-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .install-banner .btn-install {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
             font-weight: 700;
-            font-size: 1.05rem;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 2px solid transparent;
-            background: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-            position: relative;
-            overflow: hidden;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .social-links a::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s ease;
+        .install-banner .btn-install:hover {
+            transform: scale(1.05);
         }
-        .social-links a:hover::before {
-            left: 100%;
-        }
-        .social-links a:hover {
-            transform: translateY(-5px) scale(1.03);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-        }
-        .social-links a .icon {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: transform 0.3s ease;
-        }
-        .social-links a:hover .icon {
-            transform: rotate(-10deg) scale(1.1);
-        }
-        .social-links a .icon svg {
-            width: 28px;
-            height: 28px;
-            fill: currentColor;
-        }
-        .social-links a .social-text {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            line-height: 1.2;
-        }
-        .social-links a .social-text .name {
-            font-weight: 800;
-            font-size: 1.05rem;
-        }
-        .social-links a .social-text .username {
-            font-weight: 400;
-            font-size: 0.7rem;
-            opacity: 0.6;
+        .install-banner .btn-close-install {
+            background: rgba(255,255,255,0.2);
+            color: #FFF8E1;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
-        .social-links .facebook {
-            color: #1877F2;
-            border-color: rgba(24, 119, 242, 0.2);
-            background: rgba(24, 119, 242, 0.05);
-        }
-        .social-links .facebook:hover {
-            background: #1877F2;
-            color: white;
-            border-color: #1877F2;
-        }
-        .social-links .facebook:hover .icon svg { fill: white; }
-
-        .social-links .instagram {
-            color: #E4405F;
-            border-color: rgba(228, 64, 95, 0.2);
-            background: rgba(228, 64, 95, 0.05);
-        }
-        .social-links .instagram:hover {
-            background: #E4405F;
-            color: white;
-            border-color: #E4405F;
-        }
-        .social-links .instagram:hover .icon svg { fill: white; }
-
-        .social-links .tiktok {
-            color: #010101;
-            border-color: rgba(0, 0, 0, 0.1);
-            background: rgba(0, 0, 0, 0.03);
-        }
-        .social-links .tiktok:hover {
-            background: #010101;
-            color: white;
-            border-color: #010101;
-        }
-        .social-links .tiktok:hover .icon svg { fill: white; }
-
-        /* ===== CONTACT ===== */
-        .contact-form {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(4px);
-            padding: 3rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-        .form-control {
-            border-radius: 8px;
-            padding: 0.8rem;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 1rem;
-        }
-        .form-control:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-        }
-
-        .social-link {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            margin-right: 0.5rem;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .social-link:hover {
-            background: var(--secondary-color);
-            color: var(--primary-color);
-            transform: translateY(-3px);
-        }
-
-        .whatsapp-float {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: #25d366;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
-            z-index: 1000;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .whatsapp-float:hover {
-            transform: scale(1.1);
-            color: white;
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
-        }
-
-        .color-indicator {
-            position: fixed;
-            bottom: 100px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            z-index: 998;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-        .color-indicator .dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-            vertical-align: middle;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: background 0.5s ease;
-        }
-
-        footer {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(4px);
-            color: var(--text-light);
-            padding: 4rem 0 2rem;
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         @media (max-width: 768px) {
-            .hero-content h1 { font-size: 2.2rem; }
-            .timeline::before { left: 30px; }
-            .timeline-content { width: calc(100% - 80px); margin-left: 80px !important; }
-            .timeline-dot { left: 30px; }
-            section { padding: 3rem 0; }
-            .section-title h2 { font-size: 2rem; }
-            .social-links { gap: 12px; }
-            .social-links a { padding: 12px 20px; font-size: 0.9rem; gap: 10px; }
-            .social-links a .icon { width: 26px; height: 26px; }
-            .social-links a .icon svg { width: 22px; height: 22px; }
-            .social-links a .social-text .name { font-size: 0.9rem; }
-            .social-links a .social-text .username { display: none; }
-            #installBanner {
-                bottom: 80px;
-                padding: 12px 16px;
-                border-radius: 40px;
-                gap: 12px;
-            }
-            #installBanner .banner-text strong { font-size: 0.85rem; }
-            #installBanner .btn-install { padding: 8px 16px; font-size: 0.75rem; }
-            #installBanner .banner-icon { width: 36px; height: 36px; font-size: 1rem; }
-            #installBanner .btn-close-banner { font-size: 1rem; }
-        }
-        @media (max-width: 480px) {
-            .hero-content h1 { font-size: 1.8rem; }
-            .service-card { padding: 1.5rem; }
-            .social-links a { padding: 10px 16px; font-size: 0.8rem; gap: 8px; }
-            .social-links a .icon { width: 22px; height: 22px; }
-            .social-links a .icon svg { width: 18px; height: 18px; }
-            .social-links a .social-text .name { font-size: 0.8rem; }
-            .color-indicator { display: none !important; }
-            #installBanner {
-                bottom: 70px;
-                padding: 10px 12px;
-                border-radius: 30px;
-                gap: 8px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            #installBanner .banner-text strong { font-size: 0.75rem; }
-            #installBanner .btn-install { padding: 6px 14px; font-size: 0.7rem; }
-            #installBanner .banner-icon { width: 30px; height: 30px; font-size: 0.8rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .header { flex-direction: column; text-align: center; }
+            .grid-sucursales { grid-template-columns: 1fr; }
+            .install-banner { flex-direction: column; text-align: center; padding: 16px; }
+            .install-banner .install-buttons { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== SPLASH SCREEN ===== -->
-    <div id="splash-screen">
-        <div class="splash-wrapper">
-            <img src="photo-removebg-preview.png" alt="INSSO" class="splash-logo">
-            <div class="splash-text">IN<span>SSO</span></div>
+<!-- Banner de instalación PWA -->
+<div class="install-banner" id="installBanner">
+    <div class="install-text">
+        <strong>📱 Instalar SuperSpuma</strong><br>
+        <span>Instalá la app para un acceso rápido y sin internet</span>
+    </div>
+    <div class="install-buttons">
+        <button class="btn-install" id="btnInstall">📲 Instalar</button>
+        <button class="btn-close-install" id="btnCloseInstall">✕</button>
+    </div>
+</div>
+
+<div class="app-container">
+    <div class="header">
+        <img src="https://i.imgur.com/MbDDBwH.png" alt="SuperSpuma">
+        <div><h1>SuperSpuma</h1><small>Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small></div>
+        <div class="header-right">
+            <button class="btn-icon" onclick="toggleDarkMode()">🌓</button>
+            <button class="btn-icon" onclick="regenerarQRSucursal()" title="Regenerar QR">📱</button>
         </div>
     </div>
 
-    <!-- ===== INDICADOR DE COLOR ===== -->
-    <div class="color-indicator" id="colorIndicator">
-        <span class="dot" id="colorDot"></span>
-        <span id="colorName">Claro</span>
+    <div class="nav-principal">
+        <button class="activo" onclick="mostrarVista('sucursales')">🏢 Sucursal</button>
+        <button onclick="mostrarVista('historial')">📋 Historial</button>
+        <button onclick="mostrarVista('checklist-global')">✅ Checklist</button>
     </div>
 
-    <!-- ===== BANNER DE INSTALACIÓN (APP) ===== -->
-    <div id="installBanner">
-        <div class="banner-icon"><i class="fas fa-mobile-alt"></i></div>
-        <div class="banner-text">
-            <strong>Instalar INSSO</strong>
-            <small>Descarga la app para acceso rápido</small>
-        </div>
-        <button class="btn-install" id="installBtn"><i class="fas fa-download me-2"></i>Instalar</button>
-        <button class="btn-close-banner" id="closeBannerBtn"><i class="fas fa-times"></i></button>
-    </div>
-
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar navbar-expand-lg fixed-top navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="photo-removebg-preview.png" alt="INSSO">
-                INSSO
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#nosotros">Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#capacitaciones">Capacitaciones</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#galeria">Galería</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
-                </ul>
-                <a href="https://wa.me/595992672919" class="btn btn-custom ms-lg-3 mt-2 mt-lg-0">Cotizar Ahora</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- ===== HERO ===== -->
-    <section id="inicio" class="hero">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 hero-content" data-aos="fade-up">
-                    <span class="badge bg-warning text-dark mb-3 px-3 py-2">📍 Villeta, Paraguay • Fundada 2026</span>
-                    <h1>Soluciones Integrales en <span class="highlight">Ingeniería</span> y <span class="highlight">Seguridad Industrial</span></h1>
-                    <p class="lead mb-4">Protegemos tu empresa, optimizamos tus procesos y garantizamos el cumplimiento normativo con los más altos estándares de calidad.</p>
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="#servicios" class="btn btn-custom">Nuestros Servicios</a>
-                        <a href="#contacto" class="btn-outline-custom">Contáctanos</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== REDES SOCIALES ===== -->
-    <div class="container">
-        <div class="social-section" data-aos="fade-up">
-            <h3>📱 Síguenos en <span>Redes Sociales</span></h3>
-            <div class="social-links">
-                <a href="https://www.facebook.com/profile.php?id=61591519017230" target="_blank" rel="noopener noreferrer" class="facebook">
-                    <span class="icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                    </span>
-                    <span class="social-text">
-                        <span class="name">Facebook</span>
-                        <span class="username">@INSSO</span>
-                    </span>
-                </a>
-                <a href="https://www.instagram.com/insso_consultora/" target="_blank" rel="noopener noreferrer" class="instagram">
-                    <span class="icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                    </span>
-                    <span class="social-text">
-                        <span class="name">Instagram</span>
-                        <span class="username">@insso_consultora</span>
-                    </span>
-                </a>
-                <a href="https://www.tiktok.com/@inssoconsultora" target="_blank" rel="noopener noreferrer" class="tiktok">
-                    <span class="icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.11-.59-1.62-.93-.01 2.92.01 5.84-.02 8.76-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
-                    </span>
-                    <span class="social-text">
-                        <span class="name">TikTok</span>
-                        <span class="username">@inssoconsultora</span>
-                    </span>
-                </a>
-            </div>
+    <div id="vista-sucursales" class="vista" style="display:block;">
+        <h2 style="margin-bottom:12px;">🏢 Villeta - Planta Industrial</h2>
+        <p style="color:#888;margin-bottom:14px;">📍 Ruta Ypané-Villeta</p>
+        <div class="grid-sucursales" id="grid-sucursales-container">
+            <p>Cargando extintores...</p>
         </div>
     </div>
 
-    <!-- ===== NOSOTROS ===== -->
-    <section id="nosotros">
-        <div class="container">
-            <div class="section-title" data-aos="fade-up">
-                <h2>Sobre INSSO</h2>
-                <p>Comprometidos con la excelencia y la seguridad desde Villeta para todo el Paraguay.</p>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-card text-center">
-                        <div class="service-icon mx-auto"><i class="fas fa-bullseye"></i></div>
-                        <h4>Misión</h4>
-                        <p>Proveer soluciones integrales de ingeniería y seguridad industrial que garanticen la protección del capital humano y la continuidad operativa de nuestros clientes.</p>
-                    </div>
-                </div>
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="service-card text-center">
-                        <div class="service-icon mx-auto"><i class="fas fa-eye"></i></div>
-                        <h4>Visión</h4>
-                        <p>Ser la consultora líder en Paraguay en gestión de seguridad ocupacional y mantenimiento industrial, reconocida por nuestra innovación y cumplimiento normativo.</p>
-                    </div>
-                </div>
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                    <div class="service-card text-center">
-                        <div class="service-icon mx-auto"><i class="fas fa-heart"></i></div>
-                        <h4>Valores</h4>
-                        <ul class="list-unstyled text-start mt-3">
-                            <li><i class="fas fa-check text-warning me-2"></i>Seguridad ante todo</li>
-                            <li><i class="fas fa-check text-warning me-2"></i>Integridad y transparencia</li>
-                            <li><i class="fas fa-check text-warning me-2"></i>Excelencia técnica</li>
-                            <li><i class="fas fa-check text-warning me-2"></i>Compromiso con el cliente</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+    <div id="vista-panel-sucursal" class="vista" style="display:none;">
+        <div class="sucursal-header" id="sucursal-header"></div>
+        <div class="tabs" id="tabs-sucursal">
+            <button class="activo" onclick="mostrarTabSucursal('extintores')">🧯 Extintores</button>
+            <button onclick="mostrarTabSucursal('agregar')">➕ Agregar</button>
+            <button onclick="mostrarTabSucursal('checklist')">✅ Checklist</button>
+            <button onclick="mostrarTabSucursal('historial-cl')">📋 Historial CL</button>
+            <button onclick="mostrarTabSucursal('visualizar')">👁️ Visualizar</button>
+            <button onclick="mostrarTabSucursal('escanear')">📷 Escanear</button>
+            <button onclick="mostrarTabSucursal('etiquetas')">🏷️ Etiquetas</button>
         </div>
-    </section>
+        <div id="tab-extintores" class="tab-sucursal"><div class="tabla-container"><table><thead><tr><th>Foto</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th><th>CL</th><th>QR</th><th>Acciones</th></tr></thead><tbody id="tabla-extintores-sucursal"></tbody></table></div></div>
+        <div id="tab-agregar" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-checklist" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-historial-cl" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-visualizar" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-escanear" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-etiquetas" class="tab-sucursal" style="display:none;"></div>
+    </div>
 
-    <!-- ===== SERVICIOS ===== -->
-    <section id="servicios">
-        <div class="container">
-            <div class="section-title" data-aos="fade-up">
-                <h2>Nuestros Servicios</h2>
-                <p>Soluciones técnicas especializadas para la industria moderna.</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-4" data-aos="fade-up">
-                    <div class="service-card">
-                        <div class="service-icon"><i class="fas fa-bolt"></i></div>
-                        <h4>⚡ Electricidad Industrial</h4>
-                        <ul class="list-unstyled mt-3">
-                            <li>Diagnóstico, instalación y mantenimiento de tableros eléctricos</li>
-                            <li>Sistemas de potencia y líneas industriales</li>
-                            <li>Revisión y rotulado de sistemas eléctricos</li>
-                            <li>Aseguramiento de continuidad operativa</li>
-                        </ul>
-                    </div>
-                </div>
+    <div id="vista-historial" class="vista" style="display:none;">
+        <h2>📋 Historial de Vencimientos</h2>
+        <div class="tabla-container"><table><thead><tr><th>Sucursal</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th></tr></thead><tbody id="tabla-historial"></tbody></table></div>
+        <button class="btn btn-azul" onclick="exportarCSVHistorial()">📥 CSV</button>
+    </div>
 
-                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-card">
-                        <div class="service-icon"><i class="fas fa-cogs"></i></div>
-                        <h4>⚙️ Mantenimiento Mecánico</h4>
-                        <ul class="list-unstyled mt-3">
-                            <li>Gestión integral de compresores de tornillo y pistón</li>
-                            <li>Mantenimiento predictivo y correctivo de bombas industriales</li>
-                            <li>Reducción activa de fallas críticas en planta</li>
-                            <li>Diagnóstico de vibraciones y alineación de ejes</li>
-                        </ul>
-                    </div>
+    <div id="vista-checklist-global" class="vista" style="display:none;">
+        <h2>✅ Checklist de Inspección</h2>
+        <div class="tabla-container">
+            <form onsubmit="guardarChecklistGlobal(event)">
+                <div class="form-row">
+                    <div><label>🏢 Sucursal</label><select id="clg-sucursal" required onchange="cargarExtintoresCLG()"><option value="">Seleccionar...</option></select></div>
+                    <div><label>🧯 Extintor</label><select id="clg-extintor" required><option value="">Primero sucursal</option></select></div>
+                    <div><label>👤 Inspector</label><input type="text" id="clg-inspector" required></div>
+                    <div><label>📸 Foto</label><input type="file" id="clg-foto" accept="image/*" capture="environment"></div>
                 </div>
-
-                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="service-card">
-                        <div class="service-icon"><i class="fas fa-snowflake"></i></div>
-                        <h4>❄️ Refrigeración Industrial</h4>
-                        <ul class="list-unstyled mt-3">
-                            <li>Servicio especializado en Sistemas Chiller</li>
-                            <li>Mantenimiento e instalación de Aire Acondicionado industrial</li>
-                            <li>Detección, sellado y recarga de fugas de gas refrigerante</li>
-                            <li>Optimización de consumo energético</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4" data-aos="fade-up">
-                    <div class="service-card">
-                        <div class="service-icon"><i class="fas fa-shield-alt"></i></div>
-                        <h4>🛡️ Seguridad Ocupacional (SySO)</h4>
-                        <ul class="list-unstyled mt-3">
-                            <li>Evaluación y desarrollo de matrices de riesgo IPERC</li>
-                            <li>Diseño de planes de emergencia y contingencia</li>
-                            <li>Asesorías completas en seguridad industrial</li>
-                            <li>Auditorías de seguridad en planta</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-card">
-                        <div class="service-icon"><i class="fas fa-graduation-cap"></i></div>
-                        <h4>🎓 Capacitaciones Técnicas</h4>
-                        <ul class="list-unstyled mt-3">
-                            <li>🧯 Combate de incendio</li>
-                            <li>🚑 Primeros auxilios y RCP</li>
-                            <li>⚠️ Trabajos en altos riesgos (altura, espacios confinados)</li>
-                            <li>🔒 Bloqueo y etiquetado (LOTO)</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="service-card">
-                        <div class="service-icon"><i class="fas fa-fire-extinguisher"></i></div>
-                        <h4>🔥 PCI - Protección Contra Incendios</h4>
-                        <ul class="list-unstyled mt-3">
-                            <li><strong>Detección y Alarma:</strong> Centrales inteligentes</li>
-                            <li><strong>Rociadores (NFPA 13):</strong> Diseño, instalación y mantenimiento</li>
-                            <li><strong>Hidrantes y Extintores:</strong> Instalación BIE, recarga y pruebas</li>
-                            <li>Inspecciones técnicas y certificación</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+                <div class="progress-bar"><div class="fill" id="clg-progress" style="width:0%;"></div></div>
+                <div id="clg-items"></div>
+                <div class="form-row" style="margin-top:12px;"><div class="full"><label>Observaciones</label><textarea id="clg-obs" rows="2"></textarea></div></div>
+                <div class="gps-info" id="clg-gps">📍 Obteniendo ubicación...</div>
+                <div id="clg-mapa"></div>
+                <button type="submit" class="btn btn-verde" style="width:100%;margin-top:12px;">✅ Guardar Checklist</button>
+            </form>
         </div>
-    </section>
+    </div>
+</div>
 
-    <!-- ===== CAPACITACIONES ===== -->
-    <section id="capacitaciones">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-5" data-aos="fade-right">
-                    <img src="https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?auto=format&fit=crop&q=80&w=1000" alt="Capacitación Industrial" class="img-fluid rounded-4 shadow-lg">
-                </div>
-                <div class="col-lg-7 ps-lg-5 mt-4 mt-lg-0" data-aos="fade-left">
-                    <h2 class="mb-4">Capacitaciones Técnicas Especializadas</h2>
-                    <p class="lead text-muted mb-4">Formamos a tu equipo con los más altos estándares para prevenir accidentes y cumplir con la normativa paraguaya.</p>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start">
-                                <i class="fas fa-check-circle text-warning mt-1 me-3"></i>
-                                <div>
-                                    <h6 class="mb-1">Combate de Incendio y Primeros Auxilios</h6>
-                                    <small class="text-muted">RCP, DEA y uso de extintores</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start">
-                                <i class="fas fa-check-circle text-warning mt-1 me-3"></i>
-                                <div>
-                                    <h6 class="mb-1">Trabajos de Alto Riesgo</h6>
-                                    <small class="text-muted">Altura, espacios confinados, eléctrico e izaje</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start">
-                                <i class="fas fa-check-circle text-warning mt-1 me-3"></i>
-                                <div>
-                                    <h6 class="mb-1">Gestión de las 5S y EPP</h6>
-                                    <small class="text-muted">Orden, limpieza y selección correcta de equipos</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start">
-                                <i class="fas fa-check-circle text-warning mt-1 me-3"></i>
-                                <div>
-                                    <h6 class="mb-1">LOTO y Materiales Peligrosos</h6>
-                                    <small class="text-muted">Bloqueo y etiquetado de energías peligrosas</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start">
-                                <i class="fas fa-check-circle text-warning mt-1 me-3"></i>
-                                <div>
-                                    <h6 class="mb-1">Manejo Seguro de Montacargas</h6>
-                                    <small class="text-muted">Operación preventiva y normativa</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-start">
-                                <i class="fas fa-check-circle text-warning mt-1 me-3"></i>
-                                <div>
-                                    <h6 class="mb-1">Evacuación y Brigadas</h6>
-                                    <small class="text-muted">Planes de emergencia y simulacros</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="#contacto" class="btn btn-custom mt-4">Solicitar Programa de Capacitación</a>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="modal-overlay" id="modal-detalle" style="display:none;" onclick="cerrarModalDetalle()"><div class="modal" onclick="event.stopPropagation()"><div id="modal-detalle-contenido"></div><button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalDetalle()">Cerrar</button></div></div>
+<div class="modal-overlay" id="modal-password" style="display:none;"><div class="modal" onclick="event.stopPropagation()"><h3>🔒 Contraseña</h3><input type="password" id="input-password"><div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-rojo" id="btn-confirmar-eliminar">Eliminar</button><button class="btn" onclick="cerrarModalPassword()">Cancelar</button></div></div></div>
+<div class="modal-overlay" id="modal-cl-detalle" style="display:none;" onclick="cerrarModalCLDetalle()"><div class="modal" onclick="event.stopPropagation()"><div id="modal-cl-detalle-contenido"></div><button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalCLDetalle()">Cerrar</button></div></div>
 
-    <!-- ===== TIMELINE ===== -->
-    <section>
-        <div class="container">
-            <div class="section-title" data-aos="fade-up">
-                <h2>Nuestro Proceso de Trabajo</h2>
-                <p>Metodología probada para garantizar resultados seguros y eficientes.</p>
-            </div>
-            <div class="timeline">
-                <div class="timeline-item" data-aos="fade-up">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h5>1. Diagnóstico y Evaluación</h5>
-                        <p class="text-muted mb-0">Inspección visual, medición de riesgos y análisis de la situación actual de tu planta o empresa.</p>
-                    </div>
-                </div>
-                <div class="timeline-item" data-aos="fade-up">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h5>2. Planificación y Diseño</h5>
-                        <p class="text-muted mb-0">Elaboración de matrices IPERC, diseño de sistemas PCI y planificación de mantenimiento.</p>
-                    </div>
-                </div>
-                <div class="timeline-item" data-aos="fade-up">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h5>3. Ejecución y Capacitación</h5>
-                        <p class="text-muted mb-0">Implementación de soluciones, instalación de equipos y formación del personal.</p>
-                    </div>
-                </div>
-                <div class="timeline-item" data-aos="fade-up">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h5>4. Certificación y Seguimiento</h5>
-                        <p class="text-muted mb-0">Entrega de documentación para MTESS, certificación de equipos y auditorías de seguimiento.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<script>
+    // ============================================================
+    // CONFIGURACIÓN FIREBASE
+    // ============================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyArNANQ-R-RsiMJz8w401pLkwmNhxXW9UY", authDomain: "gestion-extintores-42b55.firebaseapp.com",
+        projectId: "gestion-extintores-42b55", storageBucket: "gestion-extintores-42b55.firebasestorage.app",
+        messagingSenderId: "420148708853", appId: "1:420148708853:web:3d90792c1b3c83be904cbc",
+        databaseURL: "https://gestion-extintores-42b55-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const IMGBB_API_KEY = 'ccace8b069999997554d73161868c495';
+    const PASSWORD_MAESTRA = 'SuperSpuma2024!';
 
-    <!-- ===== GALERÍA ===== -->
-    <section id="galeria">
-        <div class="container">
-            <div class="section-title" data-aos="fade-up">
-                <h2>Galería de Proyectos</h2>
-                <p>Imágenes de nuestras intervenciones y capacitaciones.</p>
-            </div>
-            <div class="row g-3">
-                <div class="col-md-4 col-sm-6" data-aos="zoom-in">
-                    <div class="gallery-item">
-                        <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=600" alt="Electricidad Industrial">
-                        <div class="gallery-overlay"><i class="fas fa-search-plus text-white fa-2x"></i></div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="gallery-item">
-                        <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=600" alt="Tablero Eléctrico">
-                        <div class="gallery-overlay"><i class="fas fa-search-plus text-white fa-2x"></i></div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="gallery-item">
-                        <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&q=80&w=600" alt="Capacitación Seguridad">
-                        <div class="gallery-overlay"><i class="fas fa-search-plus text-white fa-2x"></i></div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6" data-aos="zoom-in">
-                    <div class="gallery-item">
-                        <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=600" alt="Refrigeración Industrial">
-                        <div class="gallery-overlay"><i class="fas fa-search-plus text-white fa-2x"></i></div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6" data-aos="zoom-in" data-aos-delay="100">
-                    <div class="gallery-item">
-                        <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&q=80&w=600" alt="Mantenimiento Mecánico">
-                        <div class="gallery-overlay"><i class="fas fa-search-plus text-white fa-2x"></i></div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-6" data-aos="zoom-in" data-aos-delay="200">
-                    <div class="gallery-item">
-                        <img src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&q=80&w=600" alt="Tecnología Industrial">
-                        <div class="gallery-overlay"><i class="fas fa-search-plus text-white fa-2x"></i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    // SOLO SUCURSAL VILLETA
+    const SUCURSALES = {
+        'villeta': { nombre: 'Villeta (Planta Industrial)', direccion: 'Ruta Ypané-Villeta' }
+    };
 
-    <!-- ===== CONTACTO ===== -->
-    <section id="contacto">
-        <div class="container">
-            <div class="section-title" data-aos="fade-up">
-                <h2>Contáctanos</h2>
-                <p>Estamos listos para proteger y optimizar tu empresa.</p>
-            </div>
-            <div class="row g-5">
-                <div class="col-lg-5" data-aos="fade-right">
-                    <div class="bg-white p-4 rounded-4 shadow-sm h-100" style="background: rgba(255,255,255,0.92) !important; backdrop-filter: blur(4px);">
-                        <h4 class="mb-4">Información de Contacto</h4>
-                        
-                        <div class="d-flex mb-4">
-                            <div class="flex-shrink-0">
-                                <div class="service-icon" style="width: 50px; height: 50px; font-size: 1.2rem;"><i class="fas fa-map-marker-alt"></i></div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="mb-1">Ubicación</h6>
-                                <p class="text-muted mb-0"><strong>Villeta, Paraguay</strong></p>
-                            </div>
-                        </div>
+    const CHECKLIST_ITEMS = ['Manómetro', 'Manguera', 'Precinto', 'Boquilla', 'Etiqueta', 'Gatillo', 'Pintura', 'Soporte'];
+    let datosExtintores = {}, datosChecklists = {}, sucursalActiva = 'villeta', html5QrCode = null, editMode = false, currentEditId = null, coordenadasActuales = null;
 
-                        <div class="d-flex mb-4">
-                            <div class="flex-shrink-0">
-                                <div class="service-icon" style="width: 50px; height: 50px; font-size: 1.2rem;"><i class="fas fa-phone"></i></div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="mb-1">Teléfonos</h6>
-                                <p class="text-muted mb-0">WhatsApp: <a href="https://wa.me/595992672919" class="text-decoration-none text-dark">0992 672919</a></p>
-                                <p class="text-muted mb-0">Adicional: <a href="tel:+595992311266" class="text-decoration-none text-dark">0992 311 266</a></p>
-                            </div>
-                        </div>
+    // ============================================================
+    // PWA - INSTALACIÓN
+    // ============================================================
+    let deferredPrompt = null;
+    const installBanner = document.getElementById('installBanner');
+    const btnInstall = document.getElementById('btnInstall');
+    const btnCloseInstall = document.getElementById('btnCloseInstall');
 
-                        <div class="d-flex mb-4">
-                            <div class="flex-shrink-0">
-                                <div class="service-icon" style="width: 50px; height: 50px; font-size: 1.2rem;"><i class="fas fa-envelope"></i></div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="mb-1">Correos Electrónicos</h6>
-                                <p class="text-muted mb-0"><a href="mailto:insso_consultora@outlook.com" class="text-decoration-none text-dark">insso_consultora@outlook.com</a></p>
-                                <p class="text-muted mb-0"><a href="mailto:pintosingenieria@gmail.com" class="text-decoration-none text-dark">pintosingenieria@gmail.com</a></p>
-                            </div>
-                        </div>
+    // Detectar si ya está instalada
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        installBanner.style.display = 'none';
+    }
 
-                        <div class="mt-4">
-                            <h6 class="mb-3">Síguenos</h6>
-                            <a href="https://www.facebook.com/profile.php?id=61591519017230" target="_blank" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                            <a href="https://www.instagram.com/insso_consultora/" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
-                            <a href="https://www.tiktok.com/@inssoconsultora" target="_blank" class="social-link"><i class="fab fa-tiktok"></i></a>
-                            <a href="https://github.com/INSSO-ing/Insso-ingenier-a-y-consultor-a-" target="_blank" class="social-link"><i class="fab fa-github"></i></a>
-                        </div>
-                    </div>
-                </div>
+    // Evento de instalación
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBanner.classList.add('show');
+    });
 
-                <div class="col-lg-7" data-aos="fade-left">
-                    <form class="contact-form" onsubmit="event.preventDefault(); alert('¡Mensaje enviado! Nos pondremos en contacto contigo pronto.');">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">Nombre Completo</label>
-                                <input type="text" class="form-control" required placeholder="Tu nombre">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Teléfono</label>
-                                <input type="tel" class="form-control" required placeholder="099X XXX XXX">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" required placeholder="tu@email.com">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Servicio de Interés</label>
-                            <select class="form-control">
-                                <option>Servicios de Ingeniería</option>
-                                <option>Seguridad y Salud Ocupacional (SySO)</option>
-                                <option>Protección Contra Incendios (PCI)</option>
-                                <option>Capacitaciones Técnicas</option>
-                                <option>Gestión Documental / ISO</option>
-                                <option>Otro</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Mensaje</label>
-                            <textarea class="form-control" rows="4" required placeholder="Describe tu necesidad..."></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-custom w-100">Enviar Mensaje</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== FOOTER ===== -->
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <h3 class="text-warning mb-3" style="font-family: 'Space Grotesk', sans-serif;">INSSO</h3>
-                    <p class="text-light opacity-75">Soluciones integrales en ingeniería y seguridad industrial. Protegiendo el futuro de tu empresa desde <strong>Villeta, Paraguay</strong>.</p>
-                    <p class="text-light opacity-75"><i class="fas fa-envelope me-2"></i>insso_consultora@outlook.com</p>
-                </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="text-white mb-3">Enlaces</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#inicio" class="text-light opacity-75 text-decoration-none">Inicio</a></li>
-                        <li class="mb-2"><a href="#nosotros" class="text-light opacity-75 text-decoration-none">Nosotros</a></li>
-                        <li class="mb-2"><a href="#servicios" class="text-light opacity-75 text-decoration-none">Servicios</a></li>
-                        <li class="mb-2"><a href="#contacto" class="text-light opacity-75 text-decoration-none">Contacto</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h5 class="text-white mb-3">Servicios</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">Electricidad Industrial</a></li>
-                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">Seguridad Ocupacional</a></li>
-                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">Protección Contra Incendios</a></li>
-                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">Capacitaciones</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h5 class="text-white mb-3">Legal</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">Política de Privacidad</a></li>
-                        <li class="mb-2"><a href="#" class="text-light opacity-75 text-decoration-none">Términos de Servicio</a></li>
-                    </ul>
-                    <div class="mt-3">
-                        <a href="https://insso-ing.github.io/Insso-ingenier-a-y-consultor-a-/" target="_blank" class="btn btn-outline-warning btn-sm">
-                            <i class="fab fa-github me-2"></i>Ver Repositorio
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <hr class="border-secondary my-4">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0 text-light opacity-75">&copy; 2026 INSSO Consultora. Todos los derechos reservados.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <p class="mb-0 text-light opacity-75">Diseñado con <i class="fas fa-heart text-danger"></i> en Paraguay</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- ===== WHATSAPP FLOAT ===== -->
-    <a href="https://wa.me/595992672919" class="whatsapp-float" target="_blank" title="Chatea con nosotros por WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
-    <!-- ===== SCRIPTS ===== -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        // ===== SPLASH SCREEN =====
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.getElementById('splash-screen').classList.add('hidden');
-            }, 2000);
-        });
-
-        // ===== AOS =====
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 100
-        });
-
-        // ===== NAVBAR SCROLL =====
-        window.addEventListener('scroll', function() {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
+    btnInstall.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const result = await deferredPrompt.userChoice;
+            if (result.outcome === 'accepted') {
+                installBanner.classList.remove('show');
             }
-        });
-
-        // ===== CAMBIO DE COLOR DE FONDO CADA 5 SEGUNDOS =====
-        const colorPalettes = [
-            ['#f8fafc', '#e2e8f0', 'Claro'],
-            ['#f0f4ff', '#dbeafe', 'Azul Claro'],
-            ['#f5f0ff', '#ede6fa', 'Lavanda'],
-            ['#fff5f0', '#faede6', 'Melocotón'],
-            ['#f0fff4', '#d1fae5', 'Menta'],
-            ['#fff0f5', '#fce7f3', 'Rosa Claro'],
-            ['#f5f5f5', '#e5e5e5', 'Gris Claro'],
-            ['#fffbeb', '#fef3c7', 'Crema']
-        ];
-
-        let colorIndex = 0;
-        let isTransitioning = false;
-        const body = document.body;
-        const colorDot = document.getElementById('colorDot');
-        const colorName = document.getElementById('colorName');
-
-        function changeColor() {
-            if (isTransitioning) return;
-            isTransitioning = true;
-
-            const nextIndex = (colorIndex + 1) % colorPalettes.length;
-            const nextColors = colorPalettes[nextIndex];
-
-            body.style.transition = 'background 1.2s ease';
-            body.style.background = `linear-gradient(135deg, ${nextColors[0]}, ${nextColors[1]})`;
-
-            colorDot.style.background = `linear-gradient(135deg, ${nextColors[0]}, ${nextColors[1]})`;
-            colorName.textContent = nextColors[2];
-
-            colorIndex = nextIndex;
-
-            setTimeout(() => {
-                isTransitioning = false;
-            }, 1200);
-        }
-
-        function initColors() {
-            const initial = colorPalettes[0];
-            body.style.background = `linear-gradient(135deg, ${initial[0]}, ${initial[1]})`;
-            colorDot.style.background = `linear-gradient(135deg, ${initial[0]}, ${initial[1]})`;
-            colorName.textContent = initial[2];
-            document.getElementById('colorIndicator').style.display = 'block';
-        }
-
-        let colorInterval = setInterval(changeColor, 5000);
-
-        document.addEventListener('click', function() {
-            clearInterval(colorInterval);
-            colorInterval = setInterval(changeColor, 5000);
-        });
-
-        initColors();
-
-        // ===== SMOOTH SCROLL =====
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    const navbarCollapse = document.querySelector('.navbar-collapse');
-                    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
-                        navbarCollapse.classList.remove('show');
-                    }
-                }
-            });
-        });
-
-        // ===== INSTALAR APP (PWA) =====
-        let deferredPrompt = null;
-        const installBanner = document.getElementById('installBanner');
-        const installBtn = document.getElementById('installBtn');
-        const closeBannerBtn = document.getElementById('closeBannerBtn');
-
-        // Detectar si ya está instalada o en modo standalone
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                            window.navigator.standalone === true;
-
-        // Mostrar banner solo si no está instalada
-        if (!isStandalone) {
-            // Escuchar evento beforeinstallprompt
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                installBanner.classList.add('show');
-            });
-
-            // También mostrar si detectamos que es un dispositivo móvil y no se disparó el evento
-            // (útil para algunos navegadores)
-            const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            if (isMobile && !deferredPrompt) {
-                // Mostrar banner con mensaje alternativo
-                setTimeout(() => {
-                    if (!installBanner.classList.contains('show')) {
-                        installBanner.classList.add('show');
-                        // Cambiar texto para indicar cómo instalar manualmente
-                        document.querySelector('#installBanner .banner-text small').textContent = 
-                            'Abre en Chrome y toca "Añadir a pantalla de inicio"';
-                        installBtn.textContent = 'Instalar';
-                        installBtn.onclick = function() {
-                            alert('📱 Para instalar la app:\n1. Abre en Chrome\n2. Toca el menú (⋮)\n3. Selecciona "Añadir a pantalla de inicio"');
-                        };
-                    }
-                }, 3000);
-            }
-        }
-
-        // Botón de instalación
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                try {
-                    const result = await deferredPrompt.prompt();
-                    if (result.outcome === 'accepted') {
-                        installBanner.classList.remove('show');
-                        console.log('App instalada');
-                    }
-                } catch (err) {
-                    console.warn('Error al instalar:', err);
-                }
-                deferredPrompt = null;
-            } else {
-                // Fallback: mostrar instrucciones
-                alert('📱 Para instalar la app:\n1. Abre en Chrome\n2. Toca el menú (⋮)\n3. Selecciona "Añadir a pantalla de inicio"');
-            }
-        });
-
-        // Cerrar banner
-        closeBannerBtn.addEventListener('click', () => {
-            installBanner.classList.remove('show');
-        });
-
-        // Ocultar banner si se instaló o si ya está en standalone
-        if (isStandalone) {
-            installBanner.classList.remove('show');
-        }
-
-        // ===== DETECTAR CUANDO SE INSTALA Y OCULTAR BANNER =====
-        window.addEventListener('appinstalled', () => {
-            installBanner.classList.remove('show');
             deferredPrompt = null;
+        }
+    });
+
+    btnCloseInstall.addEventListener('click', () => {
+        installBanner.classList.remove('show');
+    });
+
+    // Detectar instalación exitosa
+    window.addEventListener('appinstalled', () => {
+        installBanner.classList.remove('show');
+    });
+
+    // ============================================================
+    // FUNCIONES QR AUTOMÁTICAS
+    // ============================================================
+
+    function generarQRParaExtintor(extintorId, containerId, mostrarLoading = true) {
+        const container = document.getElementById(containerId);
+        if (!container) {
+            console.warn(`Contenedor ${containerId} no encontrado`);
+            return;
+        }
+
+        container.innerHTML = '';
+        container.className = 'qr-container-sucursal';
+
+        const extintor = datosExtintores[extintorId];
+        if (!extintor) {
+            container.innerHTML = '<span style="color:#C62828;font-size:10px;">❌ Error</span>';
+            return;
+        }
+
+        if (mostrarLoading) {
+            container.innerHTML = '<span style="color:#888;font-size:10px;">⏳</span>';
+            container.style.opacity = '0.6';
+        }
+
+        try {
+            const datosQR = JSON.stringify({
+                id: extintorId,
+                ubicacion: extintor.ubicacion || 'Sin ubicación',
+                tipo: extintor.tipo || 'No especificado',
+                tamano: extintor.tamano || 'N/A',
+                fechaProxima: extintor.fechaProxima || 'N/A',
+                sucursal: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
+                empresa: 'SuperSpuma',
+                timestamp: new Date().toISOString()
+            });
+
+            new QRCode(container, {
+                text: datosQR,
+                width: 80,
+                height: 80,
+                colorDark: "#3E2723",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            container.style.opacity = '1';
+
+            const infoDiv = document.createElement('div');
+            infoDiv.style.cssText = 'font-size:6px;color:#888;text-align:center;margin-top:2px;';
+            infoDiv.textContent = extintorId.slice(0,8);
+            container.appendChild(infoDiv);
+
+            console.log(`✅ QR generado: ${extintorId}`);
+            return true;
+
+        } catch (error) {
+            console.error('Error QR:', error);
+            container.innerHTML = '<span style="color:#C62828;font-size:10px;">⚠️</span>';
+            container.style.opacity = '1';
+            return false;
+        }
+    }
+
+    function generarQRParaSucursal(sucursalId) {
+        if (!sucursalId) return;
+
+        const extintores = Object.entries(datosExtintores)
+            .filter(([id, d]) => d.sucursal === sucursalId);
+
+        extintores.forEach(([id], index) => {
+            const containerId = `qr-${id}`;
+            setTimeout(() => {
+                generarQRParaExtintor(id, containerId, true);
+            }, 100 + (index * 50));
         });
 
-        // También detectar si la página se carga en modo standalone
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            installBanner.classList.remove('show');
+        console.log(`📱 Generando ${extintores.length} QR para ${sucursalId}`);
+        return extintores.length;
+    }
+
+    function regenerarQRSucursal() {
+        if (!sucursalActiva) {
+            alert('❌ No hay sucursal seleccionada');
+            return;
         }
 
-        // ===== MEJORA: Detectar si viene de la instalación (iOS) =====
-        if (window.navigator.standalone) {
-            installBanner.classList.remove('show');
+        const nombre = SUCURSALES[sucursalActiva]?.nombre || sucursalActiva;
+        if (!confirm(`¿Regenerar todos los QR de ${nombre}?`)) return;
+
+        const total = generarQRParaSucursal(sucursalActiva);
+        alert(`✅ ${total} QR regenerados correctamente`);
+    }
+
+    function generarQRDetalle(extintorId) {
+        const container = document.getElementById('qr-detalle');
+        if (!container) return;
+
+        container.innerHTML = '';
+        container.style.textAlign = 'center';
+
+        const extintor = datosExtintores[extintorId];
+        if (!extintor) {
+            container.innerHTML = '<p style="color:#C62828;">Extintor no encontrado</p>';
+            return;
         }
-    </script>
+
+        try {
+            const datosQR = JSON.stringify({
+                id: extintorId,
+                ubicacion: extintor.ubicacion || 'Sin ubicación',
+                tipo: extintor.tipo || 'No especificado',
+                tamano: extintor.tamano || 'N/A',
+                fechaProxima: extintor.fechaProxima || 'N/A',
+                sucursal: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
+                empresa: 'SuperSpuma'
+            });
+
+            new QRCode(container, {
+                text: datosQR,
+                width: 150,
+                height: 150,
+                colorDark: "#3E2723",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+        } catch (error) {
+            console.error('Error QR detalle:', error);
+            container.innerHTML = '<p style="color:#C62828;">Error al generar QR</p>';
+        }
+    }
+
+    // ============================================================
+    // FUNCIONES EXISTENTES MODIFICADAS
+    // ============================================================
+
+    function cargarExtintoresSucursal() {
+        if (!sucursalActiva) return;
+        let items = Object.entries(datosExtintores).filter(([id,d]) => d.sucursal === sucursalActiva);
+        items.sort((a,b) => { const o={critico:0,alta:1,media:2,baja:3,normal:4}; return o[calcularPrioridad(a[1].fechaProxima).prioridad] - o[calcularPrioridad(b[1].fechaProxima).prioridad]; });
+        
+        document.getElementById('tabla-extintores-sucursal').innerHTML = items.map(([id,d]) => {
+            const p = calcularPrioridad(d.fechaProxima);
+            const cl = Object.values(datosChecklists).filter(c => c.extintorId === id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
+            const qrId = `qr-${id}`;
+            return `<tr onclick="verDetalleExtintor('${id}')">
+                <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '-'}</td>
+                <td>${d.ubicacion||'N/A'}</td>
+                <td>${d.tipo||'N/A'}</td>
+                <td>${d.fechaProxima||'N/A'}</td>
+                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                <td>${cl ? '<span class="badge completado">✅</span>' : '<span class="badge pendiente">❌</span>'}</td>
+                <td>
+                    <div id="${qrId}" class="qr-container-sucursal" style="min-width:80px;min-height:80px;">
+                        <span style="color:#888;font-size:9px;">⏳</span>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-small" onclick="event.stopPropagation();editarExtintor('${id}')">✏️</button>
+                    <button class="btn btn-small btn-rojo" onclick="event.stopPropagation();pedirPasswordEliminar('${id}')">🗑️</button>
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="8">No hay extintores</td></tr>';
+
+        // Generar QR automáticamente después de renderizar
+        setTimeout(() => {
+            items.forEach(([id], index) => {
+                setTimeout(() => {
+                    const container = document.getElementById(`qr-${id}`);
+                    if (container && container.innerHTML.includes('⏳')) {
+                        generarQRParaExtintor(id, `qr-${id}`, true);
+                    }
+                }, 200 + (index * 50));
+            });
+        }, 300);
+    }
+
+    const verDetalleExtintorOriginal = window.verDetalleExtintor || function(id) {
+        const d = datosExtintores[id]; if (!d) return;
+        const url = window.location.origin + window.location.pathname + '?id=' + id;
+        document.getElementById('modal-detalle-contenido').innerHTML = `<h3>Ficha del Extintor</h3>${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto">` : ''}<p><b>ID:</b> ${id}</p><p><b>Ubicación:</b> ${d.ubicacion||'N/A'}</p><p><b>Tipo:</b> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p><p><b>Vence:</b> ${d.fechaProxima||'N/A'}</p><div style="text-align:center;" id="qr-detalle"></div>`;
+        document.getElementById('modal-detalle').style.display='flex';
+        
+        setTimeout(() => {
+            generarQRDetalle(id);
+        }, 200);
+    };
+
+    window.verDetalleExtintor = verDetalleExtintorOriginal;
+
+    // ============================================================
+    // FUNCIONES EXISTENTES
+    // ============================================================
+
+    db.ref('.info/connected').on('value', snap => { document.getElementById('conexion-dot').style.background = snap.val() ? '#4CAF50' : '#f44336'; });
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
+    if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+
+    function cargarDatos() {
+        db.ref('extintores').once('value', snap => { datosExtintores = snap.val() || {}; cargarGridSucursales(); });
+        db.ref('inspecciones').once('value', snap => { datosChecklists = snap.val() || {}; });
+        db.ref('extintores').on('value', snap => { datosExtintores = snap.val() || {}; actualizarTodo(); });
+        db.ref('inspecciones').on('value', snap => { datosChecklists = snap.val() || {}; actualizarTodo(); });
+    }
+
+    function actualizarTodo() {
+        cargarGridSucursales();
+        if (sucursalActiva) { cargarHeaderSucursal(); cargarExtintoresSucursal(); cargarSelectExtintoresCL(); cargarHistorialCL(); cargarVisualizar(); }
+    }
+
+    function mostrarVista(v) {
+        document.getElementById('vista-sucursales').style.display = 'none';
+        document.getElementById('vista-panel-sucursal').style.display = 'none';
+        document.getElementById('vista-historial').style.display = 'none';
+        document.getElementById('vista-checklist-global').style.display = 'none';
+        
+        if (v === 'sucursales') {
+            document.getElementById('vista-sucursales').style.display = 'block';
+            // Mantener la sucursal activa
+            cargarHeaderSucursal();
+            cargarExtintoresSucursal();
+        } else if (v === 'panel-sucursal') {
+            document.getElementById('vista-panel-sucursal').style.display = 'block';
+        } else {
+            document.getElementById('vista-'+v).style.display = 'block';
+        }
+        
+        document.querySelectorAll('.nav-principal button').forEach(b => b.classList.remove('activo'));
+        const vistas = ['sucursales','historial','checklist-global'];
+        const idx = vistas.indexOf(v);
+        if (idx >= 0) document.querySelectorAll('.nav-principal button')[idx]?.classList.add('activo');
+        
+        if (v === 'historial') cargarHistorial();
+        if (v === 'checklist-global') { cargarSelectCLG(); generarItemsCLG(); obtenerGPS('clg-gps','clg-mapa'); }
+        detenerEscaner();
+    }
+
+    function cargarGridSucursales() {
+        const container = document.getElementById('grid-sucursales-container');
+        // Mostrar directamente la sucursal Villeta
+        const id = 'villeta';
+        const s = SUCURSALES[id];
+        const ext = Object.values(datosExtintores).filter(e => e.sucursal === id);
+        const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
+        
+        container.innerHTML = `<div class="card-sucursal" onclick="abrirSucursal('${id}')" style="border-left-color: #2E7D32; background: var(--card-bg);">
+            <h3>🏭 ${s.nombre}</h3>
+            <div style="font-size:10px;color:#888;">📍 ${s.direccion}</div>
+            <div style="margin-top:8px;font-size:12px;">📦 ${ext.length} extintores ${cri>0?`· 🔴 ${cri} críticos`:''}</div>
+            <div style="margin-top:8px;font-size:10px;color:#2E7D32;">✅ Sucursal principal</div>
+        </div>`;
+        
+        // Abrir automáticamente la sucursal
+        abrirSucursal('villeta');
+    }
+
+    function abrirSucursal(id) {
+        sucursalActiva = id;
+        document.getElementById('vista-sucursales').style.display = 'none';
+        document.getElementById('vista-panel-sucursal').style.display = 'block';
+        document.querySelectorAll('.nav-principal button').forEach(b => b.classList.remove('activo'));
+        document.querySelectorAll('.nav-principal button')[0]?.classList.add('activo');
+        cargarHeaderSucursal(); cargarExtintoresSucursal(); cargarSelectExtintoresCL(); cargarHistorialCL(); cargarVisualizar();
+        mostrarTabSucursal('extintores');
+    }
+
+    function cerrarSucursal() { 
+        // No cerrar, solo volver a la vista principal
+        document.getElementById('vista-panel-sucursal').style.display = 'none';
+        document.getElementById('vista-sucursales').style.display = 'block';
+    }
+
+    function cargarHeaderSucursal() {
+        if (!sucursalActiva) return;
+        const s = SUCURSALES[sucursalActiva];
+        const ext = Object.values(datosExtintores).filter(e => e.sucursal === sucursalActiva);
+        const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
+        document.getElementById('sucursal-header').innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><div><h2>🏭 ${s.nombre}</h2><div style="font-size:12px;color:#888;">📍 ${s.direccion}</div></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-azul" onclick="regenerarQRSucursal()">📱 QR</button><button class="btn" onclick="cerrarSucursal()">⬅ Volver</button></div></div><div class="stats"><div class="stat"><div class="num">${ext.length}</div><div class="lbl">Total</div></div><div class="stat"><div class="num" style="color:#FF0000;">${cri}</div><div class="lbl">Críticos</div></div></div>`;
+    }
+
+    function mostrarTabSucursal(tab) {
+        document.querySelectorAll('.tab-sucursal').forEach(t => t.style.display = 'none');
+        document.getElementById('tab-'+tab).style.display = 'block';
+        document.querySelectorAll('#tabs-sucursal button').forEach(b => b.classList.remove('activo'));
+        const tabs = ['extintores','agregar','checklist','historial-cl','visualizar','escanear','etiquetas'];
+        const idx = tabs.indexOf(tab);
+        if (idx >= 0) document.querySelectorAll('#tabs-sucursal button')[idx]?.classList.add('activo');
+        if (tab === 'checklist') { cargarSelectExtintoresCL(); generarItemsCL(); obtenerGPS('cl-gps','cl-mapa'); }
+        if (tab === 'historial-cl') cargarHistorialCL();
+        if (tab === 'visualizar') cargarVisualizar();
+        if (tab !== 'escanear') detenerEscaner();
+    }
+
+    function calcularPrioridad(fecha) {
+        if (!fecha) return { prioridad: 'normal', label: 'Normal' };
+        const diff = Math.ceil((new Date(fecha) - new Date()) / (1000*60*60*24));
+        if (diff < 0) return { prioridad: 'critico', label: 'CRÍTICO' };
+        if (diff <= 7) return { prioridad: 'alta', label: 'ALTA' };
+        if (diff <= 15) return { prioridad: 'media', label: 'MEDIA' };
+        return { prioridad: 'normal', label: 'Normal' };
+    }
+
+    function cerrarModalDetalle() { document.getElementById('modal-detalle').style.display='none'; }
+    function mostrarQR(id) { verDetalleExtintor(id); }
+
+    function pedirPasswordEliminar(id) {
+        document.getElementById('input-password').value=''; document.getElementById('modal-password').style.display='flex';
+        document.getElementById('btn-confirmar-eliminar').onclick=()=>{
+            if(document.getElementById('input-password').value===PASSWORD_MAESTRA){db.ref('extintores/'+id).remove();cerrarModalPassword();}
+            else{alert('❌ Contraseña incorrecta');}
+        };
+    }
+    function cerrarModalPassword() { document.getElementById('modal-password').style.display='none'; }
+
+    function cargarHistorial() {
+        document.getElementById('tabla-historial').innerHTML=Object.entries(datosExtintores).sort((a,b)=>new Date(a[1].fechaProxima||'9999')-new Date(b[1].fechaProxima||'9999')).map(([id,d])=>{
+            const p=calcularPrioridad(d.fechaProxima);
+            return`<tr><td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal}</td><td>${d.ubicacion||''}</td><td>${d.tipo||''}</td><td>${d.fechaProxima||''}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td></tr>`;
+        }).join('');
+    }
+
+    function exportarCSVHistorial() {
+        let csv='Sucursal,Ubicación,Tipo,Vence,Prioridad\n';
+        Object.entries(datosExtintores).forEach(([id,d])=>{csv+=`"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${calcularPrioridad(d.fechaProxima).label}"\n`;});
+        const blob=new Blob(['\uFEFF'+csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='historial.csv'; a.click();
+    }
+
+    function cargarSelectCLG() { 
+        document.getElementById('clg-sucursal').innerHTML = Object.entries(SUCURSALES).map(([id,s])=>`<option value="${id}" ${id==='villeta'?'selected':''}>${s.nombre}</option>`).join('');
+        cargarExtintoresCLG();
+    }
+    function cargarExtintoresCLG() { const s=document.getElementById('clg-sucursal').value; const sel=document.getElementById('clg-extintor'); sel.innerHTML='<option value="">Seleccionar...</option>'; if(!s)return; Object.entries(datosExtintores).forEach(([id,d])=>{if(d.sucursal===s)sel.innerHTML+=`<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;}); }
+    function generarItemsCLG() { document.getElementById('clg-items').innerHTML=CHECKLIST_ITEMS.map(i=>`<div class="checklist-item"><span class="nombre">${i}</span><div class="opciones"><button type="button" onclick="marcarCLG(this,'ok')">✅ OK</button><button type="button" onclick="marcarCLG(this,'nook')">❌ NO OK</button></div></div>`).join(''); actualizarProgresoCLG(); }
+    function marcarCLG(btn,tipo){const p=btn.parentElement;p.querySelectorAll('button').forEach(b=>b.classList.remove('sel-ok','sel-nook'));btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');actualizarProgresoCLG();}
+    function actualizarProgresoCLG(){const t=CHECKLIST_ITEMS.length;const m=document.querySelectorAll('#clg-items .sel-ok, #clg-items .sel-nook').length;document.getElementById('clg-progress').style.width=((m/t)*100)+'%';}
+
+    function obtenerGPS(gpsId, mapaId) {
+        if (navigator.geolocation) { navigator.geolocation.getCurrentPosition(pos => { coordenadasActuales = { lat: pos.coords.latitude, lng: pos.coords.longitude }; document.getElementById(gpsId).innerHTML = `📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; if(mapaId) mostrarMiniMapa(pos.coords.latitude, pos.coords.longitude, mapaId); }, () => { document.getElementById(gpsId).textContent = '📍 GPS no disponible'; }); }
+    }
+
+    function mostrarMiniMapa(lat, lng, containerId) { const c = document.getElementById(containerId); if(!c)return; const url = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.002},${lat-0.001},${lng+0.002},${lat+0.001}&layer=mapnik&marker=${lat},${lng}`; c.innerHTML = `<iframe class="mapa-mini" src="${url}"></iframe><a class="mapa-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">📍 Google Maps</a>`; }
+
+    async function subirFotoImgBB(file,nombre) { const fd=new FormData(); fd.append('image',file,nombre||file.name); const r=await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,{method:'POST',body:fd}); const d=await r.json(); if(d.success) return d.data.url; throw new Error('Error'); }
+
+    async function guardarChecklistGlobal(e) {
+        e.preventDefault(); const extintorId=document.getElementById('clg-extintor').value; const inspector=document.getElementById('clg-inspector').value.trim(); const suc=document.getElementById('clg-sucursal').value;
+        if(!extintorId||!inspector||!suc)return alert('Completá todos los campos');
+        const items={}; document.querySelectorAll('#clg-items .checklist-item').forEach((item,i)=>{const sel=item.querySelector('.sel-ok,.sel-nook');items[CHECKLIST_ITEMS[i]]=sel?(sel.classList.contains('sel-ok')?'OK':'NO OK'):'No verificado';});
+        let fotoURL=''; const fi=document.getElementById('clg-foto'); if(fi.files[0]){try{fotoURL=await subirFotoImgBB(fi.files[0],`clg_${extintorId}`);}catch(err){}}
+        await db.ref('inspecciones').push({extintorId,sucursal:suc,tipo:'checklist',inspector,items,observaciones:document.getElementById('clg-obs').value.trim(),fotoURL,gps:document.getElementById('clg-gps').textContent,coordenadas:coordenadasActuales,fecha:new Date().toISOString()});
+        alert('✅ Checklist guardado!'); document.getElementById('clg-obs').value=''; document.getElementById('clg-foto').value=''; document.querySelectorAll('#clg-items button').forEach(b=>b.classList.remove('sel-ok','sel-nook')); actualizarProgresoCLG();
+    }
+
+    function cargarSelectExtintoresCL() { if(!sucursalActiva)return; const sel=document.getElementById('cl-extintor'); if(!sel)return; sel.innerHTML='<option value="">Seleccionar...</option>'; Object.entries(datosExtintores).forEach(([id,d])=>{if(d.sucursal===sucursalActiva)sel.innerHTML+=`<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;}); }
+    function generarItemsCL() { const el=document.getElementById('cl-items'); if(!el)return; el.innerHTML = CHECKLIST_ITEMS.map(i => `<div class="checklist-item"><span class="nombre">${i}</span><div class="opciones"><button type="button" onclick="marcarCL(this,'ok')">✅ OK</button><button type="button" onclick="marcarCL(this,'nook')">❌ NO OK</button></div></div>`).join(''); actualizarProgresoCL(); }
+    function marcarCL(btn,tipo){const p=btn.parentElement;p.querySelectorAll('button').forEach(b=>b.classList.remove('sel-ok','sel-nook'));btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');actualizarProgresoCL();}
+    function actualizarProgresoCL(){const t=CHECKLIST_ITEMS.length;const m=document.querySelectorAll('#cl-items .sel-ok, #cl-items .sel-nook').length;const el=document.getElementById('cl-progress');if(el)el.style.width=((m/t)*100)+'%';}
+
+    function cargarHistorialCL() {
+        if(!sucursalActiva)return;
+        const items=Object.values(datosChecklists).filter(c=>c.tipo==='checklist'&&c.sucursal===sucursalActiva).sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)).slice(0,20);
+        document.getElementById('tabla-historial-cl').innerHTML=items.map(c=>{const ext=datosExtintores[c.extintorId];const ok=Object.values(c.items||{}).every(v=>v==='OK');return`<tr><td>${new Date(c.fecha).toLocaleDateString()}</td><td>${ext?.ubicacion||c.extintorId}</td><td>${c.inspector}</td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'OK':'Fallas'}</span></td><td><button class="btn btn-small btn-azul" onclick="verDetalleCL('${c.fecha}','${c.extintorId}')">🔍 Ver</button></td></tr>`;}).join('')||'<tr><td colspan="5">Sin checklists</td></tr>';
+    }
+
+    function verDetalleCL(fecha,extintorId) {
+        const cl=Object.values(datosChecklists).filter(c=>c.tipo==='checklist'&&c.fecha===fecha&&c.extintorId===extintorId)[0]; if(!cl)return;
+        const ext=datosExtintores[cl.extintorId]; const ok=Object.values(cl.items||{}).every(v=>v==='OK');
+        let h=`<h3>📋 Detalle de Checklist</h3><table style="width:100%;"><tr><td><b>Fecha:</b></td><td>${new Date(cl.fecha).toLocaleString()}</td></tr><tr><td><b>Extintor:</b></td><td>${ext?.ubicacion||cl.extintorId} (${ext?.tipo||''} ${ext?.tamano||''})</td></tr><tr><td><b>Inspector:</b></td><td>${cl.inspector}</td></tr><tr><td><b>Resultado:</b></td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ Todo OK':'❌ Con fallas'}</span></td></tr></table><h4>🔍 Items</h4><table>`;
+        Object.entries(cl.items||{}).forEach(([k,v])=>{h+=`<tr><td>${k}</td><td><span class="badge ${v==='OK'?'completado':'pendiente'}">${v}</span></td></tr>`;});
+        h+=`</table>`;
+        if(cl.fotoURL)h+=`<img src="${cl.fotoURL}" class="modal-detalle-foto">`;
+        if(cl.observaciones)h+=`<p><b>Obs:</b> ${cl.observaciones}</p>`;
+        if(cl.gps)h+=`<p>${cl.gps}</p>`;
+        if(cl.coordenadas){h+=`<div id="mapa-cl-detalle"></div>`;}
+        h+=`<button class="btn btn-wsp" style="width:100%;margin-top:12px;" onclick="compartirChecklistWhatsApp('${cl.fecha}','${cl.extintorId}')">📤 Compartir por WhatsApp</button>`;
+        document.getElementById('modal-cl-detalle-contenido').innerHTML=h;
+        document.getElementById('modal-cl-detalle').style.display='flex';
+        if(cl.coordenadas){setTimeout(()=>{mostrarMiniMapa(cl.coordenadas.lat,cl.coordenadas.lng,'mapa-cl-detalle');},200);}
+    }
+
+    function compartirChecklistWhatsApp(fecha, extintorId) {
+        const cl = Object.values(datosChecklists).filter(c => c.tipo === 'checklist' && c.fecha === fecha && c.extintorId === extintorId)[0];
+        if (!cl) return;
+        const ext = datosExtintores[cl.extintorId]; const suc = SUCURSALES[cl.sucursal]?.nombre || cl.sucursal;
+        const ok = Object.values(cl.items||{}).every(v => v === 'OK');
+        let texto = `🧯 *CHECKLIST SUPERSPUMA*%0A%0A`;
+        texto += `📅 *Fecha:* ${new Date(cl.fecha).toLocaleString()}%0A`;
+        texto += `🏢 *Sucursal:* ${suc}%0A`;
+        texto += `📍 *Extintor:* ${ext?.ubicacion||'N/A'} (${ext?.tipo||''} ${ext?.tamano||''})%0A`;
+        texto += `👤 *Inspector:* ${cl.inspector}%0A`;
+        texto += `📊 *Resultado:* ${ok ? '✅ TODO OK' : '❌ CON FALLAS'}%0A%0A🔍 *Items:*%0A`;
+        Object.entries(cl.items||{}).forEach(([k, v]) => { texto += `${v === 'OK' ? '✅' : '❌'} ${k}: ${v}%0A`; });
+        if (cl.observaciones) texto += `%0A📝 *Obs:* ${cl.observaciones}%0A`;
+        if (cl.gps) texto += `%0A📍 ${cl.gps.replace('📍 ','')}%0A`;
+        window.open(`https://wa.me/?text=${texto}`, '_blank');
+    }
+
+    function cerrarModalCLDetalle() { document.getElementById('modal-cl-detalle').style.display='none'; }
+
+    function cargarVisualizar() {
+        if (!sucursalActiva) return;
+        const ext = Object.values(datosExtintores).filter(e => e.sucursal === sucursalActiva);
+        const total = ext.length;
+        const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
+        const alt = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'alta').length;
+        const nor = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'normal').length;
+        const conCL = ext.filter(e => Object.values(datosChecklists).some(c => c.extintorId === e.id)).length;
+        const sinCL = total - conCL;
+        const urgentes = ext.filter(e => { const p = calcularPrioridad(e.fechaProxima); return p.prioridad === 'critico' || p.prioridad === 'alta'; }).sort((a,b) => new Date(a.fechaProxima) - new Date(b.fechaProxima));
+        const ultimosCL = Object.values(datosChecklists).filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva).sort((a,b) => new Date(b.fecha) - new Date(a.fecha)).slice(0,5);
+
+        let html = `<div class="stats" style="margin-bottom:16px;">
+            <div class="stat"><div class="num">${total}</div><div class="lbl">Total</div></div>
+            <div class="stat"><div class="num" style="color:#FF0000;">${cri}</div><div class="lbl">Críticos</div></div>
+            <div class="stat"><div class="num" style="color:#FF6600;">${alt}</div><div class="lbl">Alta</div></div>
+            <div class="stat"><div class="num" style="color:#00CC66;">${nor}</div><div class="lbl">Normal</div></div>
+            <div class="stat"><div class="num" style="color:#2E7D32;">${conCL}</div><div class="lbl">Con CL</div></div>
+            <div class="stat"><div class="num" style="color:#C62828;">${sinCL}</div><div class="lbl">Sin CL</div></div>
+        </div>`;
+
+        html += `<h4>📊 Gráfico de Estado</h4><div style="margin-bottom:16px;">`;
+        if (nor > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(nor/total)*100}%;background:#00CC66;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${nor} Normales</span></div>`;
+        if (alt > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(alt/total)*100}%;background:#FF6600;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${alt} Altos</span></div>`;
+        if (cri > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(cri/total)*100}%;background:#FF0000;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${cri} Críticos</span></div>`;
+        html += `</div>`;
+
+        html += `<h4>⚠️ Urgentes</h4><div>${urgentes.length > 0 ? urgentes.map(e => `<div style="padding:4px 0;border-bottom:1px solid #eee;font-size:11px;">🔴 ${e.ubicacion||'N/A'} - ${e.tipo||''} - Vence: ${e.fechaProxima||'N/A'}</div>`).join('') : '<p style="color:green;">✅ No hay urgentes</p>'}</div>`;
+        html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.ubicacion||c.extintorId} - ${c.inspector} - <span style="color:${o?'green':'red'};">${o?'OK':'Fallas'}</span></div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
+
+        document.getElementById('visualizar-contenido').innerHTML = html;
+    }
+
+    function iniciarEscaner() { detenerEscaner(); html5QrCode=new Html5Qrcode("qr-reader"); html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:250}},text=>{detenerEscaner(); let id=text; if(text.includes('?id='))id=new URLSearchParams(text.split('?')[1]).get('id')||text; verDetalleExtintor(id);},()=>{}).catch(()=>{alert('Error cámara');detenerEscaner();}); }
+    function detenerEscaner() { if(html5QrCode){html5QrCode.stop().then(()=>html5QrCode.clear()).catch(()=>{});html5QrCode=null;} }
+
+    function generarEtiquetas() { if(!sucursalActiva)return; const items=Object.entries(datosExtintores).filter(([id,d])=>d.sucursal===sucursalActiva); document.getElementById('etiquetas-container').innerHTML=items.map(([id,d])=>{const p=calcularPrioridad(d.fechaProxima);const color={critico:'#FF0000',alta:'#FF6600',media:'#FFCC00',baja:'#33CCFF',normal:'#00CC66'}[p.prioridad];return`<div class="etiqueta-print"><div class="color-bar" style="background:${color};height:8px;border-radius:4px;"></div><strong>${d.ubicacion}</strong><br>${d.tipo} · ${d.tamano}<br>Vence: ${d.fechaProxima||'N/A'}<br><span style="color:${color};">${p.label}</span><div id="qr-et-${id}"></div></div>`;}).join(''); items.forEach(([id,d])=>{new QRCode(document.getElementById('qr-et-'+id),{text:window.location.origin+window.location.pathname+'?id='+id,width:80,height:80});}); }
+
+    // ============================================================
+    // INICIALIZAR
+    // ============================================================
+    cargarDatos();
+
+    console.log('🔥 SuperSpuma - Villeta (Planta Industrial)');
+    console.log('📱 Los QR se generan automáticamente');
+    console.log('📲 Instalación PWA disponible');
+</script>
 </body>
 </html>
