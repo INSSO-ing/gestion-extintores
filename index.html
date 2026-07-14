@@ -3,174 +3,684 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SuperSpuma · Gestión de Extintores</title>
+    <title>INSSO · Gestión de Extintores</title>
     
-    <!-- PWA Meta Tags -->
+    <!-- ============================================================
+         META TAGS PARA PWA
+         ============================================================ -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SuperSpuma">
+    <meta name="apple-mobile-web-app-title" content="INSSO Extintores">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/MbDDBwH.png">
-    <meta name="theme-color" content="#3E2723">
-    <meta name="description" content="Sistema de gestión de extintores SuperSpuma">
+    <link rel="apple-touch-icon" href="logo-insso.png">
+    <meta name="theme-color" content="#C62828">
+    <meta name="description" content="Sistema de gestión de extintores INSSO">
 
+    <!-- ============================================================
+         SCRIPTS EXTERNOS
+         ============================================================ -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
     <style>
+        /* ============================================================
+           VARIABLES Y ESTILOS PRINCIPALES
+           ============================================================ */
         :root {
-            --bg: #f5f0e8; --card-bg: rgba(255,255,255,0.92); --text: #3E2723;
-            --text-sec: #5D4037; --header-bg: linear-gradient(135deg, #3E2723, #4E342E);
-            --sombra: 0 2px 10px rgba(0,0,0,0.08); --marron: #3E2723; --marron-medio: #4E342E; --crema: #FFF8E1;
+            --primary: #C62828;
+            --primary-dark: #B71C1C;
+            --primary-light: #EF5350;
+            --secondary: #D32F2F;
+            --accent: #FF6F00;
+            --success: #2E7D32;
+            --warning: #F57F17;
+            --danger: #C62828;
+            --bg: #f5f0e8;
+            --card-bg: rgba(255,255,255,0.92);
+            --text: #1a1a1a;
+            --text-sec: #5D4037;
+            --header-bg: linear-gradient(135deg, #C62828, #B71C1C);
+            --sombra: 0 4px 20px rgba(198, 40, 40, 0.15);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
         .dark-mode {
-            --bg: #1a1a1a; --card-bg: rgba(30,30,30,0.95); --text: #FFF8E1;
-            --text-sec: #ccc; --header-bg: linear-gradient(135deg, #111, #222); --sombra: 0 2px 10px rgba(255,255,255,0.05);
+            --bg: #121212;
+            --card-bg: rgba(30,30,30,0.95);
+            --text: #FFF8E1;
+            --text-sec: #ccc;
+            --header-bg: linear-gradient(135deg, #8B0000, #5C0000);
+            --sombra: 0 4px 20px rgba(255,0,0,0.1);
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: 0.3s; }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            min-height: 100vh; 
+            transition: var(--transition);
+            padding-bottom: 80px;
+        }
+
         .app-container { max-width: 1200px; margin: 0 auto; padding: 16px; }
 
-        .header { background: var(--header-bg); color: #FFF8E1; padding: 14px 20px; border-radius: 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
-        .header img { width: 45px; height: 45px; border-radius: 10px; background: #FFF8E1; padding: 3px; }
-        .header h1 { font-size: 20px; font-weight: 800; }
-        .header .header-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
-        .btn-icon { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #FFF8E1; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
-        .conexion-dot { width: 10px; height: 10px; border-radius: 50%; background: #4CAF50; display: inline-block; }
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header { 
+            background: var(--header-bg); 
+            color: #FFF8E1; 
+            padding: 16px 24px; 
+            border-radius: var(--border-radius); 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap;
+            box-shadow: 0 4px 20px rgba(198, 40, 40, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
 
-        .nav-principal { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-        .nav-principal button { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 600; font-size: 12px; cursor: pointer; background: #eee; color: #333; }
-        .nav-principal button.activo { background: var(--marron); color: #FFF8E1; }
+        .header::before {
+            content: '🧯';
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            font-size: 120px;
+            opacity: 0.05;
+            transform: rotate(-15deg);
+        }
 
-        .grid-sucursales { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 20px; }
-        .card-sucursal { background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px; padding: 16px; cursor: pointer; transition: 0.2s; border-left: 5px solid #4E342E; box-shadow: var(--sombra); }
-        .card-sucursal:hover { transform: translateY(-3px); }
+        .header img { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 12px; 
+            background: #FFF8E1; 
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
 
-        .sucursal-header { background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 16px; padding: 20px; margin-bottom: 16px; border-left: 6px solid var(--marron); box-shadow: var(--sombra); }
-        .stats { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
-        .stat { text-align: center; background: var(--crema); padding: 10px 14px; border-radius: 12px; min-width: 70px; }
-        .stat .num { font-size: 24px; font-weight: 800; }
-        .stat .lbl { font-size: 9px; color: #5D4037; text-transform: uppercase; }
+        .header h1 { 
+            font-size: 22px; 
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
 
-        .tabs { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
-        .tabs button { padding: 8px 14px; border: none; border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; background: #eee; color: #333; }
-        .tabs button.activo { background: var(--marron); color: #FFF8E1; }
+        .header h1 span {
+            font-weight: 300;
+            opacity: 0.8;
+        }
 
-        .tabla-container { background: var(--card-bg); backdrop-filter: blur(8px); border-radius: 14px; padding: 16px; box-shadow: var(--sombra); margin-bottom: 16px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        th { background: var(--marron); color: #FFF8E1; padding: 8px 10px; text-align: left; font-size: 10px; text-transform: uppercase; }
-        td { padding: 7px 10px; border-bottom: 1px solid #eee; color: var(--text); }
-        tr:hover { background: rgba(0,0,0,0.04); }
-        .badge { padding: 3px 7px; border-radius: 8px; font-size: 9px; font-weight: 700; }
-        .badge.critico { background: #FF0000; color: white; } .badge.alta { background: #FF6600; color: white; }
-        .badge.media { background: #FFCC00; color: #333; } .badge.baja { background: #33CCFF; color: #333; } .badge.normal { background: #00CC66; color: white; }
-        .badge.completado { background: #2E7D32; color: white; } .badge.pendiente { background: #C62828; color: white; }
+        .header small { 
+            opacity: 0.85; 
+            font-weight: 400;
+            display: block;
+            font-size: 12px;
+        }
 
-        .btn { padding: 7px 12px; border: none; border-radius: 8px; font-weight: 600; font-size: 11px; cursor: pointer; background: #4E342E; color: #FFF8E1; }
-        .btn-rojo { background: #C62828; } .btn-verde { background: #2E7D32; } .btn-azul { background: #1565C0; }
+        .header .header-right { 
+            margin-left: auto; 
+            display: flex; 
+            gap: 8px; 
+            align-items: center; 
+        }
+
+        .btn-icon { 
+            background: rgba(255,255,255,0.15); 
+            border: 1px solid rgba(255,255,255,0.2); 
+            color: #FFF8E1; 
+            padding: 10px 14px; 
+            border-radius: 12px; 
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-icon:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .conexion-dot { 
+            width: 10px; 
+            height: 10px; 
+            border-radius: 50%; 
+            background: #4CAF50; 
+            display: inline-block;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ============================================================
+           NAVEGACIÓN PRINCIPAL
+           ============================================================ */
+        .nav-principal { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap;
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--sombra);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-principal button { 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            font-size: 13px; 
+            cursor: pointer; 
+            background: transparent;
+            color: var(--text-sec);
+            transition: var(--transition);
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .nav-principal button:hover {
+            background: rgba(198, 40, 40, 0.08);
+        }
+
+        .nav-principal button.activo { 
+            background: var(--primary); 
+            color: #FFF8E1;
+            box-shadow: 0 4px 15px rgba(198, 40, 40, 0.3);
+        }
+
+        /* ============================================================
+           CARDS
+           ============================================================ */
+        .grid-sucursales { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 16px; 
+            margin-bottom: 20px; 
+        }
+
+        .card-sucursal { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px); 
+            border-radius: var(--border-radius); 
+            padding: 20px; 
+            cursor: pointer; 
+            transition: var(--transition); 
+            border-left: 5px solid var(--primary);
+            box-shadow: var(--sombra);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-sucursal::after {
+            content: '→';
+            position: absolute;
+            right: 16px;
+            bottom: 16px;
+            font-size: 24px;
+            opacity: 0.2;
+            transition: var(--transition);
+        }
+
+        .card-sucursal:hover { 
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(198, 40, 40, 0.2);
+        }
+
+        .card-sucursal:hover::after {
+            opacity: 0.6;
+            transform: translateX(4px);
+        }
+
+        .card-sucursal h3 { 
+            font-size: 18px; 
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .card-sucursal .direccion {
+            font-size: 12px;
+            color: var(--text-sec);
+            opacity: 0.7;
+        }
+
+        .card-sucursal .stats-mini {
+            margin-top: 12px;
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+        }
+
+        .card-sucursal .stats-mini span {
+            background: rgba(198, 40, 40, 0.08);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .card-sucursal .stats-mini .critico {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        /* ============================================================
+           SUCURSAL HEADER
+           ============================================================ */
+        .sucursal-header { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px); 
+            border-radius: var(--border-radius); 
+            padding: 24px; 
+            margin-bottom: 20px; 
+            border-left: 6px solid var(--primary);
+            box-shadow: var(--sombra);
+        }
+
+        .sucursal-header .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .sucursal-header h2 {
+            font-size: 22px;
+            color: var(--primary);
+        }
+
+        .sucursal-header .direccion {
+            font-size: 13px;
+            color: var(--text-sec);
+            opacity: 0.7;
+        }
+
+        .stats { 
+            display: flex; 
+            gap: 12px; 
+            margin-top: 16px; 
+            flex-wrap: wrap; 
+        }
+
+        .stat { 
+            text-align: center; 
+            background: rgba(198, 40, 40, 0.06); 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            min-width: 80px;
+            flex: 1;
+            min-width: 70px;
+            transition: var(--transition);
+        }
+
+        .stat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .stat .num { 
+            font-size: 28px; 
+            font-weight: 800; 
+            color: var(--primary);
+        }
+
+        .stat .lbl { 
+            font-size: 10px; 
+            color: var(--text-sec); 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* ============================================================
+           TABS
+           ============================================================ */
+        .tabs { 
+            display: flex; 
+            gap: 4px; 
+            margin-bottom: 16px; 
+            flex-wrap: wrap;
+            background: var(--card-bg);
+            padding: 6px;
+            border-radius: 12px;
+            box-shadow: var(--sombra);
+        }
+
+        .tabs button { 
+            padding: 10px 16px; 
+            border: none; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-size: 12px; 
+            cursor: pointer; 
+            background: transparent;
+            color: var(--text-sec);
+            transition: var(--transition);
+            flex: 1;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .tabs button:hover {
+            background: rgba(198, 40, 40, 0.06);
+        }
+
+        .tabs button.activo { 
+            background: var(--primary); 
+            color: #FFF8E1;
+            box-shadow: 0 4px 15px rgba(198, 40, 40, 0.25);
+        }
+
+        /* ============================================================
+           TABLA
+           ============================================================ */
+        .tabla-container { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px); 
+            border-radius: var(--border-radius); 
+            padding: 16px; 
+            box-shadow: var(--sombra); 
+            margin-bottom: 16px; 
+            overflow-x: auto;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 12px; 
+        }
+
+        th { 
+            background: var(--primary); 
+            color: #FFF8E1; 
+            padding: 12px 14px; 
+            text-align: left; 
+            font-size: 10px; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        td { 
+            padding: 10px 14px; 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(198, 40, 40, 0.03);
+        }
+
+        /* ============================================================
+           BADGES
+           ============================================================ */
+        .badge { 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-size: 9px; 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: inline-block;
+        }
+
+        .badge.critico { background: #FF0000; color: white; box-shadow: 0 2px 10px rgba(255,0,0,0.3); }
+        .badge.alta { background: #FF6600; color: white; box-shadow: 0 2px 10px rgba(255,102,0,0.3); }
+        .badge.media { background: #FFCC00; color: #333; }
+        .badge.baja { background: #33CCFF; color: #333; }
+        .badge.normal { background: #00CC66; color: white; }
+        .badge.completado { background: #2E7D32; color: white; }
+        .badge.pendiente { background: #C62828; color: white; }
+
+        /* ============================================================
+           BOTONES
+           ============================================================ */
+        .btn { 
+            padding: 8px 16px; 
+            border: none; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-size: 11px; 
+            cursor: pointer; 
+            background: var(--primary); 
+            color: #FFF8E1;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(198, 40, 40, 0.3);
+        }
+
+        .btn-rojo { background: #C62828; }
+        .btn-verde { background: #2E7D32; }
+        .btn-azul { background: #1565C0; }
         .btn-wsp { background: #25D366; color: white; }
-        .btn-small { padding: 3px 7px; font-size: 9px; }
+        .btn-small { padding: 4px 10px; font-size: 10px; }
 
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .form-row .full { grid-column: 1 / -1; }
-        input, select, textarea { width: 100%; padding: 9px; border: 2px solid #ddd; border-radius: 8px; font-size: 12px; background: var(--card-bg); color: var(--text); }
-        label { display: block; font-weight: 600; font-size: 10px; color: var(--text-sec); margin-bottom: 2px; }
+        /* ============================================================
+           FORMULARIOS
+           ============================================================ */
+        .form-row { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-bottom: 12px; 
+        }
 
-        .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #eee; }
-        .checklist-item .nombre { flex: 1; font-weight: 600; font-size: 12px; }
-        .checklist-item .opciones button { padding: 5px 14px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 2px solid #ccc; cursor: pointer; background: white; color: #333; }
-        .checklist-item .opciones button.sel-ok { background: #2E7D32; color: white; border-color: #2E7D32; }
-        .checklist-item .opciones button.sel-nook { background: #C62828; color: white; border-color: #C62828; }
+        .form-row .full { 
+            grid-column: 1 / -1; 
+        }
 
-        .progress-bar { width: 100%; height: 8px; background: #eee; border-radius: 4px; margin: 10px 0; overflow: hidden; }
-        .progress-bar .fill { height: 100%; background: #2E7D32; transition: width 0.3s; border-radius: 4px; }
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px 14px; 
+            border: 2px solid rgba(198, 40, 40, 0.15); 
+            border-radius: 12px; 
+            font-size: 13px; 
+            background: var(--card-bg); 
+            color: var(--text);
+            transition: var(--transition);
+        }
 
-        .foto-preview { width: 100px; height: 100px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
-        .foto-preview img { width: 100%; height: 100%; object-fit: contain; background: #f0f0f0; }
-        .foto-mini { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; cursor: pointer; background: #f0f0f0; }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(198, 40, 40, 0.1);
+        }
 
-        .mapa-mini { width: 100%; height: 150px; border-radius: 10px; margin-top: 8px; border: 1px solid #ddd; }
-        .mapa-link { font-size: 10px; color: #1565C0; cursor: pointer; text-decoration: underline; display: block; margin-top: 4px; }
+        label { 
+            display: block; 
+            font-weight: 600; 
+            font-size: 11px; 
+            color: var(--text-sec); 
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-        .etiqueta-print { background: white; border: 2px solid #333; border-radius: 10px; padding: 12px; width: 280px; display: inline-block; margin: 8px; font-family: Arial; }
+        /* ============================================================
+           CHECKLIST
+           ============================================================ */
+        .checklist-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 10px 0; 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
 
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:1000; padding: 16px; }
-        .modal { background: white; border-radius: 16px; padding: 24px; max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; }
-        .modal-detalle-foto { width: 100%; max-height: 250px; object-fit: contain; background: #f5f5f5; border-radius: 10px; margin-bottom: 10px; }
-        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #3E2723; color: #FFF8E1; padding: 10px 20px; border-radius: 20px; font-weight: 600; z-index: 2000; font-size: 13px; }
+        .checklist-item .nombre { 
+            flex: 1; 
+            font-weight: 600; 
+            font-size: 13px; 
+        }
 
+        .checklist-item .opciones button { 
+            padding: 6px 16px; 
+            border-radius: 8px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            border: 2px solid #ccc; 
+            cursor: pointer; 
+            background: white; 
+            color: #333;
+            transition: var(--transition);
+        }
+
+        .checklist-item .opciones button:hover {
+            transform: scale(1.05);
+        }
+
+        .checklist-item .opciones button.sel-ok { 
+            background: #2E7D32; 
+            color: white; 
+            border-color: #2E7D32;
+            box-shadow: 0 2px 10px rgba(46, 125, 50, 0.3);
+        }
+
+        .checklist-item .opciones button.sel-nook { 
+            background: #C62828; 
+            color: white; 
+            border-color: #C62828;
+            box-shadow: 0 2px 10px rgba(198, 40, 40, 0.3);
+        }
+
+        .progress-bar { 
+            width: 100%; 
+            height: 8px; 
+            background: rgba(0,0,0,0.05); 
+            border-radius: 4px; 
+            margin: 12px 0; 
+            overflow: hidden; 
+        }
+
+        .progress-bar .fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #C62828, #EF5350);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+        }
+
+        /* ============================================================
+           QR
+           ============================================================ */
         .qr-container-sucursal { 
             background: white; 
             padding: 8px; 
-            border-radius: 8px; 
+            border-radius: 12px; 
             display: inline-block; 
             margin: 4px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             min-width: 100px;
             min-height: 100px;
             text-align: center;
+            transition: var(--transition);
         }
+
+        .qr-container-sucursal:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transform: scale(1.02);
+        }
+
         .qr-container-sucursal canvas {
             display: block !important;
             margin: 0 auto !important;
         }
 
-        /* Banner de instalación PWA */
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-overlay { 
+            position: fixed; 
+            top:0; 
+            left:0; 
+            width:100%; 
+            height:100%; 
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(10px);
+            display:flex; 
+            align-items:center; 
+            justify-content:center; 
+            z-index:1000; 
+            padding: 16px; 
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal { 
+            background: var(--card-bg); 
+            border-radius: var(--border-radius); 
+            padding: 28px; 
+            max-width: 650px; 
+            width: 100%; 
+            max-height: 90vh; 
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal h3 {
+            color: var(--primary);
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .modal-detalle-foto { 
+            width: 100%; 
+            max-height: 250px; 
+            object-fit: contain; 
+            background: rgba(0,0,0,0.03); 
+            border-radius: 12px; 
+            margin-bottom: 12px; 
+        }
+
+        /* ============================================================
+           BANNER DE INSTALACIÓN PWA
+           ============================================================ */
         .install-banner {
             display: none;
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(135deg, #3E2723, #4E342E);
+            background: linear-gradient(135deg, #C62828, #B71C1C);
             color: #FFF8E1;
-            padding: 16px 20px;
+            padding: 16px 24px;
             z-index: 999;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 -4px 30px rgba(198, 40, 40, 0.4);
             animation: slideUp 0.5s ease-out;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
             flex-wrap: wrap;
+            border-top: 2px solid rgba(255,255,255,0.2);
         }
+
         .install-banner.show {
             display: flex;
-        }
-        .install-banner .install-text {
-            flex: 1;
-            font-size: 14px;
-        }
-        .install-banner .install-text strong {
-            font-size: 16px;
-        }
-        .install-banner .install-buttons {
-            display: flex;
-            gap: 8px;
-        }
-        .install-banner .btn-install {
-            background: #25D366;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .install-banner .btn-install:hover {
-            transform: scale(1.05);
-        }
-        .install-banner .btn-close-install {
-            background: rgba(255,255,255,0.2);
-            color: #FFF8E1;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 10px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
         }
 
         @keyframes slideUp {
@@ -178,22 +688,130 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
+        .install-banner .install-text {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .install-banner .install-text strong {
+            font-size: 16px;
+            display: block;
+        }
+
+        .install-banner .install-text .sub {
+            font-size: 12px;
+            opacity: 0.85;
+        }
+
+        .install-banner .install-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .install-banner .btn-install {
+            background: white;
+            color: #C62828;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .install-banner .btn-install:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .install-banner .btn-close-install {
+            background: rgba(255,255,255,0.15);
+            color: #FFF8E1;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .install-banner .btn-close-install:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
             .header { flex-direction: column; text-align: center; }
+            .header::before { font-size: 80px; right: -10px; top: -10px; }
             .grid-sucursales { grid-template-columns: 1fr; }
+            .tabs button { font-size: 10px; padding: 8px 12px; min-width: 50px; }
+            .nav-principal button { font-size: 11px; padding: 10px 12px; min-width: 60px; }
+            .stats { gap: 8px; }
+            .stat { padding: 10px 14px; min-width: 60px; }
+            .stat .num { font-size: 22px; }
             .install-banner { flex-direction: column; text-align: center; padding: 16px; }
             .install-banner .install-buttons { width: 100%; justify-content: center; }
+            .sucursal-header .header-top { flex-direction: column; align-items: flex-start; }
         }
+
+        @media (max-width: 480px) {
+            .app-container { padding: 10px; }
+            .header { padding: 12px 16px; }
+            .header h1 { font-size: 18px; }
+            .card-sucursal { padding: 16px; }
+            .tabla-container { padding: 10px; }
+            table { font-size: 10px; }
+            th, td { padding: 6px 8px; }
+            .btn { font-size: 10px; padding: 6px 12px; }
+        }
+
+        /* ============================================================
+           OTROS
+           ============================================================ */
+        .foto-mini { 
+            width: 40px; 
+            height: 40px; 
+            object-fit: contain; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            background: rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: var(--transition);
+        }
+
+        .foto-mini:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .mapa-mini { width: 100%; height: 150px; border-radius: 12px; margin-top: 8px; border: 1px solid rgba(0,0,0,0.05); }
+        .mapa-link { font-size: 11px; color: var(--primary); cursor: pointer; text-decoration: underline; display: block; margin-top: 4px; font-weight: 600; }
+        .etiqueta-print { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 16px; width: 280px; display: inline-block; margin: 8px; font-family: Arial; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-sec); opacity: 0.6; }
+        .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
     </style>
 </head>
 <body>
 
-<!-- Banner de instalación PWA -->
+<!-- ============================================================
+     BANNER DE INSTALACIÓN PWA
+     ============================================================ -->
 <div class="install-banner" id="installBanner">
     <div class="install-text">
-        <strong>📱 Instalar SuperSpuma</strong><br>
-        <span>Instalá la app para un acceso rápido y sin internet</span>
+        <strong>🧯 Instalar INSSO Extintores</strong>
+        <span class="sub">Instalá la app para acceso rápido y sin conexión</span>
     </div>
     <div class="install-buttons">
         <button class="btn-install" id="btnInstall">📲 Instalar</button>
@@ -201,42 +819,72 @@
     </div>
 </div>
 
+<!-- ============================================================
+     CONTENEDOR PRINCIPAL
+     ============================================================ -->
 <div class="app-container">
+    
+    <!-- HEADER -->
     <div class="header">
-        <img src="https://i.imgur.com/MbDDBwH.png" alt="SuperSpuma">
-        <div><h1>SuperSpuma</h1><small>Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small></div>
+        <img src="logo-insso.png" alt="INSSO">
+        <div>
+            <h1>INSSO <span>Extintores</span></h1>
+            <small>Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small>
+        </div>
         <div class="header-right">
-            <button class="btn-icon" onclick="toggleDarkMode()">🌓</button>
+            <button class="btn-icon" onclick="toggleDarkMode()" title="Modo oscuro">🌓</button>
             <button class="btn-icon" onclick="regenerarQRSucursal()" title="Regenerar QR">📱</button>
         </div>
     </div>
 
+    <!-- NAVEGACIÓN -->
     <div class="nav-principal">
         <button class="activo" onclick="mostrarVista('sucursales')">🏢 Sucursal</button>
         <button onclick="mostrarVista('historial')">📋 Historial</button>
         <button onclick="mostrarVista('checklist-global')">✅ Checklist</button>
     </div>
 
+    <!-- VISTA SUCURSALES -->
     <div id="vista-sucursales" class="vista" style="display:block;">
-        <h2 style="margin-bottom:12px;">🏢 Villeta - Planta Industrial</h2>
-        <p style="color:#888;margin-bottom:14px;">📍 Ruta Ypané-Villeta</p>
         <div class="grid-sucursales" id="grid-sucursales-container">
             <p>Cargando extintores...</p>
         </div>
     </div>
 
+    <!-- VISTA PANEL SUCURSAL -->
     <div id="vista-panel-sucursal" class="vista" style="display:none;">
         <div class="sucursal-header" id="sucursal-header"></div>
+        
         <div class="tabs" id="tabs-sucursal">
             <button class="activo" onclick="mostrarTabSucursal('extintores')">🧯 Extintores</button>
             <button onclick="mostrarTabSucursal('agregar')">➕ Agregar</button>
             <button onclick="mostrarTabSucursal('checklist')">✅ Checklist</button>
-            <button onclick="mostrarTabSucursal('historial-cl')">📋 Historial CL</button>
+            <button onclick="mostrarTabSucursal('historial-cl')">📋 Historial</button>
             <button onclick="mostrarTabSucursal('visualizar')">👁️ Visualizar</button>
             <button onclick="mostrarTabSucursal('escanear')">📷 Escanear</button>
             <button onclick="mostrarTabSucursal('etiquetas')">🏷️ Etiquetas</button>
         </div>
-        <div id="tab-extintores" class="tab-sucursal"><div class="tabla-container"><table><thead><tr><th>Foto</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th><th>CL</th><th>QR</th><th>Acciones</th></tr></thead><tbody id="tabla-extintores-sucursal"></tbody></table></div></div>
+
+        <div id="tab-extintores" class="tab-sucursal">
+            <div class="tabla-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Ubicación</th>
+                            <th>Tipo</th>
+                            <th>Vence</th>
+                            <th>Prioridad</th>
+                            <th>CL</th>
+                            <th>QR</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-extintores-sucursal"></tbody>
+                </table>
+            </div>
+        </div>
+
         <div id="tab-agregar" class="tab-sucursal" style="display:none;"></div>
         <div id="tab-checklist" class="tab-sucursal" style="display:none;"></div>
         <div id="tab-historial-cl" class="tab-sucursal" style="display:none;"></div>
@@ -245,53 +893,127 @@
         <div id="tab-etiquetas" class="tab-sucursal" style="display:none;"></div>
     </div>
 
+    <!-- VISTA HISTORIAL -->
     <div id="vista-historial" class="vista" style="display:none;">
-        <h2>📋 Historial de Vencimientos</h2>
-        <div class="tabla-container"><table><thead><tr><th>Sucursal</th><th>Ubicación</th><th>Tipo</th><th>Vence</th><th>Prioridad</th></tr></thead><tbody id="tabla-historial"></tbody></table></div>
-        <button class="btn btn-azul" onclick="exportarCSVHistorial()">📥 CSV</button>
+        <h2 style="color: var(--primary); margin-bottom: 16px;">📋 Historial de Vencimientos</h2>
+        <div class="tabla-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sucursal</th>
+                        <th>Ubicación</th>
+                        <th>Tipo</th>
+                        <th>Vence</th>
+                        <th>Prioridad</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-historial"></tbody>
+            </table>
+        </div>
+        <button class="btn btn-azul" onclick="exportarCSVHistorial()">📥 Exportar CSV</button>
     </div>
 
+    <!-- VISTA CHECKLIST GLOBAL -->
     <div id="vista-checklist-global" class="vista" style="display:none;">
-        <h2>✅ Checklist de Inspección</h2>
+        <h2 style="color: var(--primary); margin-bottom: 16px;">✅ Checklist de Inspección</h2>
         <div class="tabla-container">
             <form onsubmit="guardarChecklistGlobal(event)">
                 <div class="form-row">
-                    <div><label>🏢 Sucursal</label><select id="clg-sucursal" required onchange="cargarExtintoresCLG()"><option value="">Seleccionar...</option></select></div>
-                    <div><label>🧯 Extintor</label><select id="clg-extintor" required><option value="">Primero sucursal</option></select></div>
-                    <div><label>👤 Inspector</label><input type="text" id="clg-inspector" required></div>
-                    <div><label>📸 Foto</label><input type="file" id="clg-foto" accept="image/*" capture="environment"></div>
+                    <div>
+                        <label>🏢 Sucursal</label>
+                        <select id="clg-sucursal" required onchange="cargarExtintoresCLG()">
+                            <option value="">Seleccionar...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>🧯 Extintor</label>
+                        <select id="clg-extintor" required>
+                            <option value="">Primero sucursal</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>👤 Inspector</label>
+                        <input type="text" id="clg-inspector" required placeholder="Nombre del inspector">
+                    </div>
+                    <div>
+                        <label>📸 Foto</label>
+                        <input type="file" id="clg-foto" accept="image/*" capture="environment">
+                    </div>
                 </div>
-                <div class="progress-bar"><div class="fill" id="clg-progress" style="width:0%;"></div></div>
+
+                <div class="progress-bar">
+                    <div class="fill" id="clg-progress" style="width:0%;"></div>
+                </div>
+
                 <div id="clg-items"></div>
-                <div class="form-row" style="margin-top:12px;"><div class="full"><label>Observaciones</label><textarea id="clg-obs" rows="2"></textarea></div></div>
+
+                <div class="form-row" style="margin-top:12px;">
+                    <div class="full">
+                        <label>Observaciones</label>
+                        <textarea id="clg-obs" rows="2" placeholder="Notas adicionales..."></textarea>
+                    </div>
+                </div>
+
                 <div class="gps-info" id="clg-gps">📍 Obteniendo ubicación...</div>
                 <div id="clg-mapa"></div>
-                <button type="submit" class="btn btn-verde" style="width:100%;margin-top:12px;">✅ Guardar Checklist</button>
+
+                <button type="submit" class="btn btn-verde" style="width:100%; margin-top:16px; padding: 14px; font-size: 14px;">
+                    ✅ Guardar Checklist
+                </button>
             </form>
         </div>
     </div>
 </div>
 
-<div class="modal-overlay" id="modal-detalle" style="display:none;" onclick="cerrarModalDetalle()"><div class="modal" onclick="event.stopPropagation()"><div id="modal-detalle-contenido"></div><button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalDetalle()">Cerrar</button></div></div>
-<div class="modal-overlay" id="modal-password" style="display:none;"><div class="modal" onclick="event.stopPropagation()"><h3>🔒 Contraseña</h3><input type="password" id="input-password"><div style="display:flex;gap:8px;margin-top:8px;"><button class="btn btn-rojo" id="btn-confirmar-eliminar">Eliminar</button><button class="btn" onclick="cerrarModalPassword()">Cancelar</button></div></div></div>
-<div class="modal-overlay" id="modal-cl-detalle" style="display:none;" onclick="cerrarModalCLDetalle()"><div class="modal" onclick="event.stopPropagation()"><div id="modal-cl-detalle-contenido"></div><button class="btn btn-rojo" style="width:100%;margin-top:12px;" onclick="cerrarModalCLDetalle()">Cerrar</button></div></div>
+<!-- ============================================================
+     MODALES
+     ============================================================ -->
+<div class="modal-overlay" id="modal-detalle" style="display:none;" onclick="cerrarModalDetalle()">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div id="modal-detalle-contenido"></div>
+        <button class="btn btn-rojo" style="width:100%; margin-top:16px;" onclick="cerrarModalDetalle()">Cerrar</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-password" style="display:none;">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h3>🔒 Contraseña</h3>
+        <input type="password" id="input-password" placeholder="Ingresá la contraseña maestra">
+        <div style="display:flex; gap:8px; margin-top:12px;">
+            <button class="btn btn-rojo" id="btn-confirmar-eliminar">Eliminar</button>
+            <button class="btn" onclick="cerrarModalPassword()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-cl-detalle" style="display:none;" onclick="cerrarModalCLDetalle()">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div id="modal-cl-detalle-contenido"></div>
+        <button class="btn btn-rojo" style="width:100%; margin-top:16px;" onclick="cerrarModalCLDetalle()">Cerrar</button>
+    </div>
+</div>
 
 <script>
     // ============================================================
     // CONFIGURACIÓN FIREBASE
     // ============================================================
     const firebaseConfig = {
-        apiKey: "AIzaSyArNANQ-R-RsiMJz8w401pLkwmNhxXW9UY", authDomain: "gestion-extintores-42b55.firebaseapp.com",
-        projectId: "gestion-extintores-42b55", storageBucket: "gestion-extintores-42b55.firebasestorage.app",
-        messagingSenderId: "420148708853", appId: "1:420148708853:web:3d90792c1b3c83be904cbc",
+        apiKey: "AIzaSyArNANQ-R-RsiMJz8w401pLkwmNhxXW9UY", 
+        authDomain: "gestion-extintores-42b55.firebaseapp.com",
+        projectId: "gestion-extintores-42b55", 
+        storageBucket: "gestion-extintores-42b55.firebasestorage.app",
+        messagingSenderId: "420148708853", 
+        appId: "1:420148708853:web:3d90792c1b3c83be904cbc",
         databaseURL: "https://gestion-extintores-42b55-default-rtdb.firebaseio.com"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const IMGBB_API_KEY = 'ccace8b069999997554d73161868c495';
-    const PASSWORD_MAESTRA = 'SuperSpuma2024!';
+    const PASSWORD_MAESTRA = 'INSSO2024!';
 
-    // SOLO SUCURSAL VILLETA
+    // ============================================================
+    // DATOS - SOLO SUCURSAL VILLETA
+    // ============================================================
     const SUCURSALES = {
         'villeta': { nombre: 'Villeta (Planta Industrial)', direccion: 'Ruta Ypané-Villeta' }
     };
@@ -307,55 +1029,74 @@
     const btnInstall = document.getElementById('btnInstall');
     const btnCloseInstall = document.getElementById('btnCloseInstall');
 
-    // Detectar si ya está instalada
     if (window.matchMedia('(display-mode: standalone)').matches) {
-        installBanner.style.display = 'none';
+        if (installBanner) installBanner.style.display = 'none';
     }
 
-    // Evento de instalación
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        installBanner.classList.add('show');
-    });
-
-    btnInstall.addEventListener('click', async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const result = await deferredPrompt.userChoice;
-            if (result.outcome === 'accepted') {
-                installBanner.classList.remove('show');
-            }
-            deferredPrompt = null;
+        if (installBanner) {
+            installBanner.classList.add('show');
+            console.log('📱 Banner de instalación mostrado');
         }
     });
 
-    btnCloseInstall.addEventListener('click', () => {
-        installBanner.classList.remove('show');
+    if (btnInstall) {
+        btnInstall.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const result = await deferredPrompt.userChoice;
+                if (result.outcome === 'accepted') {
+                    console.log('✅ Usuario aceptó la instalación');
+                    if (installBanner) installBanner.classList.remove('show');
+                } else {
+                    console.log('❌ Usuario rechazó la instalación');
+                }
+                deferredPrompt = null;
+            } else {
+                alert('📱 Para instalar: Abrí el menú del navegador (3 puntos) y seleccioná "Instalar aplicación"');
+            }
+        });
+    }
+
+    if (btnCloseInstall) {
+        btnCloseInstall.addEventListener('click', () => {
+            if (installBanner) installBanner.classList.remove('show');
+        });
+    }
+
+    window.addEventListener('appinstalled', () => {
+        console.log('🎉 App instalada correctamente');
+        if (installBanner) installBanner.classList.remove('show');
     });
 
-    // Detectar instalación exitosa
-    window.addEventListener('appinstalled', () => {
-        installBanner.classList.remove('show');
-    });
+    // Registrar Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js')
+                .then(function(registration) {
+                    console.log('✅ Service Worker registrado con éxito:', registration.scope);
+                })
+                .catch(function(error) {
+                    console.log('❌ Error al registrar Service Worker:', error);
+                });
+        });
+    }
 
     // ============================================================
     // FUNCIONES QR AUTOMÁTICAS
     // ============================================================
-
     function generarQRParaExtintor(extintorId, containerId, mostrarLoading = true) {
         const container = document.getElementById(containerId);
-        if (!container) {
-            console.warn(`Contenedor ${containerId} no encontrado`);
-            return;
-        }
+        if (!container) return;
 
         container.innerHTML = '';
         container.className = 'qr-container-sucursal';
 
         const extintor = datosExtintores[extintorId];
         if (!extintor) {
-            container.innerHTML = '<span style="color:#C62828;font-size:10px;">❌ Error</span>';
+            container.innerHTML = '<span style="color:#C62828;font-size:10px;">❌</span>';
             return;
         }
 
@@ -372,7 +1113,7 @@
                 tamano: extintor.tamano || 'N/A',
                 fechaProxima: extintor.fechaProxima || 'N/A',
                 sucursal: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
-                empresa: 'SuperSpuma',
+                empresa: 'INSSO',
                 timestamp: new Date().toISOString()
             });
 
@@ -380,7 +1121,7 @@
                 text: datosQR,
                 width: 80,
                 height: 80,
-                colorDark: "#3E2723",
+                colorDark: "#C62828",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
@@ -392,11 +1133,8 @@
             infoDiv.textContent = extintorId.slice(0,8);
             container.appendChild(infoDiv);
 
-            console.log(`✅ QR generado: ${extintorId}`);
             return true;
-
         } catch (error) {
-            console.error('Error QR:', error);
             container.innerHTML = '<span style="color:#C62828;font-size:10px;">⚠️</span>';
             container.style.opacity = '1';
             return false;
@@ -405,18 +1143,12 @@
 
     function generarQRParaSucursal(sucursalId) {
         if (!sucursalId) return;
-
-        const extintores = Object.entries(datosExtintores)
-            .filter(([id, d]) => d.sucursal === sucursalId);
-
+        const extintores = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalId);
         extintores.forEach(([id], index) => {
-            const containerId = `qr-${id}`;
             setTimeout(() => {
-                generarQRParaExtintor(id, containerId, true);
+                generarQRParaExtintor(id, `qr-${id}`, true);
             }, 100 + (index * 50));
         });
-
-        console.log(`📱 Generando ${extintores.length} QR para ${sucursalId}`);
         return extintores.length;
     }
 
@@ -425,10 +1157,8 @@
             alert('❌ No hay sucursal seleccionada');
             return;
         }
-
         const nombre = SUCURSALES[sucursalActiva]?.nombre || sucursalActiva;
         if (!confirm(`¿Regenerar todos los QR de ${nombre}?`)) return;
-
         const total = generarQRParaSucursal(sucursalActiva);
         alert(`✅ ${total} QR regenerados correctamente`);
     }
@@ -436,7 +1166,6 @@
     function generarQRDetalle(extintorId) {
         const container = document.getElementById('qr-detalle');
         if (!container) return;
-
         container.innerHTML = '';
         container.style.textAlign = 'center';
 
@@ -454,88 +1183,33 @@
                 tamano: extintor.tamano || 'N/A',
                 fechaProxima: extintor.fechaProxima || 'N/A',
                 sucursal: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
-                empresa: 'SuperSpuma'
+                empresa: 'INSSO'
             });
 
             new QRCode(container, {
                 text: datosQR,
                 width: 150,
                 height: 150,
-                colorDark: "#3E2723",
+                colorDark: "#C62828",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
-
         } catch (error) {
-            console.error('Error QR detalle:', error);
             container.innerHTML = '<p style="color:#C62828;">Error al generar QR</p>';
         }
     }
 
     // ============================================================
-    // FUNCIONES EXISTENTES MODIFICADAS
+    // FUNCIONES PRINCIPALES
     // ============================================================
+    db.ref('.info/connected').on('value', snap => { 
+        document.getElementById('conexion-dot').style.background = snap.val() ? '#4CAF50' : '#f44336'; 
+    });
 
-    function cargarExtintoresSucursal() {
-        if (!sucursalActiva) return;
-        let items = Object.entries(datosExtintores).filter(([id,d]) => d.sucursal === sucursalActiva);
-        items.sort((a,b) => { const o={critico:0,alta:1,media:2,baja:3,normal:4}; return o[calcularPrioridad(a[1].fechaProxima).prioridad] - o[calcularPrioridad(b[1].fechaProxima).prioridad]; });
-        
-        document.getElementById('tabla-extintores-sucursal').innerHTML = items.map(([id,d]) => {
-            const p = calcularPrioridad(d.fechaProxima);
-            const cl = Object.values(datosChecklists).filter(c => c.extintorId === id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
-            const qrId = `qr-${id}`;
-            return `<tr onclick="verDetalleExtintor('${id}')">
-                <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '-'}</td>
-                <td>${d.ubicacion||'N/A'}</td>
-                <td>${d.tipo||'N/A'}</td>
-                <td>${d.fechaProxima||'N/A'}</td>
-                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
-                <td>${cl ? '<span class="badge completado">✅</span>' : '<span class="badge pendiente">❌</span>'}</td>
-                <td>
-                    <div id="${qrId}" class="qr-container-sucursal" style="min-width:80px;min-height:80px;">
-                        <span style="color:#888;font-size:9px;">⏳</span>
-                    </div>
-                </td>
-                <td>
-                    <button class="btn btn-small" onclick="event.stopPropagation();editarExtintor('${id}')">✏️</button>
-                    <button class="btn btn-small btn-rojo" onclick="event.stopPropagation();pedirPasswordEliminar('${id}')">🗑️</button>
-                </td>
-            </tr>`;
-        }).join('') || '<tr><td colspan="8">No hay extintores</td></tr>';
-
-        // Generar QR automáticamente después de renderizar
-        setTimeout(() => {
-            items.forEach(([id], index) => {
-                setTimeout(() => {
-                    const container = document.getElementById(`qr-${id}`);
-                    if (container && container.innerHTML.includes('⏳')) {
-                        generarQRParaExtintor(id, `qr-${id}`, true);
-                    }
-                }, 200 + (index * 50));
-            });
-        }, 300);
+    function toggleDarkMode() { 
+        document.body.classList.toggle('dark-mode'); 
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); 
     }
-
-    const verDetalleExtintorOriginal = window.verDetalleExtintor || function(id) {
-        const d = datosExtintores[id]; if (!d) return;
-        const url = window.location.origin + window.location.pathname + '?id=' + id;
-        document.getElementById('modal-detalle-contenido').innerHTML = `<h3>Ficha del Extintor</h3>${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto">` : ''}<p><b>ID:</b> ${id}</p><p><b>Ubicación:</b> ${d.ubicacion||'N/A'}</p><p><b>Tipo:</b> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p><p><b>Vence:</b> ${d.fechaProxima||'N/A'}</p><div style="text-align:center;" id="qr-detalle"></div>`;
-        document.getElementById('modal-detalle').style.display='flex';
-        
-        setTimeout(() => {
-            generarQRDetalle(id);
-        }, 200);
-    };
-
-    window.verDetalleExtintor = verDetalleExtintorOriginal;
-
-    // ============================================================
-    // FUNCIONES EXISTENTES
-    // ============================================================
-
-    db.ref('.info/connected').on('value', snap => { document.getElementById('conexion-dot').style.background = snap.val() ? '#4CAF50' : '#f44336'; });
-    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
     if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
 
     function cargarDatos() {
@@ -547,7 +1221,13 @@
 
     function actualizarTodo() {
         cargarGridSucursales();
-        if (sucursalActiva) { cargarHeaderSucursal(); cargarExtintoresSucursal(); cargarSelectExtintoresCL(); cargarHistorialCL(); cargarVisualizar(); }
+        if (sucursalActiva) { 
+            cargarHeaderSucursal(); 
+            cargarExtintoresSucursal(); 
+            cargarSelectExtintoresCL(); 
+            cargarHistorialCL(); 
+            cargarVisualizar(); 
+        }
     }
 
     function mostrarVista(v) {
@@ -558,7 +1238,6 @@
         
         if (v === 'sucursales') {
             document.getElementById('vista-sucursales').style.display = 'block';
-            // Mantener la sucursal activa
             cargarHeaderSucursal();
             cargarExtintoresSucursal();
         } else if (v === 'panel-sucursal') {
@@ -579,20 +1258,21 @@
 
     function cargarGridSucursales() {
         const container = document.getElementById('grid-sucursales-container');
-        // Mostrar directamente la sucursal Villeta
         const id = 'villeta';
         const s = SUCURSALES[id];
         const ext = Object.values(datosExtintores).filter(e => e.sucursal === id);
         const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
         
-        container.innerHTML = `<div class="card-sucursal" onclick="abrirSucursal('${id}')" style="border-left-color: #2E7D32; background: var(--card-bg);">
+        container.innerHTML = `<div class="card-sucursal" onclick="abrirSucursal('${id}')" style="border-left-color: #2E7D32;">
             <h3>🏭 ${s.nombre}</h3>
-            <div style="font-size:10px;color:#888;">📍 ${s.direccion}</div>
-            <div style="margin-top:8px;font-size:12px;">📦 ${ext.length} extintores ${cri>0?`· 🔴 ${cri} críticos`:''}</div>
-            <div style="margin-top:8px;font-size:10px;color:#2E7D32;">✅ Sucursal principal</div>
+            <div class="direccion">📍 ${s.direccion}</div>
+            <div class="stats-mini">
+                <span>📦 ${ext.length} extintores</span>
+                ${cri > 0 ? `<span class="critico">🔴 ${cri} críticos</span>` : ''}
+            </div>
+            <div style="margin-top:8px;font-size:11px;color:#2E7D32;font-weight:600;">✅ Sucursal principal</div>
         </div>`;
         
-        // Abrir automáticamente la sucursal
         abrirSucursal('villeta');
     }
 
@@ -602,12 +1282,15 @@
         document.getElementById('vista-panel-sucursal').style.display = 'block';
         document.querySelectorAll('.nav-principal button').forEach(b => b.classList.remove('activo'));
         document.querySelectorAll('.nav-principal button')[0]?.classList.add('activo');
-        cargarHeaderSucursal(); cargarExtintoresSucursal(); cargarSelectExtintoresCL(); cargarHistorialCL(); cargarVisualizar();
+        cargarHeaderSucursal(); 
+        cargarExtintoresSucursal(); 
+        cargarSelectExtintoresCL(); 
+        cargarHistorialCL(); 
+        cargarVisualizar();
         mostrarTabSucursal('extintores');
     }
 
     function cerrarSucursal() { 
-        // No cerrar, solo volver a la vista principal
         document.getElementById('vista-panel-sucursal').style.display = 'none';
         document.getElementById('vista-sucursales').style.display = 'block';
     }
@@ -617,7 +1300,29 @@
         const s = SUCURSALES[sucursalActiva];
         const ext = Object.values(datosExtintores).filter(e => e.sucursal === sucursalActiva);
         const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
-        document.getElementById('sucursal-header').innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;"><div><h2>🏭 ${s.nombre}</h2><div style="font-size:12px;color:#888;">📍 ${s.direccion}</div></div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn btn-azul" onclick="regenerarQRSucursal()">📱 QR</button><button class="btn" onclick="cerrarSucursal()">⬅ Volver</button></div></div><div class="stats"><div class="stat"><div class="num">${ext.length}</div><div class="lbl">Total</div></div><div class="stat"><div class="num" style="color:#FF0000;">${cri}</div><div class="lbl">Críticos</div></div></div>`;
+        
+        document.getElementById('sucursal-header').innerHTML = `
+            <div class="header-top">
+                <div>
+                    <h2>🏭 ${s.nombre}</h2>
+                    <div class="direccion">📍 ${s.direccion}</div>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-azul" onclick="regenerarQRSucursal()">📱 QR</button>
+                    <button class="btn" onclick="cerrarSucursal()">⬅ Volver</button>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="num">${ext.length}</div>
+                    <div class="lbl">Total</div>
+                </div>
+                <div class="stat">
+                    <div class="num" style="color:#FF0000;">${cri}</div>
+                    <div class="lbl">Críticos</div>
+                </div>
+            </div>
+        `;
     }
 
     function mostrarTabSucursal(tab) {
@@ -633,6 +1338,49 @@
         if (tab !== 'escanear') detenerEscaner();
     }
 
+    function cargarExtintoresSucursal() {
+        if (!sucursalActiva) return;
+        let items = Object.entries(datosExtintores).filter(([id,d]) => d.sucursal === sucursalActiva);
+        items.sort((a,b) => { 
+            const o={critico:0,alta:1,media:2,baja:3,normal:4}; 
+            return o[calcularPrioridad(a[1].fechaProxima).prioridad] - o[calcularPrioridad(b[1].fechaProxima).prioridad]; 
+        });
+        
+        document.getElementById('tabla-extintores-sucursal').innerHTML = items.map(([id,d]) => {
+            const p = calcularPrioridad(d.fechaProxima);
+            const cl = Object.values(datosChecklists).filter(c => c.extintorId === id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
+            const qrId = `qr-${id}`;
+            return `<tr onclick="verDetalleExtintor('${id}')">
+                <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '📷'}</td>
+                <td><strong>${d.ubicacion||'N/A'}</strong></td>
+                <td>${d.tipo||'N/A'}</td>
+                <td>${d.fechaProxima||'N/A'}</td>
+                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                <td>${cl ? '<span class="badge completado">✅</span>' : '<span class="badge pendiente">❌</span>'}</td>
+                <td>
+                    <div id="${qrId}" class="qr-container-sucursal" style="min-width:80px;min-height:80px;">
+                        <span style="color:#888;font-size:9px;">⏳</span>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-small" onclick="event.stopPropagation();editarExtintor('${id}')">✏️</button>
+                    <button class="btn btn-small btn-rojo" onclick="event.stopPropagation();pedirPasswordEliminar('${id}')">🗑️</button>
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="8"><div class="empty-state"><span class="icon">🧯</span>No hay extintores registrados</div></td></tr>';
+
+        setTimeout(() => {
+            items.forEach(([id], index) => {
+                setTimeout(() => {
+                    const container = document.getElementById(`qr-${id}`);
+                    if (container && container.innerHTML.includes('⏳')) {
+                        generarQRParaExtintor(id, `qr-${id}`, true);
+                    }
+                }, 200 + (index * 50));
+            });
+        }, 300);
+    }
+
     function calcularPrioridad(fecha) {
         if (!fecha) return { prioridad: 'normal', label: 'Normal' };
         const diff = Math.ceil((new Date(fecha) - new Date()) / (1000*60*60*24));
@@ -642,96 +1390,283 @@
         return { prioridad: 'normal', label: 'Normal' };
     }
 
+    function verDetalleExtintor(id) {
+        const d = datosExtintores[id]; if (!d) return;
+        document.getElementById('modal-detalle-contenido').innerHTML = `
+            <h3>🧯 Ficha del Extintor</h3>
+            ${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto">` : ''}
+            <p><strong>ID:</strong> ${id}</p>
+            <p><strong>Ubicación:</strong> ${d.ubicacion||'N/A'}</p>
+            <p><strong>Tipo:</strong> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p>
+            <p><strong>Vence:</strong> ${d.fechaProxima||'N/A'}</p>
+            <div style="text-align:center; margin-top:12px;" id="qr-detalle"></div>
+        `;
+        document.getElementById('modal-detalle').style.display='flex';
+        setTimeout(() => { generarQRDetalle(id); }, 200);
+    }
+
     function cerrarModalDetalle() { document.getElementById('modal-detalle').style.display='none'; }
-    function mostrarQR(id) { verDetalleExtintor(id); }
 
     function pedirPasswordEliminar(id) {
-        document.getElementById('input-password').value=''; document.getElementById('modal-password').style.display='flex';
+        document.getElementById('input-password').value=''; 
+        document.getElementById('modal-password').style.display='flex';
         document.getElementById('btn-confirmar-eliminar').onclick=()=>{
-            if(document.getElementById('input-password').value===PASSWORD_MAESTRA){db.ref('extintores/'+id).remove();cerrarModalPassword();}
-            else{alert('❌ Contraseña incorrecta');}
+            if(document.getElementById('input-password').value===PASSWORD_MAESTRA){
+                db.ref('extintores/'+id).remove();
+                cerrarModalPassword();
+            } else {
+                alert('❌ Contraseña incorrecta');
+            }
         };
     }
+
     function cerrarModalPassword() { document.getElementById('modal-password').style.display='none'; }
 
     function cargarHistorial() {
-        document.getElementById('tabla-historial').innerHTML=Object.entries(datosExtintores).sort((a,b)=>new Date(a[1].fechaProxima||'9999')-new Date(b[1].fechaProxima||'9999')).map(([id,d])=>{
-            const p=calcularPrioridad(d.fechaProxima);
-            return`<tr><td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal}</td><td>${d.ubicacion||''}</td><td>${d.tipo||''}</td><td>${d.fechaProxima||''}</td><td><span class="badge ${p.prioridad}">${p.label}</span></td></tr>`;
-        }).join('');
+        document.getElementById('tabla-historial').innerHTML = Object.entries(datosExtintores)
+            .sort((a,b) => new Date(a[1].fechaProxima||'9999') - new Date(b[1].fechaProxima||'9999'))
+            .map(([id,d]) => {
+                const p = calcularPrioridad(d.fechaProxima);
+                return `<tr>
+                    <td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal}</td>
+                    <td>${d.ubicacion||''}</td>
+                    <td>${d.tipo||''}</td>
+                    <td>${d.fechaProxima||''}</td>
+                    <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                </tr>`;
+            }).join('');
     }
 
     function exportarCSVHistorial() {
-        let csv='Sucursal,Ubicación,Tipo,Vence,Prioridad\n';
-        Object.entries(datosExtintores).forEach(([id,d])=>{csv+=`"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${calcularPrioridad(d.fechaProxima).label}"\n`;});
-        const blob=new Blob(['\uFEFF'+csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='historial.csv'; a.click();
+        let csv = 'Sucursal,Ubicación,Tipo,Vence,Prioridad\n';
+        Object.entries(datosExtintores).forEach(([id,d]) => {
+            csv += `"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${calcularPrioridad(d.fechaProxima).label}"\n`;
+        });
+        const blob = new Blob(['\uFEFF'+csv], {type:'text/csv'}); 
+        const a = document.createElement('a'); 
+        a.href = URL.createObjectURL(blob); 
+        a.download = 'historial.csv'; 
+        a.click();
     }
 
     function cargarSelectCLG() { 
-        document.getElementById('clg-sucursal').innerHTML = Object.entries(SUCURSALES).map(([id,s])=>`<option value="${id}" ${id==='villeta'?'selected':''}>${s.nombre}</option>`).join('');
+        document.getElementById('clg-sucursal').innerHTML = Object.entries(SUCURSALES)
+            .map(([id,s]) => `<option value="${id}" ${id==='villeta'?'selected':''}>${s.nombre}</option>`).join('');
         cargarExtintoresCLG();
     }
-    function cargarExtintoresCLG() { const s=document.getElementById('clg-sucursal').value; const sel=document.getElementById('clg-extintor'); sel.innerHTML='<option value="">Seleccionar...</option>'; if(!s)return; Object.entries(datosExtintores).forEach(([id,d])=>{if(d.sucursal===s)sel.innerHTML+=`<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;}); }
-    function generarItemsCLG() { document.getElementById('clg-items').innerHTML=CHECKLIST_ITEMS.map(i=>`<div class="checklist-item"><span class="nombre">${i}</span><div class="opciones"><button type="button" onclick="marcarCLG(this,'ok')">✅ OK</button><button type="button" onclick="marcarCLG(this,'nook')">❌ NO OK</button></div></div>`).join(''); actualizarProgresoCLG(); }
-    function marcarCLG(btn,tipo){const p=btn.parentElement;p.querySelectorAll('button').forEach(b=>b.classList.remove('sel-ok','sel-nook'));btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');actualizarProgresoCLG();}
-    function actualizarProgresoCLG(){const t=CHECKLIST_ITEMS.length;const m=document.querySelectorAll('#clg-items .sel-ok, #clg-items .sel-nook').length;document.getElementById('clg-progress').style.width=((m/t)*100)+'%';}
+
+    function cargarExtintoresCLG() { 
+        const s = document.getElementById('clg-sucursal').value; 
+        const sel = document.getElementById('clg-extintor'); 
+        sel.innerHTML = '<option value="">Seleccionar...</option>'; 
+        if (!s) return; 
+        Object.entries(datosExtintores).forEach(([id,d]) => {
+            if (d.sucursal === s) sel.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
+        }); 
+    }
+
+    function generarItemsCLG() { 
+        document.getElementById('clg-items').innerHTML = CHECKLIST_ITEMS.map(i => 
+            `<div class="checklist-item">
+                <span class="nombre">${i}</span>
+                <div class="opciones">
+                    <button type="button" onclick="marcarCLG(this,'ok')">✅ OK</button>
+                    <button type="button" onclick="marcarCLG(this,'nook')">❌ NO OK</button>
+                </div>
+            </div>`
+        ).join(''); 
+        actualizarProgresoCLG(); 
+    }
+
+    function marcarCLG(btn,tipo) {
+        const p = btn.parentElement;
+        p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok','sel-nook'));
+        btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');
+        actualizarProgresoCLG();
+    }
+
+    function actualizarProgresoCLG() {
+        const t = CHECKLIST_ITEMS.length;
+        const m = document.querySelectorAll('#clg-items .sel-ok, #clg-items .sel-nook').length;
+        document.getElementById('clg-progress').style.width = ((m/t)*100)+'%';
+    }
 
     function obtenerGPS(gpsId, mapaId) {
-        if (navigator.geolocation) { navigator.geolocation.getCurrentPosition(pos => { coordenadasActuales = { lat: pos.coords.latitude, lng: pos.coords.longitude }; document.getElementById(gpsId).innerHTML = `📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; if(mapaId) mostrarMiniMapa(pos.coords.latitude, pos.coords.longitude, mapaId); }, () => { document.getElementById(gpsId).textContent = '📍 GPS no disponible'; }); }
+        if (navigator.geolocation) { 
+            navigator.geolocation.getCurrentPosition(pos => { 
+                coordenadasActuales = { lat: pos.coords.latitude, lng: pos.coords.longitude }; 
+                document.getElementById(gpsId).innerHTML = `📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; 
+                if (mapaId) mostrarMiniMapa(pos.coords.latitude, pos.coords.longitude, mapaId); 
+            }, () => { document.getElementById(gpsId).textContent = '📍 GPS no disponible'; }); 
+        }
     }
 
-    function mostrarMiniMapa(lat, lng, containerId) { const c = document.getElementById(containerId); if(!c)return; const url = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.002},${lat-0.001},${lng+0.002},${lat+0.001}&layer=mapnik&marker=${lat},${lng}`; c.innerHTML = `<iframe class="mapa-mini" src="${url}"></iframe><a class="mapa-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">📍 Google Maps</a>`; }
+    function mostrarMiniMapa(lat, lng, containerId) { 
+        const c = document.getElementById(containerId); 
+        if (!c) return; 
+        const url = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.002},${lat-0.001},${lng+0.002},${lat+0.001}&layer=mapnik&marker=${lat},${lng}`; 
+        c.innerHTML = `<iframe class="mapa-mini" src="${url}"></iframe><a class="mapa-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">📍 Google Maps</a>`; 
+    }
 
-    async function subirFotoImgBB(file,nombre) { const fd=new FormData(); fd.append('image',file,nombre||file.name); const r=await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,{method:'POST',body:fd}); const d=await r.json(); if(d.success) return d.data.url; throw new Error('Error'); }
+    async function subirFotoImgBB(file, nombre) { 
+        const fd = new FormData(); 
+        fd.append('image', file, nombre || file.name); 
+        const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {method:'POST', body:fd}); 
+        const d = await r.json(); 
+        if (d.success) return d.data.url; 
+        throw new Error('Error'); 
+    }
 
     async function guardarChecklistGlobal(e) {
-        e.preventDefault(); const extintorId=document.getElementById('clg-extintor').value; const inspector=document.getElementById('clg-inspector').value.trim(); const suc=document.getElementById('clg-sucursal').value;
-        if(!extintorId||!inspector||!suc)return alert('Completá todos los campos');
-        const items={}; document.querySelectorAll('#clg-items .checklist-item').forEach((item,i)=>{const sel=item.querySelector('.sel-ok,.sel-nook');items[CHECKLIST_ITEMS[i]]=sel?(sel.classList.contains('sel-ok')?'OK':'NO OK'):'No verificado';});
-        let fotoURL=''; const fi=document.getElementById('clg-foto'); if(fi.files[0]){try{fotoURL=await subirFotoImgBB(fi.files[0],`clg_${extintorId}`);}catch(err){}}
-        await db.ref('inspecciones').push({extintorId,sucursal:suc,tipo:'checklist',inspector,items,observaciones:document.getElementById('clg-obs').value.trim(),fotoURL,gps:document.getElementById('clg-gps').textContent,coordenadas:coordenadasActuales,fecha:new Date().toISOString()});
-        alert('✅ Checklist guardado!'); document.getElementById('clg-obs').value=''; document.getElementById('clg-foto').value=''; document.querySelectorAll('#clg-items button').forEach(b=>b.classList.remove('sel-ok','sel-nook')); actualizarProgresoCLG();
+        e.preventDefault(); 
+        const extintorId = document.getElementById('clg-extintor').value; 
+        const inspector = document.getElementById('clg-inspector').value.trim(); 
+        const suc = document.getElementById('clg-sucursal').value;
+        if (!extintorId || !inspector || !suc) return alert('Completá todos los campos');
+        
+        const items = {}; 
+        document.querySelectorAll('#clg-items .checklist-item').forEach((item, i) => {
+            const sel = item.querySelector('.sel-ok,.sel-nook');
+            items[CHECKLIST_ITEMS[i]] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : 'NO OK') : 'No verificado';
+        });
+        
+        let fotoURL = ''; 
+        const fi = document.getElementById('clg-foto'); 
+        if (fi.files[0]) {
+            try { fotoURL = await subirFotoImgBB(fi.files[0], `clg_${extintorId}`); } 
+            catch (err) {}
+        }
+        
+        await db.ref('inspecciones').push({
+            extintorId, 
+            sucursal: suc, 
+            tipo: 'checklist', 
+            inspector, 
+            items, 
+            observaciones: document.getElementById('clg-obs').value.trim(), 
+            fotoURL, 
+            gps: document.getElementById('clg-gps').textContent, 
+            coordenadas: coordenadasActuales, 
+            fecha: new Date().toISOString()
+        });
+        
+        alert('✅ Checklist guardado!'); 
+        document.getElementById('clg-obs').value = ''; 
+        document.getElementById('clg-foto').value = ''; 
+        document.querySelectorAll('#clg-items button').forEach(b => b.classList.remove('sel-ok','sel-nook')); 
+        actualizarProgresoCLG();
     }
 
-    function cargarSelectExtintoresCL() { if(!sucursalActiva)return; const sel=document.getElementById('cl-extintor'); if(!sel)return; sel.innerHTML='<option value="">Seleccionar...</option>'; Object.entries(datosExtintores).forEach(([id,d])=>{if(d.sucursal===sucursalActiva)sel.innerHTML+=`<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;}); }
-    function generarItemsCL() { const el=document.getElementById('cl-items'); if(!el)return; el.innerHTML = CHECKLIST_ITEMS.map(i => `<div class="checklist-item"><span class="nombre">${i}</span><div class="opciones"><button type="button" onclick="marcarCL(this,'ok')">✅ OK</button><button type="button" onclick="marcarCL(this,'nook')">❌ NO OK</button></div></div>`).join(''); actualizarProgresoCL(); }
-    function marcarCL(btn,tipo){const p=btn.parentElement;p.querySelectorAll('button').forEach(b=>b.classList.remove('sel-ok','sel-nook'));btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');actualizarProgresoCL();}
-    function actualizarProgresoCL(){const t=CHECKLIST_ITEMS.length;const m=document.querySelectorAll('#cl-items .sel-ok, #cl-items .sel-nook').length;const el=document.getElementById('cl-progress');if(el)el.style.width=((m/t)*100)+'%';}
+    function cargarSelectExtintoresCL() { 
+        if (!sucursalActiva) return; 
+        const sel = document.getElementById('cl-extintor'); 
+        if (!sel) return; 
+        sel.innerHTML = '<option value="">Seleccionar...</option>'; 
+        Object.entries(datosExtintores).forEach(([id,d]) => {
+            if (d.sucursal === sucursalActiva) sel.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
+        }); 
+    }
+
+    function generarItemsCL() { 
+        const el = document.getElementById('cl-items'); 
+        if (!el) return; 
+        el.innerHTML = CHECKLIST_ITEMS.map(i => 
+            `<div class="checklist-item">
+                <span class="nombre">${i}</span>
+                <div class="opciones">
+                    <button type="button" onclick="marcarCL(this,'ok')">✅ OK</button>
+                    <button type="button" onclick="marcarCL(this,'nook')">❌ NO OK</button>
+                </div>
+            </div>`
+        ).join(''); 
+        actualizarProgresoCL(); 
+    }
+
+    function marcarCL(btn,tipo) {
+        const p = btn.parentElement;
+        p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok','sel-nook'));
+        btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');
+        actualizarProgresoCL();
+    }
+
+    function actualizarProgresoCL() {
+        const t = CHECKLIST_ITEMS.length;
+        const m = document.querySelectorAll('#cl-items .sel-ok, #cl-items .sel-nook').length;
+        const el = document.getElementById('cl-progress');
+        if (el) el.style.width = ((m/t)*100)+'%';
+    }
 
     function cargarHistorialCL() {
-        if(!sucursalActiva)return;
-        const items=Object.values(datosChecklists).filter(c=>c.tipo==='checklist'&&c.sucursal===sucursalActiva).sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)).slice(0,20);
-        document.getElementById('tabla-historial-cl').innerHTML=items.map(c=>{const ext=datosExtintores[c.extintorId];const ok=Object.values(c.items||{}).every(v=>v==='OK');return`<tr><td>${new Date(c.fecha).toLocaleDateString()}</td><td>${ext?.ubicacion||c.extintorId}</td><td>${c.inspector}</td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'OK':'Fallas'}</span></td><td><button class="btn btn-small btn-azul" onclick="verDetalleCL('${c.fecha}','${c.extintorId}')">🔍 Ver</button></td></tr>`;}).join('')||'<tr><td colspan="5">Sin checklists</td></tr>';
+        if (!sucursalActiva) return;
+        const items = Object.values(datosChecklists)
+            .filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva)
+            .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
+            .slice(0,20);
+        
+        document.getElementById('tabla-historial-cl').innerHTML = items.map(c => {
+            const ext = datosExtintores[c.extintorId];
+            const ok = Object.values(c.items||{}).every(v => v === 'OK');
+            return `<tr>
+                <td>${new Date(c.fecha).toLocaleDateString()}</td>
+                <td>${ext?.ubicacion||c.extintorId}</td>
+                <td>${c.inspector}</td>
+                <td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ OK':'❌ Fallas'}</span></td>
+                <td><button class="btn btn-small btn-azul" onclick="verDetalleCL('${c.fecha}','${c.extintorId}')">🔍 Ver</button></td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="5"><div class="empty-state"><span class="icon">📋</span>Sin checklists</div></td></tr>';
     }
 
-    function verDetalleCL(fecha,extintorId) {
-        const cl=Object.values(datosChecklists).filter(c=>c.tipo==='checklist'&&c.fecha===fecha&&c.extintorId===extintorId)[0]; if(!cl)return;
-        const ext=datosExtintores[cl.extintorId]; const ok=Object.values(cl.items||{}).every(v=>v==='OK');
-        let h=`<h3>📋 Detalle de Checklist</h3><table style="width:100%;"><tr><td><b>Fecha:</b></td><td>${new Date(cl.fecha).toLocaleString()}</td></tr><tr><td><b>Extintor:</b></td><td>${ext?.ubicacion||cl.extintorId} (${ext?.tipo||''} ${ext?.tamano||''})</td></tr><tr><td><b>Inspector:</b></td><td>${cl.inspector}</td></tr><tr><td><b>Resultado:</b></td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ Todo OK':'❌ Con fallas'}</span></td></tr></table><h4>🔍 Items</h4><table>`;
-        Object.entries(cl.items||{}).forEach(([k,v])=>{h+=`<tr><td>${k}</td><td><span class="badge ${v==='OK'?'completado':'pendiente'}">${v}</span></td></tr>`;});
-        h+=`</table>`;
-        if(cl.fotoURL)h+=`<img src="${cl.fotoURL}" class="modal-detalle-foto">`;
-        if(cl.observaciones)h+=`<p><b>Obs:</b> ${cl.observaciones}</p>`;
-        if(cl.gps)h+=`<p>${cl.gps}</p>`;
-        if(cl.coordenadas){h+=`<div id="mapa-cl-detalle"></div>`;}
-        h+=`<button class="btn btn-wsp" style="width:100%;margin-top:12px;" onclick="compartirChecklistWhatsApp('${cl.fecha}','${cl.extintorId}')">📤 Compartir por WhatsApp</button>`;
-        document.getElementById('modal-cl-detalle-contenido').innerHTML=h;
-        document.getElementById('modal-cl-detalle').style.display='flex';
-        if(cl.coordenadas){setTimeout(()=>{mostrarMiniMapa(cl.coordenadas.lat,cl.coordenadas.lng,'mapa-cl-detalle');},200);}
+    function verDetalleCL(fecha, extintorId) {
+        const cl = Object.values(datosChecklists)
+            .filter(c => c.tipo === 'checklist' && c.fecha === fecha && c.extintorId === extintorId)[0]; 
+        if (!cl) return;
+        const ext = datosExtintores[cl.extintorId]; 
+        const ok = Object.values(cl.items||{}).every(v => v === 'OK');
+        
+        let h = `<h3>📋 Detalle de Checklist</h3>
+            <table style="width:100%; margin:12px 0;">
+                <tr><td><strong>Fecha:</strong></td><td>${new Date(cl.fecha).toLocaleString()}</td></tr>
+                <tr><td><strong>Extintor:</strong></td><td>${ext?.ubicacion||cl.extintorId}</td></tr>
+                <tr><td><strong>Inspector:</strong></td><td>${cl.inspector}</td></tr>
+                <tr><td><strong>Resultado:</strong></td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ Todo OK':'❌ Con fallas'}</span></td></tr>
+            </table>
+            <h4>🔍 Items</h4>
+            <table>`;
+        
+        Object.entries(cl.items||{}).forEach(([k,v]) => {
+            h += `<tr><td>${k}</td><td><span class="badge ${v==='OK'?'completado':'pendiente'}">${v}</span></td></tr>`;
+        });
+        h += `</table>`;
+        if (cl.fotoURL) h += `<img src="${cl.fotoURL}" class="modal-detalle-foto">`;
+        if (cl.observaciones) h += `<p><strong>Obs:</strong> ${cl.observaciones}</p>`;
+        if (cl.gps) h += `<p>${cl.gps}</p>`;
+        if (cl.coordenadas) h += `<div id="mapa-cl-detalle"></div>`;
+        h += `<button class="btn btn-wsp" style="width:100%; margin-top:12px;" onclick="compartirChecklistWhatsApp('${cl.fecha}','${cl.extintorId}')">📤 Compartir por WhatsApp</button>`;
+        
+        document.getElementById('modal-cl-detalle-contenido').innerHTML = h;
+        document.getElementById('modal-cl-detalle').style.display = 'flex';
+        if (cl.coordenadas) {
+            setTimeout(() => { mostrarMiniMapa(cl.coordenadas.lat, cl.coordenadas.lng, 'mapa-cl-detalle'); }, 200);
+        }
     }
 
     function compartirChecklistWhatsApp(fecha, extintorId) {
-        const cl = Object.values(datosChecklists).filter(c => c.tipo === 'checklist' && c.fecha === fecha && c.extintorId === extintorId)[0];
+        const cl = Object.values(datosChecklists)
+            .filter(c => c.tipo === 'checklist' && c.fecha === fecha && c.extintorId === extintorId)[0];
         if (!cl) return;
-        const ext = datosExtintores[cl.extintorId]; const suc = SUCURSALES[cl.sucursal]?.nombre || cl.sucursal;
+        const ext = datosExtintores[cl.extintorId]; 
+        const suc = SUCURSALES[cl.sucursal]?.nombre || cl.sucursal;
         const ok = Object.values(cl.items||{}).every(v => v === 'OK');
-        let texto = `🧯 *CHECKLIST SUPERSPUMA*%0A%0A`;
+        
+        let texto = `🧯 *CHECKLIST INSSO*%0A%0A`;
         texto += `📅 *Fecha:* ${new Date(cl.fecha).toLocaleString()}%0A`;
         texto += `🏢 *Sucursal:* ${suc}%0A`;
         texto += `📍 *Extintor:* ${ext?.ubicacion||'N/A'} (${ext?.tipo||''} ${ext?.tamano||''})%0A`;
         texto += `👤 *Inspector:* ${cl.inspector}%0A`;
         texto += `📊 *Resultado:* ${ok ? '✅ TODO OK' : '❌ CON FALLAS'}%0A%0A🔍 *Items:*%0A`;
-        Object.entries(cl.items||{}).forEach(([k, v]) => { texto += `${v === 'OK' ? '✅' : '❌'} ${k}: ${v}%0A`; });
+        Object.entries(cl.items||{}).forEach(([k, v]) => { 
+            texto += `${v === 'OK' ? '✅' : '❌'} ${k}: ${v}%0A`; 
+        });
         if (cl.observaciones) texto += `%0A📝 *Obs:* ${cl.observaciones}%0A`;
         if (cl.gps) texto += `%0A📍 ${cl.gps.replace('📍 ','')}%0A`;
         window.open(`https://wa.me/?text=${texto}`, '_blank');
@@ -748,8 +1683,14 @@
         const nor = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'normal').length;
         const conCL = ext.filter(e => Object.values(datosChecklists).some(c => c.extintorId === e.id)).length;
         const sinCL = total - conCL;
-        const urgentes = ext.filter(e => { const p = calcularPrioridad(e.fechaProxima); return p.prioridad === 'critico' || p.prioridad === 'alta'; }).sort((a,b) => new Date(a.fechaProxima) - new Date(b.fechaProxima));
-        const ultimosCL = Object.values(datosChecklists).filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva).sort((a,b) => new Date(b.fecha) - new Date(a.fecha)).slice(0,5);
+        const urgentes = ext.filter(e => { 
+            const p = calcularPrioridad(e.fechaProxima); 
+            return p.prioridad === 'critico' || p.prioridad === 'alta'; 
+        }).sort((a,b) => new Date(a.fechaProxima) - new Date(b.fechaProxima));
+        const ultimosCL = Object.values(datosChecklists)
+            .filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva)
+            .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
+            .slice(0,5);
 
         let html = `<div class="stats" style="margin-bottom:16px;">
             <div class="stat"><div class="num">${total}</div><div class="lbl">Total</div></div>
@@ -767,22 +1708,65 @@
         html += `</div>`;
 
         html += `<h4>⚠️ Urgentes</h4><div>${urgentes.length > 0 ? urgentes.map(e => `<div style="padding:4px 0;border-bottom:1px solid #eee;font-size:11px;">🔴 ${e.ubicacion||'N/A'} - ${e.tipo||''} - Vence: ${e.fechaProxima||'N/A'}</div>`).join('') : '<p style="color:green;">✅ No hay urgentes</p>'}</div>`;
-        html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.ubicacion||c.extintorId} - ${c.inspector} - <span style="color:${o?'green':'red'};">${o?'OK':'Fallas'}</span></div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
+        html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.ubicacion||c.extintorId} - ${c.inspector} - <span style="color:${o?'green':'red'};">${o?'✅ OK':'❌ Fallas'}</span></div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
 
         document.getElementById('visualizar-contenido').innerHTML = html;
     }
 
-    function iniciarEscaner() { detenerEscaner(); html5QrCode=new Html5Qrcode("qr-reader"); html5QrCode.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:250}},text=>{detenerEscaner(); let id=text; if(text.includes('?id='))id=new URLSearchParams(text.split('?')[1]).get('id')||text; verDetalleExtintor(id);},()=>{}).catch(()=>{alert('Error cámara');detenerEscaner();}); }
-    function detenerEscaner() { if(html5QrCode){html5QrCode.stop().then(()=>html5QrCode.clear()).catch(()=>{});html5QrCode=null;} }
+    function iniciarEscaner() { 
+        detenerEscaner(); 
+        html5QrCode = new Html5Qrcode("qr-reader"); 
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            text => { 
+                detenerEscaner(); 
+                let id = text; 
+                if (text.includes('?id=')) id = new URLSearchParams(text.split('?')[1]).get('id') || text; 
+                verDetalleExtintor(id); 
+            },
+            () => {}
+        ).catch(() => { alert('Error cámara'); detenerEscaner(); }); 
+    }
 
-    function generarEtiquetas() { if(!sucursalActiva)return; const items=Object.entries(datosExtintores).filter(([id,d])=>d.sucursal===sucursalActiva); document.getElementById('etiquetas-container').innerHTML=items.map(([id,d])=>{const p=calcularPrioridad(d.fechaProxima);const color={critico:'#FF0000',alta:'#FF6600',media:'#FFCC00',baja:'#33CCFF',normal:'#00CC66'}[p.prioridad];return`<div class="etiqueta-print"><div class="color-bar" style="background:${color};height:8px;border-radius:4px;"></div><strong>${d.ubicacion}</strong><br>${d.tipo} · ${d.tamano}<br>Vence: ${d.fechaProxima||'N/A'}<br><span style="color:${color};">${p.label}</span><div id="qr-et-${id}"></div></div>`;}).join(''); items.forEach(([id,d])=>{new QRCode(document.getElementById('qr-et-'+id),{text:window.location.origin+window.location.pathname+'?id='+id,width:80,height:80});}); }
+    function detenerEscaner() { 
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => html5QrCode.clear()).catch(() => {}); 
+            html5QrCode = null; 
+        } 
+    }
+
+    function generarEtiquetas() { 
+        if (!sucursalActiva) return; 
+        const items = Object.entries(datosExtintores).filter(([id,d]) => d.sucursal === sucursalActiva); 
+        document.getElementById('etiquetas-container').innerHTML = items.map(([id,d]) => {
+            const p = calcularPrioridad(d.fechaProxima);
+            const color = {critico:'#FF0000', alta:'#FF6600', media:'#FFCC00', baja:'#33CCFF', normal:'#00CC66'}[p.prioridad];
+            return `<div class="etiqueta-print">
+                <div style="background:${color}; height:8px; border-radius:4px;"></div>
+                <strong>${d.ubicacion}</strong><br>
+                ${d.tipo} · ${d.tamano}<br>
+                Vence: ${d.fechaProxima||'N/A'}<br>
+                <span style="color:${color}; font-weight:700;">${p.label}</span>
+                <div id="qr-et-${id}"></div>
+            </div>`;
+        }).join(''); 
+        items.forEach(([id,d]) => {
+            new QRCode(document.getElementById('qr-et-'+id), {
+                text: window.location.origin + window.location.pathname + '?id=' + id,
+                width: 80,
+                height: 80,
+                colorDark: "#C62828",
+                colorLight: "#ffffff"
+            });
+        }); 
+    }
 
     // ============================================================
     // INICIALIZAR
     // ============================================================
     cargarDatos();
-
-    console.log('🔥 SuperSpuma - Villeta (Planta Industrial)');
+    console.log('🔥 INSSO - Gestión de Extintores');
     console.log('📱 Los QR se generan automáticamente');
     console.log('📲 Instalación PWA disponible');
 </script>
