@@ -1,0 +1,103 @@
+{
+  "name": "INSSO - Gestión de Extintores",
+  "short_name": "INSSO Extintores",
+  "description": "Sistema de gestión de extintores para seguridad industrial INSSO",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f5f0e8",
+  "theme_color": "#C62828",
+  "orientation": "portrait",
+  "categories": ["business", "productivity", "utilities"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "logo-insso.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo-insso.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo-insso.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo-insso.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo-insso.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo-insso.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo-insso.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo-insso.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo-insso.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "android",
+      "label": "Pantalla principal de gestión de extintores"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nuevo Extintor",
+      "short_name": "Agregar",
+      "description": "Agregar un nuevo extintor al inventario",
+      "url": "index.html?action=add",
+      "icons": [
+        {
+          "src": "logo-insso.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Ver Checklist",
+      "short_name": "Checklist",
+      "description": "Realizar una inspección rápida",
+      "url": "index.html?action=checklist",
+      "icons": [
+        {
+          "src": "logo-insso.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
