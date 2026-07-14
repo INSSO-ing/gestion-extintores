@@ -12,8 +12,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="INSSO Extintores">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="logo-insso.png">
-    <meta name="theme-color" content="#C62828">
+    <link rel="apple-touch-icon" href="LOGO_NVO_SUPERSPUMA.webp">
+    <meta name="theme-color" content="#f5f0e8">
     <meta name="description" content="Sistema de gestión de extintores INSSO">
 
     <!-- ============================================================
@@ -32,13 +32,11 @@
             --primary: #C62828;
             --primary-dark: #B71C1C;
             --primary-light: #EF5350;
-            --secondary: #D32F2F;
-            --accent: #FF6F00;
             --success: #2E7D32;
             --warning: #F57F17;
             --danger: #C62828;
             --bg: #f5f0e8;
-            --card-bg: rgba(255,255,255,0.92);
+            --card-bg: rgba(255, 255, 255, 0.92);
             --text: #1a1a1a;
             --text-sec: #5D4037;
             --header-bg: linear-gradient(135deg, #C62828, #B71C1C);
@@ -64,10 +62,49 @@
             color: var(--text); 
             min-height: 100vh; 
             transition: var(--transition);
-            padding-bottom: 80px;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .app-container { max-width: 1200px; margin: 0 auto; padding: 16px; }
+        /* ============================================================
+           LOGO DE FONDO
+           ============================================================ */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('LOGO_NVO_SUPERSPUMA.webp');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.08;
+            z-index: 0;
+            pointer-events: none;
+            transform: scale(1.2);
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.85) 0%, rgba(245,240,232,0.92) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .app-container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            position: relative;
+            z-index: 1;
+        }
 
         /* ============================================================
            HEADER
@@ -826,7 +863,7 @@
     
     <!-- HEADER -->
     <div class="header">
-        <img src="logo-insso.png" alt="INSSO">
+        <img src="LOGO_NVO_SUPERSPUMA.webp" alt="INSSO">
         <div>
             <h1>INSSO <span>Extintores</span></h1>
             <small>Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small>
@@ -1029,10 +1066,36 @@
     const btnInstall = document.getElementById('btnInstall');
     const btnCloseInstall = document.getElementById('btnCloseInstall');
 
+    // Verificar si ya está instalada
     if (window.matchMedia('(display-mode: standalone)').matches) {
         if (installBanner) installBanner.style.display = 'none';
+        console.log('✅ App instalada correctamente');
     }
 
+    // Verificar si la PWA es válida
+    function verificarPWA() {
+        console.log('🔍 Verificando PWA...');
+        const manifestLink = document.querySelector('link[rel="manifest"]');
+        if (manifestLink) {
+            console.log('✅ manifest.json encontrado:', manifestLink.href);
+        } else {
+            console.warn('⚠️ manifest.json no encontrado');
+        }
+        
+        if ('serviceWorker' in navigator) {
+            console.log('✅ Service Worker soportado');
+        } else {
+            console.warn('⚠️ Service Worker no soportado');
+        }
+        
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('✅ App corriendo en modo standalone');
+        } else {
+            console.log('📱 App corriendo en navegador');
+        }
+    }
+
+    // Evento de instalación
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -1083,6 +1146,11 @@
                 });
         });
     }
+
+    // Ejecutar verificación al cargar
+    window.addEventListener('load', function() {
+        verificarPWA();
+    });
 
     // ============================================================
     // FUNCIONES QR AUTOMÁTICAS
@@ -1769,6 +1837,7 @@
     console.log('🔥 INSSO - Gestión de Extintores');
     console.log('📱 Los QR se generan automáticamente');
     console.log('📲 Instalación PWA disponible');
+    console.log('🔍 Verifica la consola para el estado de la PWA');
 </script>
 </body>
 </html>
