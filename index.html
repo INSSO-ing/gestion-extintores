@@ -312,8 +312,8 @@
             border-radius: 20px;
         }
 
-        .card-sucursal .stats-mini .critico {
-            color: var(--danger);
+        .card-sucursal .stats-mini .proximos-vencer {
+            color: #FF6600;
             font-weight: 700;
         }
 
@@ -1120,6 +1120,19 @@
             text-align: center;
             margin: 12px 0;
         }
+        
+        /* Estilo para resaltar extintores próximos a vencer */
+        .vencimiento-critico {
+            color: #FF0000 !important;
+            font-weight: 800;
+        }
+        .vencimiento-alerta {
+            color: #FF6600 !important;
+            font-weight: 700;
+        }
+        .vencimiento-normal {
+            color: #00CC66 !important;
+        }
     </style>
 </head>
 <body>
@@ -1192,10 +1205,10 @@
                     <thead>
                         <tr>
                             <th>Foto</th>
+                            <th>N° Extintor</th>
                             <th>Ubicación</th>
                             <th>Tipo</th>
                             <th>Vence</th>
-                            <th>Prioridad</th>
                             <th>CL</th>
                             <th>QR</th>
                             <th>Acciones</th>
@@ -1211,6 +1224,10 @@
                 <h3 style="color:var(--primary); margin-bottom:16px;">➕ Agregar Extintor</h3>
                 <form onsubmit="agregarExtintor(event)">
                     <div class="form-row">
+                        <div>
+                            <label>🔢 Número de Extintor *</label>
+                            <input type="text" id="form-numero" required placeholder="Ej: EXT-001">
+                        </div>
                         <div>
                             <label>📍 Ubicación *</label>
                             <input type="text" id="form-ubicacion" required placeholder="Ej: Pasillo principal">
@@ -1363,10 +1380,10 @@
                 <thead>
                     <tr>
                         <th>Sucursal</th>
+                        <th>N° Extintor</th>
                         <th>Ubicación</th>
                         <th>Tipo</th>
                         <th>Vence</th>
-                        <th>Prioridad</th>
                         <th>GPS</th>
                     </tr>
                 </thead>
@@ -1483,6 +1500,33 @@
     let datosExtintores = {}, datosChecklists = {}, sucursalActiva = 'villeta', html5QrCode = null, editMode = false, currentEditId = null, coordenadasActuales = null;
 
     // ============================================================
+    // FUNCIÓN PARA CALCULAR DÍAS RESTANTES PARA VENCIMIENTO
+    // ============================================================
+    function calcularDiasRestantes(fecha) {
+        if (!fecha) return Infinity;
+        const hoy = new Date();
+        hoy.setHours(0,0,0,0);
+        const vencimiento = new Date(fecha);
+        vencimiento.setHours(0,0,0,0);
+        const diff = Math.ceil((vencimiento - hoy) / (1000 * 60 * 60 * 24));
+        return diff;
+    }
+
+    function obtenerEstadoVencimiento(fecha) {
+        const dias = calcularDiasRestantes(fecha);
+        if (dias < 0) return { texto: 'VENCIDO', clase: 'vencimiento-critico', prioridad: 'critico', label: 'VENCIDO' };
+        if (dias <= 7) return { texto: '⚠️ Vence en 7 días', clase: 'vencimiento-critico', prioridad: 'critico', label: 'CRÍTICO' };
+        if (dias <= 15) return { texto: '⚠️ Vence en 15 días', clase: 'vencimiento-alerta', prioridad: 'alta', label: 'ALTA' };
+        if (dias <= 30) return { texto: 'Vence en 30 días', clase: 'vencimiento-alerta', prioridad: 'media', label: 'MEDIA' };
+        return { texto: 'OK', clase: 'vencimiento-normal', prioridad: 'normal', label: 'Normal' };
+    }
+
+    function estaProximoAVencer(fecha) {
+        const dias = calcularDiasRestantes(fecha);
+        return dias >= 0 && dias <= 30;
+    }
+
+    // ============================================================
     // PWA - INSTALACIÓN
     // ============================================================
     let deferredPrompt = null;
@@ -1567,7 +1611,7 @@
 
             const infoDiv = document.createElement('div');
             infoDiv.style.cssText = 'font-size:6px;color:#888;text-align:center;margin-top:2px;';
-            infoDiv.textContent = extintorId.slice(0,8);
+            infoDiv.textContent = extintor.numero || extintorId.slice(0,8);
             container.appendChild(infoDiv);
 
             return true;
@@ -1593,15 +1637,14 @@
         
         if (typeof id === 'string' && datosExtintores[id]) {
             const ext = datosExtintores[id];
-            const p = calcularPrioridad(ext.fechaProxima);
-            const color = {critico:'#FF0000', alta:'#FF6600', media:'#FFCC00', baja:'#33CCFF', normal:'#00CC66'}[p.prioridad];
+            const estado = obtenerEstadoVencimiento(ext.fechaProxima);
             
+            html += `<div class="qr-data-row"><span class="label">🔢 N° Extintor:</span><span class="value">${ext.numero || 'N/A'}</span></div>`;
             html += `<div class="qr-data-row"><span class="label">ID:</span><span class="value">${id}</span></div>`;
-            html += `<div class="qr-data-row"><span class="label">Ubicación:</span><span class="value">${ext.ubicacion||'N/A'}</span></div>`;
-            html += `<div class="qr-data-row"><span class="label">Tipo:</span><span class="value">${ext.tipo||'N/A'} · ${ext.tamano||'N/A'}</span></div>`;
-            html += `<div class="qr-data-row"><span class="label">Vence:</span><span class="value">${ext.fechaProxima||'N/A'}</span></div>`;
-            html += `<div class="qr-data-row"><span class="label">Prioridad:</span><span class="value"><span style="background:${color};padding:2px 8px;border-radius:12px;color:white;font-size:10px;">${p.label}</span></span></div>`;
-            if (ext.gps) html += `<div class="qr-data-row"><span class="label">GPS:</span><span class="value">${ext.gps}</span></div>`;
+            html += `<div class="qr-data-row"><span class="label">📍 Ubicación:</span><span class="value">${ext.ubicacion||'N/A'}</span></div>`;
+            html += `<div class="qr-data-row"><span class="label">🏷️ Tipo:</span><span class="value">${ext.tipo||'N/A'} · ${ext.tamano||'N/A'}</span></div>`;
+            html += `<div class="qr-data-row"><span class="label">📅 Vence:</span><span class="value">${ext.fechaProxima||'N/A'} <span style="font-size:10px;color:${estado.clase === 'vencimiento-critico' ? '#FF0000' : estado.clase === 'vencimiento-alerta' ? '#FF6600' : '#00CC66'};">(${estado.texto})</span></span></div>`;
+            if (ext.gps) html += `<div class="qr-data-row"><span class="label">📍 GPS:</span><span class="value">${ext.gps}</span></div>`;
             if (ext.observaciones) html += `<div class="qr-data-row"><span class="label">Obs:</span><span class="value">${ext.observaciones}</span></div>`;
             
             if (ext.fotoURL) {
@@ -1693,11 +1736,6 @@
             helpText.textContent = '📱 Escanea este QR con cualquier celular';
             container.appendChild(helpText);
             
-            const urlText = document.createElement('p');
-            urlText.style.cssText = 'font-size:8px;color:#aaa;margin-top:4px;word-break:break-all;';
-            urlText.textContent = urlQR;
-            container.appendChild(urlText);
-            
         } catch (error) {
             console.error('Error generando QR detalle:', error);
             container.innerHTML = '<p style="color:#C62828;">Error al generar QR</p>';
@@ -1725,14 +1763,12 @@
             return;
         }
         
-        const p = calcularPrioridad(extintor.fechaProxima);
-        const colorPrioridad = {
-            critico: '#FF0000',
-            alta: '#FF6600', 
-            media: '#FFCC00',
-            baja: '#33CCFF',
-            normal: '#00CC66'
-        }[p.prioridad] || '#00CC66';
+        const estado = obtenerEstadoVencimiento(extintor.fechaProxima);
+        const colorEstado = {
+            'vencimiento-critico': '#FF0000',
+            'vencimiento-alerta': '#FF6600',
+            'vencimiento-normal': '#00CC66'
+        }[estado.clase] || '#00CC66';
         
         const fichaHTML = `
             <div id="ficha-para-descargar">
@@ -1744,6 +1780,10 @@
                 
                 ${extintor.fotoURL ? `<img src="${extintor.fotoURL}" class="foto" alt="Foto del extintor">` : ''}
                 
+                <div class="campo">
+                    <span class="label">🔢 N° Extintor</span>
+                    <span class="valor">${extintor.numero || 'N/A'}</span>
+                </div>
                 <div class="campo">
                     <span class="label">ID</span>
                     <span class="valor">${id}</span>
@@ -1758,11 +1798,7 @@
                 </div>
                 <div class="campo">
                     <span class="label">📅 Vence</span>
-                    <span class="valor">${extintor.fechaProxima || 'N/A'}</span>
-                </div>
-                <div class="campo">
-                    <span class="label">⚠️ Prioridad</span>
-                    <span class="valor"><span class="prioridad" style="background:${colorPrioridad};">${p.label}</span></span>
+                    <span class="valor">${extintor.fechaProxima || 'N/A'} <span style="font-size:12px;color:${colorEstado};">(${estado.texto})</span></span>
                 </div>
                 ${extintor.gps ? `<div class="campo"><span class="label">📍 GPS</span><span class="valor">${extintor.gps}</span></div>` : ''}
                 ${extintor.coordenadas ? `<div class="campo"><span class="label">📌 Coordenadas</span><span class="valor">${extintor.coordenadas.lat}, ${extintor.coordenadas.lng}</span></div>` : ''}
@@ -1844,15 +1880,6 @@
                     text-align:right;
                     max-width:60%;
                     word-break:break-all;
-                }
-                .prioridad {
-                    display:inline-block;
-                    padding:4px 16px;
-                    border-radius:20px;
-                    color:white;
-                    font-weight:700;
-                    font-size:12px;
-                    text-transform:uppercase;
                 }
                 .botones {
                     display:flex;
@@ -1942,10 +1969,10 @@
                 function compartirWhatsAppFicha() {
                     const texto = encodeURIComponent(
                         '🧯 *SUPERSPUMA - Ficha del Extintor*%0A%0A' +
+                        '🔢 *N° Extintor:* ${extintor.numero || 'N/A'}%0A' +
                         '📍 *Ubicación:* ${extintor.ubicacion || 'N/A'}%0A' +
                         '🏷️ *Tipo:* ${extintor.tipo || 'N/A'} · ${extintor.tamano || 'N/A'}%0A' +
-                        '📅 *Vence:* ${extintor.fechaProxima || 'N/A'}%0A' +
-                        '⚠️ *Prioridad:* ${p.label}%0A' +
+                        '📅 *Vence:* ${extintor.fechaProxima || 'N/A'} (${estado.texto})%0A' +
                         '🆔 *ID:* ${id}%0A' +
                         (extintor.gps ? '📍 *GPS:* ${extintor.gps}%0A' : '') +
                         '🔗 *Ver ficha:* ${window.location.href}'
@@ -2057,14 +2084,14 @@
         const id = 'villeta';
         const s = SUCURSALES[id];
         const ext = Object.values(datosExtintores).filter(e => e.sucursal === id);
-        const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
+        const proxVencer = ext.filter(e => estaProximoAVencer(e.fechaProxima));
         
         container.innerHTML = `<div class="card-sucursal" onclick="abrirSucursal('${id}')" style="border-left-color: #2E7D32;">
             <h3>🏭 ${s.nombre}</h3>
             <div class="direccion">📍 ${s.direccion}</div>
             <div class="stats-mini">
                 <span>📦 ${ext.length} extintores</span>
-                ${cri > 0 ? `<span class="critico">🔴 ${cri} críticos</span>` : ''}
+                ${proxVencer.length > 0 ? `<span class="proximos-vencer">⚠️ ${proxVencer.length} próximos a vencer</span>` : '<span style="color:#2E7D32;">✅ Todos al día</span>'}
             </div>
             <div style="margin-top:8px;font-size:11px;color:#2E7D32;font-weight:600;">✅ Sucursal principal</div>
         </div>`;
@@ -2095,7 +2122,7 @@
         if (!sucursalActiva) return;
         const s = SUCURSALES[sucursalActiva];
         const ext = Object.values(datosExtintores).filter(e => e.sucursal === sucursalActiva);
-        const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
+        const proxVencer = ext.filter(e => estaProximoAVencer(e.fechaProxima));
         
         document.getElementById('sucursal-header').innerHTML = `
             <div class="header-top">
@@ -2114,8 +2141,8 @@
                     <div class="lbl">Total</div>
                 </div>
                 <div class="stat">
-                    <div class="num" style="color:#FF0000;">${cri}</div>
-                    <div class="lbl">Críticos</div>
+                    <div class="num" style="color:#FF6600;">${proxVencer.length}</div>
+                    <div class="lbl">Próximos a vencer</div>
                 </div>
             </div>
         `;
@@ -2155,20 +2182,23 @@
         if (!sucursalActiva) return;
         let items = Object.entries(datosExtintores).filter(([id,d]) => d.sucursal === sucursalActiva);
         items.sort((a,b) => { 
-            const o={critico:0,alta:1,media:2,baja:3,normal:4}; 
-            return o[calcularPrioridad(a[1].fechaProxima).prioridad] - o[calcularPrioridad(b[1].fechaProxima).prioridad]; 
+            const diasA = calcularDiasRestantes(a[1].fechaProxima);
+            const diasB = calcularDiasRestantes(b[1].fechaProxima);
+            return diasA - diasB;
         });
         
         document.getElementById('tabla-extintores-sucursal').innerHTML = items.map(([id,d]) => {
-            const p = calcularPrioridad(d.fechaProxima);
+            const estado = obtenerEstadoVencimiento(d.fechaProxima);
             const cl = Object.values(datosChecklists).filter(c => c.extintorId === id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
             const qrId = `qr-${id}`;
+            const colorVence = estado.clase === 'vencimiento-critico' ? 'color:#FF0000;font-weight:800;' : 
+                              estado.clase === 'vencimiento-alerta' ? 'color:#FF6600;font-weight:700;' : 'color:#00CC66;';
             return `<tr onclick="verDetalleExtintor('${id}')">
                 <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '📷'}</td>
-                <td><strong>${d.ubicacion||'N/A'}</strong></td>
+                <td><strong>${d.numero || 'N/A'}</strong></td>
+                <td>${d.ubicacion||'N/A'}</td>
                 <td>${d.tipo||'N/A'}</td>
-                <td>${d.fechaProxima||'N/A'}</td>
-                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                <td style="${colorVence}">${d.fechaProxima||'N/A'} <span style="font-size:8px;">${estado.texto}</span></td>
                 <td>${cl ? '<span class="badge completado">✅</span>' : '<span class="badge pendiente">❌</span>'}</td>
                 <td>
                     <div id="${qrId}" class="qr-container-sucursal" style="min-width:90px;min-height:90px;">
@@ -2194,25 +2224,23 @@
         }, 300);
     }
 
-    function calcularPrioridad(fecha) {
-        if (!fecha) return { prioridad: 'normal', label: 'Normal' };
-        const diff = Math.ceil((new Date(fecha) - new Date()) / (1000*60*60*24));
-        if (diff < 0) return { prioridad: 'critico', label: 'CRÍTICO' };
-        if (diff <= 7) return { prioridad: 'alta', label: 'ALTA' };
-        if (diff <= 15) return { prioridad: 'media', label: 'MEDIA' };
-        if (diff <= 30) return { prioridad: 'baja', label: 'BAJA' };
-        return { prioridad: 'normal', label: 'Normal' };
-    }
-
     function verDetalleExtintor(id) {
         const d = datosExtintores[id]; if (!d) return;
+        const estado = obtenerEstadoVencimiento(d.fechaProxima);
+        const colorEstado = {
+            'vencimiento-critico': '#FF0000',
+            'vencimiento-alerta': '#FF6600',
+            'vencimiento-normal': '#00CC66'
+        }[estado.clase] || '#00CC66';
+        
         document.getElementById('modal-detalle-contenido').innerHTML = `
             <h3>🧯 Ficha del Extintor</h3>
             ${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto">` : '<p style="color:#999;">📷 Sin foto</p>'}
+            <p><strong>🔢 N° Extintor:</strong> ${d.numero || 'N/A'}</p>
             <p><strong>ID:</strong> ${id}</p>
             <p><strong>Ubicación:</strong> ${d.ubicacion||'N/A'}</p>
             <p><strong>Tipo:</strong> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p>
-            <p><strong>Vence:</strong> ${d.fechaProxima||'N/A'}</p>
+            <p><strong>Vence:</strong> ${d.fechaProxima||'N/A'} <span style="color:${colorEstado};font-weight:700;">(${estado.texto})</span></p>
             ${d.gps ? `<p><strong>📍 GPS:</strong> ${d.gps}</p>` : ''}
             ${d.coordenadas ? `<p><strong>📍 Coordenadas:</strong> ${d.coordenadas.lat}, ${d.coordenadas.lng}</p>` : ''}
             ${d.observaciones ? `<p><strong>Observaciones:</strong> ${d.observaciones}</p>` : ''}
@@ -2255,24 +2283,27 @@
             .sort((a,b) => new Date(a[1].fechaProxima||'9999') - new Date(b[1].fechaProxima||'9999'));
         
         tbody.innerHTML = items.map(([id,d]) => {
-            const p = calcularPrioridad(d.fechaProxima);
+            const estado = obtenerEstadoVencimiento(d.fechaProxima);
             const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
+            const colorEstado = estado.clase === 'vencimiento-critico' ? '#FF0000' : 
+                               estado.clase === 'vencimiento-alerta' ? '#FF6600' : '#00CC66';
             return `<tr>
                 <td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal||'N/A'}</td>
+                <td><strong>${d.numero || 'N/A'}</strong></td>
                 <td>${d.ubicacion||'N/A'}</td>
                 <td>${d.tipo||'N/A'}</td>
-                <td>${d.fechaProxima||'N/A'}</td>
-                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                <td style="color:${colorEstado};font-weight:700;">${d.fechaProxima||'N/A'} <span style="font-size:8px;">${estado.texto}</span></td>
                 <td style="font-size:9px;">${gpsText}</td>
             </tr>`;
         }).join('') || '<tr><td colspan="6"><div class="empty-state"><span class="icon">📋</span>No hay extintores registrados</div></td></tr>';
     }
 
     function exportarCSVHistorial() {
-        let csv = 'Sucursal,Ubicación,Tipo,Vence,Prioridad,GPS\n';
+        let csv = 'Sucursal,N° Extintor,Ubicación,Tipo,Vence,Estado,GPS\n';
         Object.entries(datosExtintores).forEach(([id,d]) => {
+            const estado = obtenerEstadoVencimiento(d.fechaProxima);
             const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
-            csv += `"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${calcularPrioridad(d.fechaProxima).label}","${gpsText}"\n`;
+            csv += `"${SUCURSALES[d.sucursal]?.nombre||''}","${d.numero||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${estado.texto}","${gpsText}"\n`;
         });
         const blob = new Blob(['\uFEFF'+csv], {type:'text/csv'}); 
         const a = document.createElement('a'); 
@@ -2288,6 +2319,7 @@
     async function agregarExtintor(e) {
         e.preventDefault();
         
+        const numero = document.getElementById('form-numero').value.trim();
         const ubicacion = document.getElementById('form-ubicacion').value.trim();
         const tipo = document.getElementById('form-tipo').value;
         const tamano = document.getElementById('form-tamano').value;
@@ -2295,7 +2327,7 @@
         const obs = document.getElementById('form-obs').value.trim();
         const fotoFile = document.getElementById('form-foto').files[0];
         
-        if (!ubicacion || !fechaProxima) {
+        if (!numero || !ubicacion || !fechaProxima) {
             alert('❌ Completá los campos obligatorios');
             return;
         }
@@ -2315,6 +2347,7 @@
         
         const nuevoExtintor = {
             sucursal: sucursalActiva,
+            numero: numero,
             ubicacion,
             tipo,
             tamano,
@@ -2331,6 +2364,7 @@
             await ref.set(nuevoExtintor);
             alert('✅ Extintor agregado correctamente');
             
+            document.getElementById('form-numero').value = '';
             document.getElementById('form-ubicacion').value = '';
             document.getElementById('form-fecha').value = '';
             document.getElementById('form-obs').value = '';
@@ -2349,6 +2383,7 @@
         const d = datosExtintores[id];
         if (!d) return;
         
+        document.getElementById('form-numero').value = d.numero || '';
         document.getElementById('form-ubicacion').value = d.ubicacion || '';
         document.getElementById('form-tipo').value = d.tipo || 'PQS';
         document.getElementById('form-tamano').value = d.tamano || '5 kg';
@@ -2373,6 +2408,7 @@
     }
 
     async function actualizarExtintor(id) {
+        const numero = document.getElementById('form-numero').value.trim();
         const ubicacion = document.getElementById('form-ubicacion').value.trim();
         const tipo = document.getElementById('form-tipo').value;
         const tamano = document.getElementById('form-tamano').value;
@@ -2380,7 +2416,7 @@
         const obs = document.getElementById('form-obs').value.trim();
         const fotoFile = document.getElementById('form-foto').files[0];
         
-        if (!ubicacion || !fechaProxima) {
+        if (!numero || !ubicacion || !fechaProxima) {
             alert('❌ Completá los campos obligatorios');
             return;
         }
@@ -2400,6 +2436,7 @@
         
         const datosActualizados = {
             sucursal: sucursalActiva,
+            numero: numero,
             ubicacion,
             tipo,
             tamano,
@@ -2424,6 +2461,7 @@
     }
 
     function resetearFormularioAgregar() {
+        document.getElementById('form-numero').value = '';
         document.getElementById('form-ubicacion').value = '';
         document.getElementById('form-fecha').value = '';
         document.getElementById('form-obs').value = '';
@@ -2452,7 +2490,7 @@
         sel.innerHTML = '<option value="">Seleccionar...</option>'; 
         Object.entries(datosExtintores).forEach(([id,d]) => {
             if (d.sucursal === sucursalActiva) {
-                sel.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
+                sel.innerHTML += `<option value="${id}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
             }
         }); 
     }
@@ -2551,7 +2589,7 @@
             const ok = Object.values(c.items||{}).every(v => v === 'OK');
             return `<tr>
                 <td>${new Date(c.fecha).toLocaleDateString()}</td>
-                <td>${ext?.ubicacion||c.extintorId.slice(0,8)}</td>
+                <td>${ext?.numero || ext?.ubicacion || c.extintorId.slice(0,8)}</td>
                 <td>${c.inspector||'N/A'}</td>
                 <td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ OK':'❌ Fallas'}</span></td>
                 <td><button class="btn btn-small btn-azul" onclick="verDetalleCL('${c.fecha}','${c.extintorId}')">🔍 Ver</button></td>
@@ -2569,7 +2607,7 @@
         let h = `<h3>📋 Detalle de Checklist</h3>
             <table style="width:100%; margin:12px 0;">
                 <tr><td><strong>Fecha:</strong></td><td>${new Date(cl.fecha).toLocaleString()}</td></tr>
-                <tr><td><strong>Extintor:</strong></td><td>${ext?.ubicacion||cl.extintorId}</td></tr>
+                <tr><td><strong>Extintor:</strong></td><td>${ext?.numero || ext?.ubicacion || cl.extintorId}</td></tr>
                 <tr><td><strong>Inspector:</strong></td><td>${cl.inspector}</td></tr>
                 <tr><td><strong>Resultado:</strong></td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ Todo OK':'❌ Con fallas'}</span></td></tr>
             </table>
@@ -2604,7 +2642,7 @@
         let texto = `🧯 *CHECKLIST SUPERSPUMA*%0A%0A`;
         texto += `📅 *Fecha:* ${new Date(cl.fecha).toLocaleString()}%0A`;
         texto += `🏢 *Sucursal:* ${suc}%0A`;
-        texto += `📍 *Extintor:* ${ext?.ubicacion||'N/A'} (${ext?.tipo||''} ${ext?.tamano||''})%0A`;
+        texto += `📍 *Extintor:* ${ext?.numero || ext?.ubicacion || 'N/A'} (${ext?.tipo||''} ${ext?.tamano||''})%0A`;
         texto += `👤 *Inspector:* ${cl.inspector}%0A`;
         texto += `📊 *Resultado:* ${ok ? '✅ TODO OK' : '❌ CON FALLAS'}%0A%0A🔍 *Items:*%0A`;
         Object.entries(cl.items||{}).forEach(([k, v]) => { 
@@ -2624,14 +2662,13 @@
         if (!sucursalActiva) return;
         const ext = Object.values(datosExtintores).filter(e => e.sucursal === sucursalActiva);
         const total = ext.length;
-        const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
-        const alt = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'alta').length;
-        const nor = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'normal').length;
+        const proxVencer = ext.filter(e => estaProximoAVencer(e.fechaProxima)).length;
+        const vencidos = ext.filter(e => calcularDiasRestantes(e.fechaProxima) < 0).length;
         const conCL = ext.filter(e => Object.values(datosChecklists).some(c => c.extintorId === e.id && c.tipo === 'checklist')).length;
         const sinCL = total - conCL;
-        const urgentes = ext.filter(e => { 
-            const p = calcularPrioridad(e.fechaProxima); 
-            return p.prioridad === 'critico' || p.prioridad === 'alta'; 
+        const urgentes = ext.filter(e => {
+            const dias = calcularDiasRestantes(e.fechaProxima);
+            return dias >= 0 && dias <= 15;
         }).sort((a,b) => new Date(a.fechaProxima) - new Date(b.fechaProxima));
         const ultimosCL = Object.values(datosChecklists)
             .filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva)
@@ -2640,25 +2677,25 @@
 
         let html = `<div class="stats" style="margin-bottom:16px;">
             <div class="stat"><div class="num">${total}</div><div class="lbl">Total</div></div>
-            <div class="stat"><div class="num" style="color:#FF0000;">${cri}</div><div class="lbl">Críticos</div></div>
-            <div class="stat"><div class="num" style="color:#FF6600;">${alt}</div><div class="lbl">Alta</div></div>
-            <div class="stat"><div class="num" style="color:#00CC66;">${nor}</div><div class="lbl">Normal</div></div>
+            <div class="stat"><div class="num" style="color:#FF6600;">${proxVencer}</div><div class="lbl">Próximos a vencer</div></div>
+            <div class="stat"><div class="num" style="color:#FF0000;">${vencidos}</div><div class="lbl">Vencidos</div></div>
             <div class="stat"><div class="num" style="color:#2E7D32;">${conCL}</div><div class="lbl">Con CL</div></div>
             <div class="stat"><div class="num" style="color:#C62828;">${sinCL}</div><div class="lbl">Sin CL</div></div>
         </div>`;
 
         html += `<h4>📊 Gráfico de Estado</h4><div style="margin-bottom:16px;">`;
         if (total > 0) {
-            if (nor > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(nor/total)*100}%;background:#00CC66;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${nor} Normales</span></div>`;
-            if (alt > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(alt/total)*100}%;background:#FF6600;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${alt} Altos</span></div>`;
-            if (cri > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(cri/total)*100}%;background:#FF0000;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${cri} Críticos</span></div>`;
+            const normal = ext.filter(e => !estaProximoAVencer(e.fechaProxima) && calcularDiasRestantes(e.fechaProxima) >= 0).length;
+            if (normal > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(normal/total)*100}%;background:#00CC66;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${normal} Al día</span></div>`;
+            if (proxVencer > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(proxVencer/total)*100}%;background:#FF6600;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${proxVencer} Próximos a vencer</span></div>`;
+            if (vencidos > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(vencidos/total)*100}%;background:#FF0000;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${vencidos} Vencidos</span></div>`;
         } else {
             html += `<p>No hay extintores registrados</p>`;
         }
         html += `</div>`;
 
-        html += `<h4>⚠️ Urgentes</h4><div>${urgentes.length > 0 ? urgentes.map(e => `<div style="padding:4px 0;border-bottom:1px solid #eee;font-size:11px;">🔴 ${e.ubicacion||'N/A'} - ${e.tipo||''} - Vence: ${e.fechaProxima||'N/A'}</div>`).join('') : '<p style="color:green;">✅ No hay urgentes</p>'}</div>`;
-        html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.ubicacion||c.extintorId.slice(0,8)} - ${c.inspector} - <span style="color:${o?'green':'red'};">${o?'✅ OK':'❌ Fallas'}</span></div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
+        html += `<h4>⚠️ Próximos a vencer (15 días)</h4><div>${urgentes.length > 0 ? urgentes.map(e => `<div style="padding:4px 0;border-bottom:1px solid #eee;font-size:11px;">🔴 ${e.numero || 'N/A'} - ${e.ubicacion||'N/A'} - ${e.tipo||''} - Vence: ${e.fechaProxima||'N/A'}</div>`).join('') : '<p style="color:green;">✅ No hay extintores próximos a vencer</p>'}</div>`;
+        html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.numero || ex?.ubicacion || c.extintorId.slice(0,8)} - ${c.inspector} - <span style="color:${o?'green':'red'};">${o?'✅ OK':'❌ Fallas'}</span></div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
 
         const container = document.getElementById('visualizar-contenido');
         if (container) container.innerHTML = html;
@@ -2745,8 +2782,12 @@
         }
         
         container.innerHTML = items.map(([id,d]) => {
-            const p = calcularPrioridad(d.fechaProxima);
-            const color = {critico:'#FF0000', alta:'#FF6600', media:'#FFCC00', baja:'#33CCFF', normal:'#00CC66'}[p.prioridad];
+            const estado = obtenerEstadoVencimiento(d.fechaProxima);
+            const color = {
+                'vencimiento-critico': '#FF0000',
+                'vencimiento-alerta': '#FF6600',
+                'vencimiento-normal': '#00CC66'
+            }[estado.clase] || '#00CC66';
             const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
             
             return `<div class="etiqueta-print" id="etiqueta-${id}">
@@ -2755,6 +2796,10 @@
                     <small>Gestión de Extintores</small>
                 </div>
                 ${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-extintor">` : ''}
+                <div class="info-row">
+                    <span class="label">🔢 N° Extintor:</span>
+                    <span class="value">${d.numero || 'N/A'}</span>
+                </div>
                 <div class="info-row">
                     <span class="label">Ubicación:</span>
                     <span class="value">${d.ubicacion||'N/A'}</span>
@@ -2769,11 +2814,7 @@
                 </div>
                 <div class="info-row">
                     <span class="label">Vence:</span>
-                    <span class="value">${d.fechaProxima||'N/A'}</span>
-                </div>
-                <div class="info-row" style="border-bottom: none;">
-                    <span class="label">Estado:</span>
-                    <span class="badge-prioridad" style="background:${color};">${p.label}</span>
+                    <span class="value">${d.fechaProxima||'N/A'} <span style="color:${color};">${estado.texto}</span></span>
                 </div>
                 ${gpsText ? `<div class="gps-info">📍 ${gpsText}</div>` : ''}
                 <div class="qr-wrapper" id="qr-et-${id}"></div>
@@ -2845,7 +2886,7 @@
         sel.innerHTML = '<option value="">Seleccionar...</option>'; 
         if (!s) return; 
         Object.entries(datosExtintores).forEach(([id,d]) => {
-            if (d.sucursal === s) sel.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
+            if (d.sucursal === s) sel.innerHTML += `<option value="${id}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
         }); 
     }
 
@@ -2975,6 +3016,7 @@
     console.log('📤 Botones de WhatsApp y descarga funcionando');
     console.log('🔑 Contraseña: 1234');
     console.log('📏 Tamaños disponibles: 2.5, 5, 10, 15, 20, 25 y 50 kg');
+    console.log('📊 Sistema de alerta de vencimientos activo');
 </script>
 </body>
 </html>
