@@ -3,16 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SuperSpuma · Gestión de Extintores</title>
+    <title>Gestión de Extintores · SuperSpuma</title>
     
-    <!-- PWA Meta Tags -->
+    <!-- ============================================================
+         PWA - MANIFEST Y META TAGS PARA INSTALACIÓN
+         ============================================================ -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SuperSpuma">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/MbDDBwH.png">
+    <meta name="apple-mobile-web-app-title" content="Gestión Extintores">
     <meta name="theme-color" content="#C62828">
     <meta name="description" content="Sistema de gestión de extintores SuperSpuma">
+    
+    <!-- Íconos para la app -->
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAACp0lEQVR4nO2WT2gTQRjFv5lds5u0hKKg1R/FSj3l4M0oIuRgL0F7sSCCJz1VEEGzB72JWLGXgiCCCAUhGxDEYw8CMQc9ZJv5ts1mszu+zSa0gQqxmGBhHzyYyTfvm/fNkFIK/xoVxqNTC+ce4GFDiTl3QzZ2Z4rB0tT3hPm+Bv4w4/dK2t2LRR8Zc1ZvK+GS4tClT50nUc6tOGfgU24tZp3I8a6UIOvYOlF+J5fZkQxEgtuVhO5xCDlR11Gx8ub3YwJiPKoIYDUb7k2DYpG1imRZ3RwQEOtTVaD2jBWZoyb7TSeoIEWvVrD8QcC1fHpLQAwPqxaYeNafB59AmjKxSoYGY9uvQqoDXYHDCgHvWyY7V2tqm4bwANd4vTZqAyzjYx9QytZ6M03pldAg8qoaGM5Aj31AyZ8P7fIt7Z7GHDEBd8V6I9ebjg0YfLVQC0YJgxUTMGthJd9vqR0bMLCt0Y8pBKs3mLAWM0bEnJfQAB3Y6lHNSz5CpwTidPUN4JTHh+3tPPRw0qhYzU4aR2M2HxLtQxkswB+SC9HseLcXG9CTYy4fnc4NLVkDdNhF+ccATDNB5g7ufsUVYx5tRGxHnLhJf4P7UL7KxWHGBsAlzQOKAXBObwDMuCUGMMulHrD5QDuc+XhW78BMUuL8cQ8fC79FufKcInY31tuQlJl4Ug/I2gNqPYA2eFC9sxGxs9ntWYp13mEwHtUE4Y3KDGdggPQxwjEE55cC2vIgrM7ApbPYey4nFeN7l6XqhBqBxX3XJYh7XqTfIqQOM1LW03XwvjsBkp5xY2x2LTLESZrCDYDLhuO5GB3QCuzn4wA1Vebuz8bOA21k2OQ+Xs0HAAAAAElFTkSuQmCC">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAELUlEQVR4nO2dPUgjURDHf7vZ5GOjRk0hRKWwCDcfYnls4IPjPG9tVPRuFOKl9grr41xXFRWLFAqChXqWxsLKhFQpAjY3bS3s7s2dOZO9ZCPJzr7dv9iBLPuW+e3M7My8xzhjZABI8Y8JALASACHJEwJAKSEApBQSkgIQhAhpAUDNlRBPCAGgiEA6AIiQAaAIPyHlh6AsrDM4iQYV+ALt9fK0ygb0G3//OPuI//ZowAZwxfbIt/oJqghI4USgJhNgmzdcfFxtazc/j22wAxW7b7l30PozWIRx5whuPHSem5+vT2zvZpZ2bHYRML8wPz0J/x4q3t+e/vV7nj48MBm+jI6MZoCeHh39Odj8wP16rNQrxvDdfb1aDAAJzPUmA0K7nQD4B+56EQBzALCPgXrNJAAW9yEEi4GySBUsB0IBJEGQAEGlWtYvAXc3k+5WgAxgGYP4IJgK6hFICL5pVRAgKEMsA4cIqkCw3woqFFQPwXgtCBQQysB4FoX2j6CAkB4E3TdUogwoFgIGwFIIKA+I7Uy6lAEghECyDJA2oEIgZawAADMMqCagFwFussoA1ZIfkQJ6hOAE2nBBdggICR3U/RJII8F9wX7ArNllMwH6nTtKAVITsQpOUNlGamQlBOS/fwzBvmYFyG4sCf5blm1pRPNgE0IV4D1FsAXGJhQQYIHIGcS22eaaUFx3bYlQFoAsgmXbs7GYTjPcJiA1gbXNOkCgQwCXyVqbbK0zNYYKgaoIOCswR8u4kxBBLhqgC6Ekq0fFXMM3Bkx8bjYZZl5RbrMhTAX1aSEuP85jqqiBSgguB9SyQcfK4aqwSiGUEWAKtAnB1jCbCgAVCAiAqUL1hBTw2S+TDGtB59aYYHlQK1SVDJjlQb9QFUKFZOA1GWu+AIgDghUkD8qEkKC7iZw8aBJC6u7g4g6bvo5mgX4JcPd6J2kRohKqeUOFBuoU4leGtFwgxWj2TQBDMiicBFKWQQyBPggkfCcAv5ICoAl1UiDdikUweUOM74QR4JK86loWRAg/D+53Q3qXhs98AkyPkM0sSC0Io1vCJr4hBl2+QwDBaiFBwHk++MLcYNbTTJAnC7xzHhce0RykBZt9UT2XQ0BQspSBB9ydiDMbErJ7AUgC1NOg8V1AWoBbkmhBxvIGAWsLIE0yBOQRAHtCsCCWwkK1Lr4XSi2hbJz2ZDCYcB4BkAiZ2NqP0lAKoaiCtWlUQicBqmhVQpPZAVDfE2I3gtVhKqFSIQQJXAGDmhKqCQHLAQ0UkCqc90GdO6B6Fwoz6JUC5p2B0rGo5g4aPEIIElyJ3KqEuglQSZCG7nK2Rwq2CVYHpdhYvIIaH5VdKbISbJn8QKli/xwNBLBaWnMyvzYz3X1N0h3Czo/mzDRVk5SJc0CKa7h6MFf49K4QfggA8dIuACmPIlxCAQ1SBEyliE0AJHwGSDEjASFlQiIIlAiBZlGcCkCkCABSSb9OtdM/4zNWRwTllvEAAAAASUVORK5CYII=">
+    
+    <!-- MANIFEST JSON embebido -->
+    <script>
+        // Crear el manifest dinámicamente
+        (function() {
+            const manifest = {
+                "name": "Gestión de Extintores",
+                "short_name": "GestionExt",
+                "description": "Sistema de gestión de extintores SuperSpuma",
+                "start_url": "/",
+                "display": "standalone",
+                "background_color": "#C62828",
+                "theme_color": "#C62828",
+                "orientation": "portrait",
+                "icons": [
+                    {
+                        "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAELUlEQVR4nO2dPUgjURDHf7vZ5GOjRk0hRKWwCDcfYnls4IPjPG9tVPRuFOKl9grr41xXFRWLFAqChXqWxsLKhFQpAjY3bS3s7s2dOZO9ZCPJzr7dv9iBLPuW+e3M7My8xzhjZABI8Y8JALASACHJEwJAKSEApBQSkgIQhAhpAUDNlRBPCAGgiEA6AIiQAaAIPyHlh6AsrDM4iQYV+ALt9fK0ygb0G3//OPuI//ZowAZwxfbIt/oJqghI4USgJhNgmzdcfFxtazc/j22wAxW7b7l30PozWIRx5whuPHSem5+vT2zvZpZ2bHYRML8wPz0J/x4q3t+e/vV7nj48MBm+jI6MZoCeHh39Odj8wP16rNQrxvDdfb1aDAAJzPUmA0K7nQD4B+56EQBzALCPgXrNJAAW9yEEi4GySBUsB0IBJEGQAEGlWtYvAXc3k+5WgAxgGYP4IJgK6hFICL5pVRAgKEMsA4cIqkCw3woqFFQPwXgtCBQQysB4FoX2j6CAkB4E3TdUogwoFgIGwFIIKA+I7Uy6lAEghECyDJA2oEIgZawAADMMqCagFwFussoA1ZIfkQJ6hOAE2nBBdggICR3U/RJII8F9wX7ArNllMwH6nTtKAVITsQpOUNlGamQlBOS/fwzBvmYFyG4sCf5blm1pRPNgE0IV4D1FsAXGJhQQYIHIGcS22eaaUFx3bYlQFoAsgmXbs7GYTjPcJiA1gbXNOkCgQwCXyVqbbK0zNYYKgaoIOCswR8u4kxBBLhqgC6Ekq0fFXMM3Bkx8bjYZZl5RbrMhTAX1aSEuP85jqqiBSgguB9SyQcfK4aqwSiGUEWAKtAnB1jCbCgAVCAiAqUL1hBTw2S+TDGtB59aYYHlQK1SVDJjlQb9QFUKFZOA1GWu+AIgDghUkD8qEkKC7iZw8aBJC6u7g4g6bvo5mgX4JcPd6J2kRohKqeUOFBuoU4leGtFwgxWj2TQBDMiicBFKWQQyBPggkfCcAv5ICoAl1UiDdikUweUOM74QR4JK86loWRAg/D+53Q3qXhs98AkyPkM0sSC0Io1vCJr4hBl2+QwDBaiFBwHk++MLcYNbTTJAnC7xzHhce0RykBZt9UT2XQ0BQspSBB9ydiDMbErJ7AUgC1NOg8V1AWoBbkmhBxvIGAWsLIE0yBOQRAHtCsCCWwkK1Lr4XSi2hbJz2ZDCYcB4BkAiZ2NqP0lAKoaiCtWlUQicBqmhVQpPZAVDfE2I3gtVhKqFSIQQJXAGDmhKqCQHLAQ0UkCqc90GdO6B6Fwoz6JUC5p2B0rGo5g4aPEIIElyJ3KqEuglQSZCG7nK2Rwq2CVYHpdhYvIIaH5VdKbISbJn8QKli/xwNBLBaWnMyvzYz3X1N0h3Czo/mzDRVk5SJc0CKa7h6MFf49K4QfggA8dIuACmPIlxCAQ1SBEyliE0AJHwGSDEjASFlQiIIlAiBZlGcCkCkCABSSb9OtdM/4zNWRwTllvEAAAAASUVORK5CYII=",
+                        "sizes": "128x128",
+                        "type": "image/png",
+                        "purpose": "any maskable"
+                    },
+                    {
+                        "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAELUlEQVR4nO2dPUgjURDHf7vZ5GOjRk0hRKWwCDcfYnls4IPjPG9tVPRuFOKl9grr41xXFRWLFAqChXqWxsLKhFQpAjY3bS3s7s2dOZO9ZCPJzr7dv9iBLPuW+e3M7My8xzhjZABI8Y8JALASACHJEwJAKSEApBQSkgIQhAhpAUDNlRBPCAGgiEA6AIiQAaAIPyHlh6AsrDM4iQYV+ALt9fK0ygb0G3//OPuI//ZowAZwxfbIt/oJqghI4USgJhNgmzdcfFxtazc/j22wAxW7b7l30PozWIRx5whuPHSem5+vT2zvZpZ2bHYRML8wPz0J/x4q3t+e/vV7nj48MBm+jI6MZoCeHh39Odj8wP16rNQrxvDdfb1aDAAJzPUmA0K7nQD4B+56EQBzALCPgXrNJAAW9yEEi4GySBUsB0IBJEGQAEGlWtYvAXc3k+5WgAxgGYP4IJgK6hFICL5pVRAgKEMsA4cIqkCw3woqFFQPwXgtCBQQysB4FoX2j6CAkB4E3TdUogwoFgIGwFIIKA+I7Uy6lAEghECyDJA2oEIgZawAADMMqCagFwFussoA1ZIfkQJ6hOAE2nBBdggICR3U/RJII8F9wX7ArNllMwH6nTtKAVITsQpOUNlGamQlBOS/fwzBvmYFyG4sCf5blm1pRPNgE0IV4D1FsAXGJhQQYIHIGcS22eaaUFx3bYlQFoAsgmXbs7GYTjPcJiA1gbXNOkCgQwCXyVqbbK0zNYYKgaoIOCswR8u4kxBBLhqgC6Ekq0fFXMM3Bkx8bjYZZl5RbrMhTAX1aSEuP85jqqiBSgguB9SyQcfK4aqwSiGUEWAKtAnB1jCbCgAVCAiAqUL1hBTw2S+TDGtB59aYYHlQK1SVDJjlQb9QFUKFZOA1GWu+AIgDghUkD8qEkKC7iZw8aBJC6u7g4g6bvo5mgX4JcPd6J2kRohKqeUOFBuoU4leGtFwgxWj2TQBDMiicBFKWQQyBPggkfCcAv5ICoAl1UiDdikUweUOM74QR4JK86loWRAg/D+53Q3qXhs98AkyPkM0sSC0Io1vCJr4hBl2+QwDBaiFBwHk++MLcYNbTTJAnC7xzHhce0RykBZt9UT2XQ0BQspSBB9ydiDMbErJ7AUgC1NOg8V1AWoBbkmhBxvIGAWsLIE0yBOQRAHtCsCCWwkK1Lr4XSi2hbJz2ZDCYcB4BkAiZ2NqP0lAKoaiCtWlUQicBqmhVQpPZAVDfE2I3gtVhKqFSIQQJXAGDmhKqCQHLAQ0UkCqc90GdO6B6Fwoz6JUC5p2B0rGo5g4aPEIIElyJ3KqEuglQSZCG7nK2Rwq2CVYHpdhYvIIaH5VdKbISbJn8QKli/xwNBLBaWnMyvzYz3X1N0h3Czo/mzDRVk5SJc0CKa7h6MFf49K4QfggA8dIuACmPIlxCAQ1SBEyliE0AJHwGSDEjASFlQiIIlAiBZlGcCkCkCABSSb9OtdM/4zNWRwTllvEAAAAASUVORK5CYII=",
+                        "sizes": "256x256",
+                        "type": "image/png",
+                        "purpose": "any maskable"
+                    },
+                    {
+                        "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAELUlEQVR4nO2dPUgjURDHf7vZ5GOjRk0hRKWwCDcfYnls4IPjPG9tVPRuFOKl9grr41xXFRWLFAqChXqWxsLKhFQpAjY3bS3s7s2dOZO9ZCPJzr7dv9iBLPuW+e3M7My8xzhjZABI8Y8JALASACHJEwJAKSEApBQSkgIQhAhpAUDNlRBPCAGgiEA6AIiQAaAIPyHlh6AsrDM4iQYV+ALt9fK0ygb0G3//OPuI//ZowAZwxfbIt/oJqghI4USgJhNgmzdcfFxtazc/j22wAxW7b7l30PozWIRx5whuPHSem5+vT2zvZpZ2bHYRML8wPz0J/x4q3t+e/vV7nj48MBm+jI6MZoCeHh39Odj8wP16rNQrxvDdfb1aDAAJzPUmA0K7nQD4B+56EQBzALCPgXrNJAAW9yEEi4GySBUsB0IBJEGQAEGlWtYvAXc3k+5WgAxgGYP4IJgK6hFICL5pVRAgKEMsA4cIqkCw3woqFFQPwXgtCBQQysB4FoX2j6CAkB4E3TdUogwoFgIGwFIIKA+I7Uy6lAEghECyDJA2oEIgZawAADMMqCagFwFussoA1ZIfkQJ6hOAE2nBBdggICR3U/RJII8F9wX7ArNllMwH6nTtKAVITsQpOUNlGamQlBOS/fwzBvmYFyG4sCf5blm1pRPNgE0IV4D1FsAXGJhQQYIHIGcS22eaaUFx3bYlQFoAsgmXbs7GYTjPcJiA1gbXNOkCgQwCXyVqbbK0zNYYKgaoIOCswR8u4kxBBLhqgC6Ekq0fFXMM3Bkx8bjYZZl5RbrMhTAX1aSEuP85jqqiBSgguB9SyQcfK4aqwSiGUEWAKtAnB1jCbCgAVCAiAqUL1hBTw2S+TDGtB59aYYHlQK1SVDJjlQb9QFUKFZOA1GWu+AIgDghUkD8qEkKC7iZw8aBJC6u7g4g6bvo5mgX4JcPd6J2kRohKqeUOFBuoU4leGtFwgxWj2TQBDMiicBFKWQQyBPggkfCcAv5ICoAl1UiDdikUweUOM74QR4JK86loWRAg/D+53Q3qXhs98AkyPkM0sSC0Io1vCJr4hBl2+QwDBaiFBwHk++MLcYNbTTJAnC7xzHhce0RykBZt9UT2XQ0BQspSBB9ydiDMbErJ7AUgC1NOg8V1AWoBbkmhBxvIGAWsLIE0yBOQRAHtCsCCWwkK1Lr4XSi2hbJz2ZDCYcB4BkAiZ2NqP0lAKoaiCtWlUQicBqmhVQpPZAVDfE2I3gtVhKqFSIQQJXAGDmhKqCQHLAQ0UkCqc90GdO6B6Fwoz6JUC5p2B0rGo5g4aPEIIElyJ3KqEuglQSZCG7nK2Rwq2CVYHpdhYvIIaH5VdKbISbJn8QKli/xwNBLBaWnMyvzYz3X1N0h3Czo/mzDRVk5SJc0CKa7h6MFf49K4QfggA8dIuACmPIlxCAQ1SBEyliE0AJHwGSDEjASFlQiIIlAiBZlGcCkCkCABSSb9OtdM/4zNWRwTllvEAAAAASUVORK5CYII=",
+                        "sizes": "512x512",
+                        "type": "image/png",
+                        "purpose": "any maskable"
+                    }
+                ]
+            };
+            
+            // Crear el blob del manifest
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            
+            // Crear el link al manifest
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = url;
+            document.head.appendChild(link);
+        })();
+    </script>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -620,6 +671,8 @@
         .qr-container-sucursal canvas {
             display: block !important;
             margin: 0 auto !important;
+            max-width: 100% !important;
+            height: auto !important;
         }
 
         /* ============================================================
@@ -694,6 +747,8 @@
         .etiqueta-print .qr-wrapper canvas {
             display: block !important;
             margin: 0 auto !important;
+            max-width: 100% !important;
+            height: auto !important;
         }
 
         .etiqueta-print .badge-prioridad {
@@ -1100,16 +1155,79 @@
             border-radius: 8px;
             margin-top: 8px;
         }
+
+        /* ============================================================
+           QR DETALLE
+           ============================================================ */
+        #qr-detalle canvas {
+            display: block !important;
+            margin: 0 auto !important;
+            max-width: 100% !important;
+            height: auto !important;
+        }
+
+        .qr-detalle-container {
+            text-align: center;
+            margin: 12px 0;
+        }
+
+        /* ============================================================
+           INSTALL BUTTON FLOATING - Para instalar la app
+           ============================================================ */
+        .install-float-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: linear-gradient(135deg, #C62828, #B71C1C);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 14px 24px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 20px rgba(198, 40, 40, 0.4);
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            animation: pulse-install 2s infinite;
+        }
+
+        .install-float-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(198, 40, 40, 0.5);
+        }
+
+        .install-float-btn .icon {
+            font-size: 24px;
+        }
+
+        @keyframes pulse-install {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        /* Ocultar botón flotante cuando ya está instalado o en modo standalone */
+        @media (display-mode: standalone) {
+            .install-float-btn {
+                display: none !important;
+            }
+            .install-banner {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
 
 <!-- ============================================================
-     BANNER DE INSTALACIÓN PWA
+     BANNER DE INSTALACIÓN PWA (estilo nativo)
      ============================================================ -->
 <div class="install-banner" id="installBanner">
     <div class="install-text">
-        <strong>🧯 Instalar SuperSpuma</strong>
+        <strong>📱 Instalar Gestión de Extintores</strong>
         <span>Instalá la app para acceso rápido y sin conexión</span>
     </div>
     <div class="install-buttons">
@@ -1119,16 +1237,24 @@
 </div>
 
 <!-- ============================================================
+     BOTÓN FLOTANTE DE INSTALACIÓN (alternativo)
+     ============================================================ -->
+<button class="install-float-btn" id="installFloatBtn" title="Instalar App">
+    <span class="icon">📲</span>
+    <span>Instalar App</span>
+</button>
+
+<!-- ============================================================
      CONTENEDOR PRINCIPAL
      ============================================================ -->
 <div class="app-container">
     
     <!-- HEADER -->
     <div class="header">
-        <img src="https://i.imgur.com/MbDDBwH.png" alt="SuperSpuma">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAELUlEQVR4nO2dPUgjURDHf7vZ5GOjRk0hRKWwCDcfYnls4IPjPG9tVPRuFOKl9grr41xXFRWLFAqChXqWxsLKhFQpAjY3bS3s7s2dOZO9ZCPJzr7dv9iBLPuW+e3M7My8xzhjZABI8Y8JALASACHJEwJAKSEApBQSkgIQhAhpAUDNlRBPCAGgiEA6AIiQAaAIPyHlh6AsrDM4iQYV+ALt9fK0ygb0G3//OPuI//ZowAZwxfbIt/oJqghI4USgJhNgmzdcfFxtazc/j22wAxW7b7l30PozWIRx5whuPHSem5+vT2zvZpZ2bHYRML8wPz0J/x4q3t+e/vV7nj48MBm+jI6MZoCeHh39Odj8wP16rNQrxvDdfb1aDAAJzPUmA0K7nQD4B+56EQBzALCPgXrNJAAW9yEEi4GySBUsB0IBJEGQAEGlWtYvAXc3k+5WgAxgGYP4IJgK6hFICL5pVRAgKEMsA4cIqkCw3woqFFQPwXgtCBQQysB4FoX2j6CAkB4E3TdUogwoFgIGwFIIKA+I7Uy6lAEghECyDJA2oEIgZawAADMMqCagFwFussoA1ZIfkQJ6hOAE2nBBdggICR3U/RJII8F9wX7ArNllMwH6nTtKAVITsQpOUNlGamQlBOS/fwzBvmYFyG4sCf5blm1pRPNgE0IV4D1FsAXGJhQQYIHIGcS22eaaUFx3bYlQFoAsgmXbs7GYTjPcJiA1gbXNOkCgQwCXyVqbbK0zNYYKgaoIOCswR8u4kxBBLhqgC6Ekq0fFXMM3Bkx8bjYZZl5RbrMhTAX1aSEuP85jqqiBSgguB9SyQcfK4aqwSiGUEWAKtAnB1jCbCgAVCAiAqUL1hBTw2S+TDGtB59aYYHlQK1SVDJjlQb9QFUKFZOA1GWu+AIgDghUkD8qEkKC7iZw8aBJC6u7g4g6bvo5mgX4JcPd6J2kRohKqeUOFBuoU4leGtFwgxWj2TQBDMiicBFKWQQyBPggkfCcAv5ICoAl1UiDdikUweUOM74QR4JK86loWRAg/D+53Q3qXhs98AkyPkM0sSC0Io1vCJr4hBl2+QwDBaiFBwHk++MLcYNbTTJAnC7xzHhce0RykBZt9UT2XQ0BQspSBB9ydiDMbErJ7AUgC1NOg8V1AWoBbkmhBxvIGAWsLIE0yBOQRAHtCsCCWwkK1Lr4XSi2hbJz2ZDCYcB4BkAiZ2NqP0lAKoaiCtWlUQicBqmhVQpPZAVDfE2I3gtVhKqFSIQQJXAGDmhKqCQHLAQ0UkCqc90GdO6B6Fwoz6JUC5p2B0rGo5g4aPEIIElyJ3KqEuglQSZCG7nK2Rwq2CVYHpdhYvIIaH5VdKbISbJn8QKli/xwNBLBaWnMyvzYz3X1N0h3Czo/mzDRVk5SJc0CKa7h6MFf49K4QfggA8dIuACmPIlxCAQ1SBEyliE0AJHwGSDEjASFlQiIIlAiBZlGcCkCkCABSSb9OtdM/4zNWRwTllvEAAAAASUVORK5CYII=" alt="SuperSpuma">
         <div>
-            <h1>SuperSpuma</h1>
-            <small>Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small>
+            <h1>Gestión de Extintores</h1>
+            <small>SuperSpuma · Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small>
         </div>
         <div class="header-right">
             <button class="btn-icon" onclick="toggleDarkMode()" title="Modo oscuro">🌓</button>
@@ -1468,27 +1594,38 @@
     const installBanner = document.getElementById('installBanner');
     const btnInstall = document.getElementById('btnInstall');
     const btnCloseInstall = document.getElementById('btnCloseInstall');
+    const installFloatBtn = document.getElementById('installFloatBtn');
 
+    // Verificar si ya está instalado
     if (window.matchMedia('(display-mode: standalone)').matches) {
         installBanner.style.display = 'none';
+        installFloatBtn.style.display = 'none';
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         installBanner.classList.add('show');
+        installFloatBtn.style.display = 'flex';
     });
 
-    btnInstall.addEventListener('click', async () => {
+    // Función para instalar desde cualquiera de los botones
+    async function instalarApp() {
         if (deferredPrompt) {
             deferredPrompt.prompt();
             const result = await deferredPrompt.userChoice;
             if (result.outcome === 'accepted') {
                 installBanner.classList.remove('show');
+                installFloatBtn.style.display = 'none';
             }
             deferredPrompt = null;
+        } else {
+            alert('📱 La instalación solo funciona en dispositivos móviles con Chrome o Safari.\n\nPodés agregar esta página a tu pantalla de inicio desde el menú del navegador.');
         }
-    });
+    }
+
+    btnInstall.addEventListener('click', instalarApp);
+    installFloatBtn.addEventListener('click', instalarApp);
 
     btnCloseInstall.addEventListener('click', () => {
         installBanner.classList.remove('show');
@@ -1496,10 +1633,11 @@
 
     window.addEventListener('appinstalled', () => {
         installBanner.classList.remove('show');
+        installFloatBtn.style.display = 'none';
     });
 
     // ============================================================
-    // FUNCIONES QR CON COMPRESIÓN DE DATOS
+    // FUNCIONES QR
     // ============================================================
     function generarQRParaExtintor(extintorId, containerId, mostrarLoading = true) {
         const container = document.getElementById(containerId);
@@ -1520,68 +1658,14 @@
         }
 
         try {
-            // Crear datos compactos para el QR - sin fotoURL para reducir tamaño
-            // La foto se muestra en la ficha del extintor, pero no se incluye en el QR
-            // para evitar que sea demasiado grande
-            const datosQR = {
-                id: extintorId,
-                u: extintor.ubicacion || 'Sin ubicación',  // u = ubicacion
-                t: extintor.tipo || 'No especificado',     // t = tipo
-                s: extintor.tamano || 'N/A',               // s = size/tamaño
-                f: extintor.fechaProxima || 'N/A',         // f = fecha vencimiento
-                suc: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
-                g: extintor.gps || '',                     // g = gps
-                o: extintor.observaciones || '',           // o = observaciones
-                // Foto no incluida para mantener QR pequeño y legible
-                // La foto se carga desde Firebase cuando se abre el detalle
-                fotoId: extintor.fotoURL ? 'has_foto' : '' // indicador de que tiene foto
-            };
-
-            // Convertir a JSON string
-            const textoQR = JSON.stringify(datosQR);
-            
-            // Verificar que el texto no sea demasiado largo (máximo 4296 caracteres para QR versión 40)
-            if (textoQR.length > 4000) {
-                // Si es muy largo, eliminar campos opcionales
-                delete datosQR.o; // observaciones
-                delete datosQR.g; // gps
-                const textoCompacto = JSON.stringify(datosQR);
-                if (textoCompacto.length > 4000) {
-                    // Si aún es muy largo, solo datos esenciales
-                    const datosMinimos = {
-                        id: extintorId,
-                        u: extintor.ubicacion || 'Sin ubicación',
-                        t: extintor.tipo || 'No especificado',
-                        f: extintor.fechaProxima || 'N/A'
-                    };
-                    new QRCode(container, {
-                        text: JSON.stringify(datosMinimos),
-                        width: 80,
-                        height: 80,
-                        colorDark: "#C62828",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.M  // Nivel medio para más capacidad
-                    });
-                } else {
-                    new QRCode(container, {
-                        text: textoCompacto,
-                        width: 80,
-                        height: 80,
-                        colorDark: "#C62828",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.M
-                    });
-                }
-            } else {
-                new QRCode(container, {
-                    text: textoQR,
-                    width: 80,
-                    height: 80,
-                    colorDark: "#C62828",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.M  // Nivel medio para más capacidad
-                });
-            }
+            new QRCode(container, {
+                text: extintorId,
+                width: 90,
+                height: 90,
+                colorDark: "#C62828",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
 
             container.style.opacity = '1';
 
@@ -1599,84 +1683,88 @@
         }
     }
 
-    // Función para mostrar información del QR escaneado
     function mostrarInfoQR(datosQR) {
         const container = document.getElementById('qr-info-resultado');
         if (!container) return;
         
         let html = '<h4 style="color:#C62828;margin-bottom:8px;">📋 Datos del Extintor</h4>';
         
-        // Si es string, intentar parsear
-        let datos = datosQR;
-        if (typeof datos === 'string') {
-            try {
-                datos = JSON.parse(datos);
-            } catch(e) {
-                // Si no es JSON, mostrar como texto
-                container.innerHTML = `<div style="padding:8px;background:#f5f5f5;border-radius:8px;">${datos}</div>`;
-                container.style.display = 'block';
-                return;
-            }
-        }
-        
-        // Mapeo de campos abreviados
-        const campoMap = {
-            'id': 'ID',
-            'u': 'Ubicación',
-            't': 'Tipo',
-            's': 'Tamaño',
-            'f': 'Vencimiento',
-            'suc': 'Sucursal',
-            'g': 'GPS',
-            'o': 'Observaciones'
-        };
-        
-        // Mostrar los datos
-        Object.keys(datos).forEach(key => {
-            const label = campoMap[key] || key;
-            const value = datos[key] || 'N/A';
-            if (key !== 'fotoId') {
-                html += `<div class="qr-data-row">
-                    <span class="label">${label}:</span>
-                    <span class="value">${value}</span>
+        if (typeof datosQR === 'string' && datosExtintores[datosQR]) {
+            const ext = datosExtintores[datosQR];
+            const p = calcularPrioridad(ext.fechaProxima);
+            const color = {critico:'#FF0000', alta:'#FF6600', media:'#FFCC00', baja:'#33CCFF', normal:'#00CC66'}[p.prioridad];
+            
+            html += `<div class="qr-data-row"><span class="label">ID:</span><span class="value">${datosQR}</span></div>`;
+            html += `<div class="qr-data-row"><span class="label">Ubicación:</span><span class="value">${ext.ubicacion||'N/A'}</span></div>`;
+            html += `<div class="qr-data-row"><span class="label">Tipo:</span><span class="value">${ext.tipo||'N/A'} · ${ext.tamano||'N/A'}</span></div>`;
+            html += `<div class="qr-data-row"><span class="label">Vence:</span><span class="value">${ext.fechaProxima||'N/A'}</span></div>`;
+            html += `<div class="qr-data-row"><span class="label">Prioridad:</span><span class="value"><span style="background:${color};padding:2px 8px;border-radius:12px;color:white;font-size:10px;">${p.label}</span></span></div>`;
+            if (ext.gps) html += `<div class="qr-data-row"><span class="label">GPS:</span><span class="value">${ext.gps}</span></div>`;
+            if (ext.observaciones) html += `<div class="qr-data-row"><span class="label">Obs:</span><span class="value">${ext.observaciones}</span></div>`;
+            
+            if (ext.fotoURL) {
+                html += `<div style="text-align:center;margin-top:8px;">
+                    <img src="${ext.fotoURL}" class="qr-foto" alt="Foto del extintor">
                 </div>`;
             }
-        });
-        
-        // Si hay un ID, buscar la foto en Firebase
-        if (datos.id && datosExtintores[datos.id] && datosExtintores[datos.id].fotoURL) {
-            html += `<div style="text-align:center;margin-top:8px;">
-                <img src="${datosExtintores[datos.id].fotoURL}" class="qr-foto" alt="Foto del extintor">
-            </div>`;
+            
+            if (ext.coordenadas) {
+                html += `<div style="margin-top:8px;">
+                    <a href="https://www.google.com/maps?q=${ext.coordenadas.lat},${ext.coordenadas.lng}" target="_blank" style="color:#C62828;font-weight:600;">📍 Ver en Google Maps</a>
+                </div>`;
+            }
+            
+            container.innerHTML = html;
+            container.style.display = 'block';
+            return;
         }
         
-        container.innerHTML = html;
+        if (typeof datosQR === 'object') {
+            const campoMap = {
+                'id': 'ID',
+                'u': 'Ubicación',
+                't': 'Tipo',
+                's': 'Tamaño',
+                'f': 'Vencimiento',
+                'suc': 'Sucursal',
+                'g': 'GPS',
+                'o': 'Observaciones'
+            };
+            
+            Object.keys(datosQR).forEach(key => {
+                const label = campoMap[key] || key;
+                const value = datosQR[key] || 'N/A';
+                if (key !== 'fotoId') {
+                    html += `<div class="qr-data-row">
+                        <span class="label">${label}:</span>
+                        <span class="value">${value}</span>
+                    </div>`;
+                }
+            });
+            
+            if (datosQR.id && datosExtintores[datosQR.id] && datosExtintores[datosQR.id].fotoURL) {
+                html += `<div style="text-align:center;margin-top:8px;">
+                    <img src="${datosExtintores[datosQR.id].fotoURL}" class="qr-foto" alt="Foto del extintor">
+                </div>`;
+            }
+            
+            container.innerHTML = html;
+            container.style.display = 'block';
+            return;
+        }
+        
+        container.innerHTML = `<div style="padding:8px;background:#f5f5f5;border-radius:8px;">${datosQR}</div>`;
         container.style.display = 'block';
     }
 
-    // Función para ver info QR manualmente (para pruebas)
     function verInfoQRManual() {
-        // Buscar el primer extintor
         const ids = Object.keys(datosExtintores);
         if (ids.length === 0) {
             alert('No hay extintores registrados');
             return;
         }
         const id = ids[0];
-        const extintor = datosExtintores[id];
-        
-        const datosQR = {
-            id: id,
-            u: extintor.ubicacion || 'Sin ubicación',
-            t: extintor.tipo || 'No especificado',
-            s: extintor.tamano || 'N/A',
-            f: extintor.fechaProxima || 'N/A',
-            suc: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
-            g: extintor.gps || '',
-            o: extintor.observaciones || ''
-        };
-        
-        mostrarInfoQR(datosQR);
+        mostrarInfoQR(id);
     }
 
     function generarQRParaSucursal(sucursalId) {
@@ -1714,28 +1802,20 @@
         }
 
         try {
-            // Datos compactos para el QR de detalle (más grande)
-            const datosQR = {
-                id: extintorId,
-                u: extintor.ubicacion || 'Sin ubicación',
-                t: extintor.tipo || 'No especificado',
-                s: extintor.tamano || 'N/A',
-                f: extintor.fechaProxima || 'N/A',
-                suc: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
-                g: extintor.gps || '',
-                o: extintor.observaciones || ''
-            };
-
-            const textoQR = JSON.stringify(datosQR);
-            
             new QRCode(container, {
-                text: textoQR,
+                text: extintorId,
                 width: 180,
                 height: 180,
                 colorDark: "#C62828",
                 colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
+                correctLevel: QRCode.CorrectLevel.H
             });
+            
+            const helpText = document.createElement('p');
+            helpText.style.cssText = 'font-size:10px;color:#888;margin-top:8px;';
+            helpText.textContent = '📱 Escanea este QR con cualquier celular';
+            container.appendChild(helpText);
+            
         } catch (error) {
             console.error('Error generando QR detalle:', error);
             container.innerHTML = '<p style="color:#C62828;">Error al generar QR</p>';
@@ -1931,7 +2011,7 @@
                 <td><span class="badge ${p.prioridad}">${p.label}</span></td>
                 <td>${cl ? '<span class="badge completado">✅</span>' : '<span class="badge pendiente">❌</span>'}</td>
                 <td>
-                    <div id="${qrId}" class="qr-container-sucursal" style="min-width:80px;min-height:80px;">
+                    <div id="${qrId}" class="qr-container-sucursal" style="min-width:90px;min-height:90px;">
                         <span style="color:#888;font-size:9px;">⏳</span>
                     </div>
                 </td>
@@ -2429,7 +2509,6 @@
         const readerElement = document.getElementById('qr-reader');
         if (!readerElement) return;
         
-        // Ocultar resultado anterior
         document.getElementById('qr-info-resultado').style.display = 'none';
         
         try {
@@ -2442,39 +2521,25 @@
                 },
                 text => { 
                     detenerEscaner(); 
-                    let datos = text;
-                    let id = text;
                     
-                    try {
-                        const data = JSON.parse(text);
-                        id = data.id || text;
-                        // Mostrar la información del QR
-                        mostrarInfoQR(data);
-                    } catch(e) {
-                        // Si no es JSON, buscar el ID en Firebase
-                        if (datosExtintores[text]) {
-                            id = text;
-                            const ext = datosExtintores[id];
-                            const datosQR = {
-                                id: id,
-                                u: ext.ubicacion || 'Sin ubicación',
-                                t: ext.tipo || 'No especificado',
-                                s: ext.tamano || 'N/A',
-                                f: ext.fechaProxima || 'N/A',
-                                suc: SUCURSALES[ext.sucursal]?.nombre || ext.sucursal || 'Sin sucursal',
-                                g: ext.gps || '',
-                                o: ext.observaciones || ''
-                            };
-                            mostrarInfoQR(datosQR);
-                        } else {
+                    const id = text.trim();
+                    
+                    if (datosExtintores[id]) {
+                        mostrarInfoQR(id);
+                        verDetalleExtintor(id);
+                    } else {
+                        try {
+                            const data = JSON.parse(text);
+                            if (data.id && datosExtintores[data.id]) {
+                                mostrarInfoQR(data.id);
+                                verDetalleExtintor(data.id);
+                            } else {
+                                alert('❌ Extintor no encontrado');
+                            }
+                        } catch(e) {
                             alert('❌ Extintor no encontrado');
                             document.getElementById('qr-info-resultado').style.display = 'none';
                         }
-                    }
-                    
-                    // Si encontró el extintor, mostrar detalle
-                    if (datosExtintores[id]) {
-                        verDetalleExtintor(id);
                     }
                 },
                 () => {}
@@ -2520,7 +2585,7 @@
             return `<div class="etiqueta-print" id="etiqueta-${id}">
                 <div class="header-etiqueta">
                     <h4>🧯 SUPERSPUMA</h4>
-                    <small>Seguridad Industrial</small>
+                    <small>Gestión de Extintores</small>
                 </div>
                 ${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-extintor">` : ''}
                 <div class="info-row">
@@ -2549,32 +2614,17 @@
             </div>`;
         }).join(''); 
         
-        // Generar QR para cada etiqueta con datos compactos
         items.forEach(([id,d]) => {
             const container = document.getElementById('qr-et-'+id);
             if (container) {
                 try {
-                    // Datos compactos para la etiqueta
-                    const datosQR = {
-                        id: id,
-                        u: d.ubicacion || 'Sin ubicación',
-                        t: d.tipo || 'No especificado',
-                        s: d.tamano || 'N/A',
-                        f: d.fechaProxima || 'N/A',
-                        suc: SUCURSALES[d.sucursal]?.nombre || d.sucursal || 'Sin sucursal',
-                        g: d.gps || '',
-                        o: d.observaciones || ''
-                    };
-                    
-                    const textoQR = JSON.stringify(datosQR);
-                    
                     new QRCode(container, {
-                        text: textoQR,
+                        text: id,
                         width: 100,
                         height: 100,
                         colorDark: "#C62828",
                         colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.M
+                        correctLevel: QRCode.CorrectLevel.H
                     });
                 } catch(e) {
                     console.error('Error generando QR para etiqueta:', e);
@@ -2750,12 +2800,10 @@
     // INICIALIZAR
     // ============================================================
     cargarDatos();
-    console.log('🔥 SuperSpuma - Sistema de Gestión de Extintores');
-    console.log('📱 Los QR contienen TODOS los datos del extintor en formato compacto');
-    console.log('📲 Cualquier celular puede leer el QR y ver la información completa');
-    console.log('🏷️ Las etiquetas se pueden descargar como imagen para imprimir');
-    console.log('⚠️ La foto NO se incluye en el QR para mantenerlo legible');
-    console.log('📸 La foto se muestra al escanear el QR desde la app');
+    console.log('🔥 Gestión de Extintores - SuperSpuma');
+    console.log('📱 PWA instalable en cualquier dispositivo móvil');
+    console.log('📲 Botón de instalación flotante disponible');
+    console.log('📋 QR con solo el ID del extintor - ¡Siempre funciona!');
 </script>
 </body>
 </html>
