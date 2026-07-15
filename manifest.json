@@ -2,7 +2,7 @@
   "name": "Gestión de Extintores · SuperSpuma",
   "short_name": "GestionExt",
   "description": "Sistema de gestión de extintores SuperSpuma",
-  "start_url": "/",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#C62828",
   "theme_color": "#C62828",
@@ -10,31 +10,13 @@
   "icons": [
     {
       "src": "logo-insso.png",
-      "sizes": "72x72",
+      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "logo-insso.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "logo-insso.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "logo-insso.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "logo-insso.png",
-      "sizes": "152x152",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
@@ -42,51 +24,7 @@
       "src": "logo-insso.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "logo-insso.png",
-      "sizes": "256x256",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "logo-insso.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "logo-insso.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Nuevo Extintor",
-      "short_name": "Agregar",
-      "description": "Agregar un nuevo extintor al inventario",
-      "url": "/?action=add",
-      "icons": [
-        {
-          "src": "logo-insso.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Ver Checklist",
-      "short_name": "Checklist",
-      "description": "Realizar una inspección rápida",
-      "url": "/?action=checklist",
-      "icons": [
-        {
-          "src": "logo-insso.png",
-          "sizes": "96x96"
-        }
-      ]
+      "purpose": "maskable"
     }
   ]
 }
