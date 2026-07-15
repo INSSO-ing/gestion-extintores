@@ -1,14 +1,9 @@
-// sw.js - Service Worker para SuperSpuma Gestión de Extintores
-const CACHE_NAME = 'superspuma-extintores-v2';
+// sw.js - Service Worker para SuperSpuma
+const CACHE_NAME = 'superspuma-v3';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/logo-insso.png',
-  'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js',
-  'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
-  'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
+  '/logo-insso.png'
 ];
 
 // Instalación
@@ -16,7 +11,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('✅ Cache de SuperSpuma Extintores abierto');
+        console.log('✅ Cache SuperSpuma abierto');
         return cache.addAll(urlsToCache);
       })
   );
@@ -40,7 +35,7 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch - estrategia Cache First
+// Fetch - Cache First
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
@@ -48,24 +43,15 @@ self.addEventListener('fetch', event => {
         if (response) {
           return response;
         }
-        return fetch(event.request).then(
-          response => {
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-            return response;
-          }
-        );
+        return fetch(event.request).catch(() => {
+          // Si falla la red, devolver la página offline
+          return caches.match('/index.html');
+        });
       })
   );
 });
 
-// Notificaciones push (opcional)
+// Notificaciones push
 self.addEventListener('push', function(event) {
   const title = '🔔 SuperSpuma Extintores';
   const options = {
