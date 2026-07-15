@@ -63,21 +63,12 @@
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "screenshot-1.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "platform": "android",
-      "label": "Pantalla principal de gestión de extintores"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Nuevo Extintor",
       "short_name": "Agregar",
       "description": "Agregar un nuevo extintor al inventario",
-      "url": "index.html?action=add",
+      "url": "/?action=add",
       "icons": [
         {
           "src": "logo-insso.png",
@@ -89,7 +80,7 @@
       "name": "Ver Checklist",
       "short_name": "Checklist",
       "description": "Realizar una inspección rápida",
-      "url": "index.html?action=checklist",
+      "url": "/?action=checklist",
       "icons": [
         {
           "src": "logo-insso.png",
