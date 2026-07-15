@@ -946,6 +946,17 @@
             display: block;
             margin-bottom: 12px;
         }
+
+        /* Estilos para el lector QR */
+        #qr-reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        #qr-reader video {
+            border-radius: 12px;
+        }
     </style>
 </head>
 <body>
@@ -1030,12 +1041,138 @@
             </div>
         </div>
 
-        <div id="tab-agregar" class="tab-sucursal" style="display:none;"></div>
-        <div id="tab-checklist" class="tab-sucursal" style="display:none;"></div>
-        <div id="tab-historial-cl" class="tab-sucursal" style="display:none;"></div>
-        <div id="tab-visualizar" class="tab-sucursal" style="display:none;"></div>
-        <div id="tab-escanear" class="tab-sucursal" style="display:none;"></div>
-        <div id="tab-etiquetas" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-agregar" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container">
+                <h3 style="color:var(--primary); margin-bottom:16px;">➕ Agregar Extintor</h3>
+                <form onsubmit="agregarExtintor(event)">
+                    <div class="form-row">
+                        <div>
+                            <label>📍 Ubicación *</label>
+                            <input type="text" id="form-ubicacion" required placeholder="Ej: Pasillo principal">
+                        </div>
+                        <div>
+                            <label>🏷️ Tipo *</label>
+                            <select id="form-tipo" required>
+                                <option value="PQS ABC">PQS ABC</option>
+                                <option value="CO2">CO2</option>
+                                <option value="Agua">Agua</option>
+                                <option value="Espuma">Espuma</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>📏 Tamaño *</label>
+                            <select id="form-tamano" required>
+                                <option value="2.5 kg">2.5 kg</option>
+                                <option value="5 kg">5 kg</option>
+                                <option value="10 kg">10 kg</option>
+                                <option value="15 kg">15 kg</option>
+                                <option value="20 kg">20 kg</option>
+                                <option value="50 kg">50 kg</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>📅 Fecha de vencimiento *</label>
+                            <input type="date" id="form-fecha" required>
+                        </div>
+                        <div class="full">
+                            <label>📸 Foto (opcional)</label>
+                            <input type="file" id="form-foto" accept="image/*">
+                        </div>
+                        <div class="full">
+                            <label>📝 Observaciones</label>
+                            <textarea id="form-obs" rows="2" placeholder="Notas adicionales..."></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-verde" style="width:100%; padding:14px; font-size:14px;">💾 Guardar Extintor</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="tab-checklist" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container">
+                <h3 style="color:var(--primary); margin-bottom:16px;">✅ Checklist de Inspección</h3>
+                <form onsubmit="guardarChecklist(event)">
+                    <div class="form-row">
+                        <div>
+                            <label>🧯 Extintor</label>
+                            <select id="cl-extintor" required onchange="cargarDatosExtintorCL()">
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>👤 Inspector *</label>
+                            <input type="text" id="cl-inspector" required placeholder="Nombre del inspector">
+                        </div>
+                        <div>
+                            <label>📸 Foto (opcional)</label>
+                            <input type="file" id="cl-foto" accept="image/*" capture="environment">
+                        </div>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="fill" id="cl-progress" style="width:0%;"></div>
+                    </div>
+
+                    <div id="cl-items"></div>
+
+                    <div class="form-row" style="margin-top:12px;">
+                        <div class="full">
+                            <label>Observaciones</label>
+                            <textarea id="cl-obs" rows="2" placeholder="Notas adicionales..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="gps-info" id="cl-gps">📍 Obteniendo ubicación...</div>
+                    <div id="cl-mapa"></div>
+
+                    <button type="submit" class="btn btn-verde" style="width:100%; margin-top:16px; padding: 14px; font-size: 14px;">
+                        ✅ Guardar Checklist
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="tab-historial-cl" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container">
+                <h3 style="color:var(--primary); margin-bottom:16px;">📋 Historial de Checklists</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Extintor</th>
+                            <th>Inspector</th>
+                            <th>Resultado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-historial-cl"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-visualizar" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container">
+                <h3 style="color:var(--primary); margin-bottom:16px;">👁️ Dashboard Visual</h3>
+                <div id="visualizar-contenido"></div>
+            </div>
+        </div>
+
+        <div id="tab-escanear" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container">
+                <h3 style="color:var(--primary); margin-bottom:16px;">📷 Escanear QR</h3>
+                <div id="qr-reader" style="width:100%; max-width:400px; margin:0 auto;"></div>
+                <button class="btn" style="width:100%; margin-top:12px;" onclick="iniciarEscaner()">📸 Iniciar Escáner</button>
+                <button class="btn btn-rojo" style="width:100%; margin-top:8px;" onclick="detenerEscaner()">⏹ Detener</button>
+            </div>
+        </div>
+
+        <div id="tab-etiquetas" class="tab-sucursal" style="display:none;">
+            <div class="tabla-container">
+                <h3 style="color:var(--primary); margin-bottom:16px;">🏷️ Etiquetas para Imprimir</h3>
+                <button class="btn btn-azul" style="margin-bottom:16px;" onclick="generarEtiquetas()">🔄 Generar Etiquetas</button>
+                <div id="etiquetas-container" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
+            </div>
+        </div>
     </div>
 
     <!-- VISTA HISTORIAL -->
@@ -1332,10 +1469,21 @@
     if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
 
     function cargarDatos() {
-        db.ref('extintores').once('value', snap => { datosExtintores = snap.val() || {}; cargarGridSucursales(); });
-        db.ref('inspecciones').once('value', snap => { datosChecklists = snap.val() || {}; });
-        db.ref('extintores').on('value', snap => { datosExtintores = snap.val() || {}; actualizarTodo(); });
-        db.ref('inspecciones').on('value', snap => { datosChecklists = snap.val() || {}; actualizarTodo(); });
+        db.ref('extintores').once('value', snap => { 
+            datosExtintores = snap.val() || {}; 
+            cargarGridSucursales(); 
+        });
+        db.ref('inspecciones').once('value', snap => { 
+            datosChecklists = snap.val() || {}; 
+        });
+        db.ref('extintores').on('value', snap => { 
+            datosExtintores = snap.val() || {}; 
+            actualizarTodo(); 
+        });
+        db.ref('inspecciones').on('value', snap => { 
+            datosChecklists = snap.val() || {}; 
+            actualizarTodo(); 
+        });
     }
 
     function actualizarTodo() {
@@ -1357,12 +1505,16 @@
         
         if (v === 'sucursales') {
             document.getElementById('vista-sucursales').style.display = 'block';
-            cargarHeaderSucursal();
-            cargarExtintoresSucursal();
         } else if (v === 'panel-sucursal') {
             document.getElementById('vista-panel-sucursal').style.display = 'block';
         } else {
             document.getElementById('vista-'+v).style.display = 'block';
+            if (v === 'historial') cargarHistorial();
+            if (v === 'checklist-global') { 
+                cargarSelectCLG(); 
+                generarItemsCLG(); 
+                obtenerGPS('clg-gps','clg-mapa'); 
+            }
         }
         
         document.querySelectorAll('.nav-principal button').forEach(b => b.classList.remove('activo'));
@@ -1370,8 +1522,6 @@
         const idx = vistas.indexOf(v);
         if (idx >= 0) document.querySelectorAll('.nav-principal button')[idx]?.classList.add('activo');
         
-        if (v === 'historial') cargarHistorial();
-        if (v === 'checklist-global') { cargarSelectCLG(); generarItemsCLG(); obtenerGPS('clg-gps','clg-mapa'); }
         detenerEscaner();
     }
 
@@ -1392,6 +1542,7 @@
             <div style="margin-top:8px;font-size:11px;color:#2E7D32;font-weight:600;">✅ Sucursal principal</div>
         </div>`;
         
+        // Abrir automáticamente la sucursal
         abrirSucursal('villeta');
     }
 
@@ -1446,15 +1597,28 @@
 
     function mostrarTabSucursal(tab) {
         document.querySelectorAll('.tab-sucursal').forEach(t => t.style.display = 'none');
-        document.getElementById('tab-'+tab).style.display = 'block';
+        const tabElement = document.getElementById('tab-'+tab);
+        if (tabElement) tabElement.style.display = 'block';
+        
         document.querySelectorAll('#tabs-sucursal button').forEach(b => b.classList.remove('activo'));
         const tabs = ['extintores','agregar','checklist','historial-cl','visualizar','escanear','etiquetas'];
         const idx = tabs.indexOf(tab);
         if (idx >= 0) document.querySelectorAll('#tabs-sucursal button')[idx]?.classList.add('activo');
-        if (tab === 'checklist') { cargarSelectExtintoresCL(); generarItemsCL(); obtenerGPS('cl-gps','cl-mapa'); }
+        
+        // Inicializar tabs según corresponda
+        if (tab === 'checklist') { 
+            cargarSelectExtintoresCL(); 
+            generarItemsCL(); 
+            obtenerGPS('cl-gps','cl-mapa'); 
+        }
         if (tab === 'historial-cl') cargarHistorialCL();
         if (tab === 'visualizar') cargarVisualizar();
+        if (tab === 'etiquetas') generarEtiquetas();
         if (tab !== 'escanear') detenerEscaner();
+        if (tab === 'escanear') {
+            // Iniciar automáticamente el escáner al entrar
+            setTimeout(iniciarEscaner, 500);
+        }
     }
 
     function cargarExtintoresSucursal() {
@@ -1506,6 +1670,7 @@
         if (diff < 0) return { prioridad: 'critico', label: 'CRÍTICO' };
         if (diff <= 7) return { prioridad: 'alta', label: 'ALTA' };
         if (diff <= 15) return { prioridad: 'media', label: 'MEDIA' };
+        if (diff <= 30) return { prioridad: 'baja', label: 'BAJA' };
         return { prioridad: 'normal', label: 'Normal' };
     }
 
@@ -1518,6 +1683,7 @@
             <p><strong>Ubicación:</strong> ${d.ubicacion||'N/A'}</p>
             <p><strong>Tipo:</strong> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p>
             <p><strong>Vence:</strong> ${d.fechaProxima||'N/A'}</p>
+            <p><strong>Observaciones:</strong> ${d.observaciones||'N/A'}</p>
             <div style="text-align:center; margin-top:12px;" id="qr-detalle"></div>
         `;
         document.getElementById('modal-detalle').style.display='flex';
@@ -1529,10 +1695,11 @@
     function pedirPasswordEliminar(id) {
         document.getElementById('input-password').value=''; 
         document.getElementById('modal-password').style.display='flex';
-        document.getElementById('btn-confirmar-eliminar').onclick=()=>{
+        document.getElementById('btn-confirmar-eliminar').onclick=function() {
             if(document.getElementById('input-password').value===PASSWORD_MAESTRA){
                 db.ref('extintores/'+id).remove();
                 cerrarModalPassword();
+                alert('✅ Extintor eliminado');
             } else {
                 alert('❌ Contraseña incorrecta');
             }
@@ -1542,18 +1709,20 @@
     function cerrarModalPassword() { document.getElementById('modal-password').style.display='none'; }
 
     function cargarHistorial() {
-        document.getElementById('tabla-historial').innerHTML = Object.entries(datosExtintores)
-            .sort((a,b) => new Date(a[1].fechaProxima||'9999') - new Date(b[1].fechaProxima||'9999'))
-            .map(([id,d]) => {
-                const p = calcularPrioridad(d.fechaProxima);
-                return `<tr>
-                    <td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal}</td>
-                    <td>${d.ubicacion||''}</td>
-                    <td>${d.tipo||''}</td>
-                    <td>${d.fechaProxima||''}</td>
-                    <td><span class="badge ${p.prioridad}">${p.label}</span></td>
-                </tr>`;
-            }).join('');
+        const tbody = document.getElementById('tabla-historial');
+        const items = Object.entries(datosExtintores)
+            .sort((a,b) => new Date(a[1].fechaProxima||'9999') - new Date(b[1].fechaProxima||'9999'));
+        
+        tbody.innerHTML = items.map(([id,d]) => {
+            const p = calcularPrioridad(d.fechaProxima);
+            return `<tr>
+                <td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal||'N/A'}</td>
+                <td>${d.ubicacion||'N/A'}</td>
+                <td>${d.tipo||'N/A'}</td>
+                <td>${d.fechaProxima||'N/A'}</td>
+                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="5"><div class="empty-state"><span class="icon">📋</span>No hay extintores registrados</div></td></tr>';
     }
 
     function exportarCSVHistorial() {
@@ -1564,126 +1733,192 @@
         const blob = new Blob(['\uFEFF'+csv], {type:'text/csv'}); 
         const a = document.createElement('a'); 
         a.href = URL.createObjectURL(blob); 
-        a.download = 'historial.csv'; 
+        a.download = 'historial_extintores.csv'; 
         a.click();
+        URL.revokeObjectURL(a.href);
     }
 
-    function cargarSelectCLG() { 
-        document.getElementById('clg-sucursal').innerHTML = Object.entries(SUCURSALES)
-            .map(([id,s]) => `<option value="${id}" ${id==='villeta'?'selected':''}>${s.nombre}</option>`).join('');
-        cargarExtintoresCLG();
-    }
-
-    function cargarExtintoresCLG() { 
-        const s = document.getElementById('clg-sucursal').value; 
-        const sel = document.getElementById('clg-extintor'); 
-        sel.innerHTML = '<option value="">Seleccionar...</option>'; 
-        if (!s) return; 
-        Object.entries(datosExtintores).forEach(([id,d]) => {
-            if (d.sucursal === s) sel.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
-        }); 
-    }
-
-    function generarItemsCLG() { 
-        document.getElementById('clg-items').innerHTML = CHECKLIST_ITEMS.map(i => 
-            `<div class="checklist-item">
-                <span class="nombre">${i}</span>
-                <div class="opciones">
-                    <button type="button" onclick="marcarCLG(this,'ok')">✅ OK</button>
-                    <button type="button" onclick="marcarCLG(this,'nook')">❌ NO OK</button>
-                </div>
-            </div>`
-        ).join(''); 
-        actualizarProgresoCLG(); 
-    }
-
-    function marcarCLG(btn,tipo) {
-        const p = btn.parentElement;
-        p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok','sel-nook'));
-        btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');
-        actualizarProgresoCLG();
-    }
-
-    function actualizarProgresoCLG() {
-        const t = CHECKLIST_ITEMS.length;
-        const m = document.querySelectorAll('#clg-items .sel-ok, #clg-items .sel-nook').length;
-        document.getElementById('clg-progress').style.width = ((m/t)*100)+'%';
-    }
-
-    function obtenerGPS(gpsId, mapaId) {
-        if (navigator.geolocation) { 
-            navigator.geolocation.getCurrentPosition(pos => { 
-                coordenadasActuales = { lat: pos.coords.latitude, lng: pos.coords.longitude }; 
-                document.getElementById(gpsId).innerHTML = `📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; 
-                if (mapaId) mostrarMiniMapa(pos.coords.latitude, pos.coords.longitude, mapaId); 
-            }, () => { document.getElementById(gpsId).textContent = '📍 GPS no disponible'; }); 
+    // ============================================================
+    // FUNCIONES PARA AGREGAR EXTINTORES
+    // ============================================================
+    async function agregarExtintor(e) {
+        e.preventDefault();
+        
+        const ubicacion = document.getElementById('form-ubicacion').value.trim();
+        const tipo = document.getElementById('form-tipo').value;
+        const tamano = document.getElementById('form-tamano').value;
+        const fechaProxima = document.getElementById('form-fecha').value;
+        const obs = document.getElementById('form-obs').value.trim();
+        const fotoFile = document.getElementById('form-foto').files[0];
+        
+        if (!ubicacion || !fechaProxima) {
+            alert('❌ Completá los campos obligatorios');
+            return;
+        }
+        
+        let fotoURL = '';
+        if (fotoFile) {
+            try {
+                fotoURL = await subirFotoImgBB(fotoFile, `extintor_${Date.now()}`);
+            } catch (error) {
+                console.error('Error al subir foto:', error);
+                alert('⚠️ Error al subir la foto, continuando sin ella');
+            }
+        }
+        
+        const nuevoExtintor = {
+            sucursal: sucursalActiva,
+            ubicacion,
+            tipo,
+            tamano,
+            fechaProxima,
+            observaciones: obs,
+            fotoURL,
+            createdAt: new Date().toISOString()
+        };
+        
+        try {
+            const ref = db.ref('extintores').push();
+            await ref.set(nuevoExtintor);
+            alert('✅ Extintor agregado correctamente');
+            
+            // Limpiar formulario
+            document.getElementById('form-ubicacion').value = '';
+            document.getElementById('form-fecha').value = '';
+            document.getElementById('form-obs').value = '';
+            document.getElementById('form-foto').value = '';
+            
+            // Actualizar vista
+            cargarExtintoresSucursal();
+            cargarHeaderSucursal();
+            
+        } catch (error) {
+            console.error('Error al guardar:', error);
+            alert('❌ Error al guardar el extintor');
         }
     }
 
-    function mostrarMiniMapa(lat, lng, containerId) { 
-        const c = document.getElementById(containerId); 
-        if (!c) return; 
-        const url = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.002},${lat-0.001},${lng+0.002},${lat+0.001}&layer=mapnik&marker=${lat},${lng}`; 
-        c.innerHTML = `<iframe class="mapa-mini" src="${url}"></iframe><a class="mapa-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">📍 Google Maps</a>`; 
+    function editarExtintor(id) {
+        const d = datosExtintores[id];
+        if (!d) return;
+        
+        // Cargar datos en el formulario de agregar
+        document.getElementById('form-ubicacion').value = d.ubicacion || '';
+        document.getElementById('form-tipo').value = d.tipo || 'PQS ABC';
+        document.getElementById('form-tamano').value = d.tamano || '5 kg';
+        document.getElementById('form-fecha').value = d.fechaProxima || '';
+        document.getElementById('form-obs').value = d.observaciones || '';
+        
+        // Cambiar modo a edición
+        editMode = true;
+        currentEditId = id;
+        
+        // Cambiar el botón del formulario
+        const btn = document.querySelector('#tab-agregar form button[type="submit"]');
+        btn.textContent = '✏️ Actualizar Extintor';
+        btn.style.background = '#1565C0';
+        
+        // Cambiar el título
+        document.querySelector('#tab-agregar h3').textContent = '✏️ Editar Extintor';
+        
+        // Mostrar la pestaña de agregar
+        mostrarTabSucursal('agregar');
+        
+        // Cambiar el comportamiento del submit
+        const form = document.querySelector('#tab-agregar form');
+        form.onsubmit = function(e) {
+            e.preventDefault();
+            actualizarExtintor(id);
+        };
     }
 
-    async function subirFotoImgBB(file, nombre) { 
-        const fd = new FormData(); 
-        fd.append('image', file, nombre || file.name); 
-        const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {method:'POST', body:fd}); 
-        const d = await r.json(); 
-        if (d.success) return d.data.url; 
-        throw new Error('Error'); 
-    }
-
-    async function guardarChecklistGlobal(e) {
-        e.preventDefault(); 
-        const extintorId = document.getElementById('clg-extintor').value; 
-        const inspector = document.getElementById('clg-inspector').value.trim(); 
-        const suc = document.getElementById('clg-sucursal').value;
-        if (!extintorId || !inspector || !suc) return alert('Completá todos los campos');
+    async function actualizarExtintor(id) {
+        const ubicacion = document.getElementById('form-ubicacion').value.trim();
+        const tipo = document.getElementById('form-tipo').value;
+        const tamano = document.getElementById('form-tamano').value;
+        const fechaProxima = document.getElementById('form-fecha').value;
+        const obs = document.getElementById('form-obs').value.trim();
+        const fotoFile = document.getElementById('form-foto').files[0];
         
-        const items = {}; 
-        document.querySelectorAll('#clg-items .checklist-item').forEach((item, i) => {
-            const sel = item.querySelector('.sel-ok,.sel-nook');
-            items[CHECKLIST_ITEMS[i]] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : 'NO OK') : 'No verificado';
-        });
-        
-        let fotoURL = ''; 
-        const fi = document.getElementById('clg-foto'); 
-        if (fi.files[0]) {
-            try { fotoURL = await subirFotoImgBB(fi.files[0], `clg_${extintorId}`); } 
-            catch (err) {}
+        if (!ubicacion || !fechaProxima) {
+            alert('❌ Completá los campos obligatorios');
+            return;
         }
         
-        await db.ref('inspecciones').push({
-            extintorId, 
-            sucursal: suc, 
-            tipo: 'checklist', 
-            inspector, 
-            items, 
-            observaciones: document.getElementById('clg-obs').value.trim(), 
-            fotoURL, 
-            gps: document.getElementById('clg-gps').textContent, 
-            coordenadas: coordenadasActuales, 
-            fecha: new Date().toISOString()
-        });
+        let fotoURL = datosExtintores[id]?.fotoURL || '';
+        if (fotoFile) {
+            try {
+                fotoURL = await subirFotoImgBB(fotoFile, `extintor_${Date.now()}`);
+            } catch (error) {
+                console.error('Error al subir foto:', error);
+                alert('⚠️ Error al subir la foto, manteniendo la anterior');
+            }
+        }
         
-        alert('✅ Checklist guardado!'); 
-        document.getElementById('clg-obs').value = ''; 
-        document.getElementById('clg-foto').value = ''; 
-        document.querySelectorAll('#clg-items button').forEach(b => b.classList.remove('sel-ok','sel-nook')); 
-        actualizarProgresoCLG();
+        const datosActualizados = {
+            sucursal: sucursalActiva,
+            ubicacion,
+            tipo,
+            tamano,
+            fechaProxima,
+            observaciones: obs,
+            fotoURL,
+            updatedAt: new Date().toISOString()
+        };
+        
+        try {
+            await db.ref('extintores/' + id).update(datosActualizados);
+            alert('✅ Extintor actualizado correctamente');
+            
+            // Resetear formulario
+            resetearFormularioAgregar();
+            
+            // Actualizar vista
+            cargarExtintoresSucursal();
+            cargarHeaderSucursal();
+            
+        } catch (error) {
+            console.error('Error al actualizar:', error);
+            alert('❌ Error al actualizar el extintor');
+        }
     }
 
+    function resetearFormularioAgregar() {
+        document.getElementById('form-ubicacion').value = '';
+        document.getElementById('form-fecha').value = '';
+        document.getElementById('form-obs').value = '';
+        document.getElementById('form-foto').value = '';
+        
+        editMode = false;
+        currentEditId = null;
+        
+        const btn = document.querySelector('#tab-agregar form button[type="submit"]');
+        btn.textContent = '💾 Guardar Extintor';
+        btn.style.background = '';
+        
+        document.querySelector('#tab-agregar h3').textContent = '➕ Agregar Extintor';
+        
+        const form = document.querySelector('#tab-agregar form');
+        form.onsubmit = agregarExtintor;
+    }
+
+    // ============================================================
+    // FUNCIONES PARA CHECKLIST
+    // ============================================================
     function cargarSelectExtintoresCL() { 
         if (!sucursalActiva) return; 
         const sel = document.getElementById('cl-extintor'); 
         if (!sel) return; 
         sel.innerHTML = '<option value="">Seleccionar...</option>'; 
         Object.entries(datosExtintores).forEach(([id,d]) => {
-            if (d.sucursal === sucursalActiva) sel.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
+            if (d.sucursal === sucursalActiva) {
+                sel.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
+            }
         }); 
+    }
+
+    function cargarDatosExtintorCL() {
+        // Función adicional si se necesita cargar datos del extintor seleccionado
     }
 
     function generarItemsCL() { 
@@ -1715,20 +1950,68 @@
         if (el) el.style.width = ((m/t)*100)+'%';
     }
 
+    async function guardarChecklist(e) {
+        e.preventDefault(); 
+        const extintorId = document.getElementById('cl-extintor').value; 
+        const inspector = document.getElementById('cl-inspector').value.trim(); 
+        if (!extintorId || !inspector) return alert('Completá todos los campos');
+        
+        const items = {}; 
+        document.querySelectorAll('#cl-items .checklist-item').forEach((item, i) => {
+            const sel = item.querySelector('.sel-ok,.sel-nook');
+            items[CHECKLIST_ITEMS[i]] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : 'NO OK') : 'No verificado';
+        });
+        
+        let fotoURL = ''; 
+        const fi = document.getElementById('cl-foto'); 
+        if (fi.files[0]) {
+            try { 
+                fotoURL = await subirFotoImgBB(fi.files[0], `cl_${extintorId}_${Date.now()}`); 
+            } catch (err) {
+                console.error('Error al subir foto:', err);
+            }
+        }
+        
+        await db.ref('inspecciones').push({
+            extintorId, 
+            sucursal: sucursalActiva, 
+            tipo: 'checklist', 
+            inspector, 
+            items, 
+            observaciones: document.getElementById('cl-obs').value.trim(), 
+            fotoURL, 
+            gps: document.getElementById('cl-gps').textContent, 
+            coordenadas: coordenadasActuales, 
+            fecha: new Date().toISOString()
+        });
+        
+        alert('✅ Checklist guardado!'); 
+        document.getElementById('cl-obs').value = ''; 
+        document.getElementById('cl-foto').value = ''; 
+        document.getElementById('cl-inspector').value = '';
+        document.querySelectorAll('#cl-items button').forEach(b => b.classList.remove('sel-ok','sel-nook')); 
+        actualizarProgresoCL();
+        cargarHistorialCL();
+        cargarExtintoresSucursal();
+    }
+
     function cargarHistorialCL() {
         if (!sucursalActiva) return;
         const items = Object.values(datosChecklists)
             .filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva)
             .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
-            .slice(0,20);
+            .slice(0,50);
         
-        document.getElementById('tabla-historial-cl').innerHTML = items.map(c => {
+        const tbody = document.getElementById('tabla-historial-cl');
+        if (!tbody) return;
+        
+        tbody.innerHTML = items.map(c => {
             const ext = datosExtintores[c.extintorId];
             const ok = Object.values(c.items||{}).every(v => v === 'OK');
             return `<tr>
                 <td>${new Date(c.fecha).toLocaleDateString()}</td>
-                <td>${ext?.ubicacion||c.extintorId}</td>
-                <td>${c.inspector}</td>
+                <td>${ext?.ubicacion||c.extintorId.slice(0,8)}</td>
+                <td>${c.inspector||'N/A'}</td>
                 <td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ OK':'❌ Fallas'}</span></td>
                 <td><button class="btn btn-small btn-azul" onclick="verDetalleCL('${c.fecha}','${c.extintorId}')">🔍 Ver</button></td>
             </tr>`;
@@ -1752,7 +2035,7 @@
             <h4>🔍 Items</h4>
             <table>`;
         
-        Object.entries(cl.items||{}).forEach(([k,v]) => {
+        Object.entries(cl.items||{}).forEach(([k, v]) => {
             h += `<tr><td>${k}</td><td><span class="badge ${v==='OK'?'completado':'pendiente'}">${v}</span></td></tr>`;
         });
         h += `</table>`;
@@ -1793,6 +2076,9 @@
 
     function cerrarModalCLDetalle() { document.getElementById('modal-cl-detalle').style.display='none'; }
 
+    // ============================================================
+    // FUNCIONES PARA VISUALIZAR
+    // ============================================================
     function cargarVisualizar() {
         if (!sucursalActiva) return;
         const ext = Object.values(datosExtintores).filter(e => e.sucursal === sucursalActiva);
@@ -1800,7 +2086,7 @@
         const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
         const alt = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'alta').length;
         const nor = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'normal').length;
-        const conCL = ext.filter(e => Object.values(datosChecklists).some(c => c.extintorId === e.id)).length;
+        const conCL = ext.filter(e => Object.values(datosChecklists).some(c => c.extintorId === e.id && c.tipo === 'checklist')).length;
         const sinCL = total - conCL;
         const urgentes = ext.filter(e => { 
             const p = calcularPrioridad(e.fechaProxima); 
@@ -1821,64 +2107,254 @@
         </div>`;
 
         html += `<h4>📊 Gráfico de Estado</h4><div style="margin-bottom:16px;">`;
-        if (nor > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(nor/total)*100}%;background:#00CC66;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${nor} Normales</span></div>`;
-        if (alt > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(alt/total)*100}%;background:#FF6600;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${alt} Altos</span></div>`;
-        if (cri > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(cri/total)*100}%;background:#FF0000;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${cri} Críticos</span></div>`;
+        if (total > 0) {
+            if (nor > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(nor/total)*100}%;background:#00CC66;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${nor} Normales</span></div>`;
+            if (alt > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(alt/total)*100}%;background:#FF6600;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${alt} Altos</span></div>`;
+            if (cri > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(cri/total)*100}%;background:#FF0000;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${cri} Críticos</span></div>`;
+        } else {
+            html += `<p>No hay extintores registrados</p>`;
+        }
         html += `</div>`;
 
         html += `<h4>⚠️ Urgentes</h4><div>${urgentes.length > 0 ? urgentes.map(e => `<div style="padding:4px 0;border-bottom:1px solid #eee;font-size:11px;">🔴 ${e.ubicacion||'N/A'} - ${e.tipo||''} - Vence: ${e.fechaProxima||'N/A'}</div>`).join('') : '<p style="color:green;">✅ No hay urgentes</p>'}</div>`;
-        html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.ubicacion||c.extintorId} - ${c.inspector} - <span style="color:${o?'green':'red'};">${o?'✅ OK':'❌ Fallas'}</span></div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
+        html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.ubicacion||c.extintorId.slice(0,8)} - ${c.inspector} - <span style="color:${o?'green':'red'};">${o?'✅ OK':'❌ Fallas'}</span></div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
 
-        document.getElementById('visualizar-contenido').innerHTML = html;
+        const container = document.getElementById('visualizar-contenido');
+        if (container) container.innerHTML = html;
     }
 
+    // ============================================================
+    // FUNCIONES PARA ESCANER QR
+    // ============================================================
     function iniciarEscaner() { 
         detenerEscaner(); 
-        html5QrCode = new Html5Qrcode("qr-reader"); 
-        html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            text => { 
+        const readerElement = document.getElementById('qr-reader');
+        if (!readerElement) return;
+        
+        try {
+            html5QrCode = new Html5Qrcode("qr-reader"); 
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { 
+                    fps: 10, 
+                    qrbox: { width: 250, height: 250 } 
+                },
+                text => { 
+                    detenerEscaner(); 
+                    let id = text; 
+                    try {
+                        const data = JSON.parse(text);
+                        id = data.id || text;
+                    } catch(e) {
+                        // Si no es JSON, usar el texto directo
+                        id = text;
+                    }
+                    if (datosExtintores[id]) {
+                        verDetalleExtintor(id);
+                    } else {
+                        alert('❌ Extintor no encontrado');
+                    }
+                },
+                () => {}
+            ).catch(() => { 
+                alert('❌ Error al acceder a la cámara. Verificá los permisos.');
                 detenerEscaner(); 
-                let id = text; 
-                if (text.includes('?id=')) id = new URLSearchParams(text.split('?')[1]).get('id') || text; 
-                verDetalleExtintor(id); 
-            },
-            () => {}
-        ).catch(() => { alert('Error cámara'); detenerEscaner(); }); 
+            }); 
+        } catch(error) {
+            alert('❌ Error al iniciar el escáner: ' + error.message);
+        }
     }
 
     function detenerEscaner() { 
         if (html5QrCode) {
-            html5QrCode.stop().then(() => html5QrCode.clear()).catch(() => {}); 
+            try {
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear().catch(() => {});
+                }).catch(() => {});
+            } catch(e) {}
             html5QrCode = null; 
         } 
     }
 
+    // ============================================================
+    // FUNCIONES PARA ETIQUETAS
+    // ============================================================
     function generarEtiquetas() { 
         if (!sucursalActiva) return; 
         const items = Object.entries(datosExtintores).filter(([id,d]) => d.sucursal === sucursalActiva); 
-        document.getElementById('etiquetas-container').innerHTML = items.map(([id,d]) => {
+        const container = document.getElementById('etiquetas-container');
+        if (!container) return;
+        
+        if (items.length === 0) {
+            container.innerHTML = '<div class="empty-state"><span class="icon">🏷️</span>No hay extintores para generar etiquetas</div>';
+            return;
+        }
+        
+        container.innerHTML = items.map(([id,d]) => {
             const p = calcularPrioridad(d.fechaProxima);
             const color = {critico:'#FF0000', alta:'#FF6600', media:'#FFCC00', baja:'#33CCFF', normal:'#00CC66'}[p.prioridad];
-            return `<div class="etiqueta-print">
+            return `<div class="etiqueta-print" style="display:inline-block;">
                 <div style="background:${color}; height:8px; border-radius:4px;"></div>
-                <strong>${d.ubicacion}</strong><br>
-                ${d.tipo} · ${d.tamano}<br>
+                <strong>${d.ubicacion||'N/A'}</strong><br>
+                ${d.tipo||'N/A'} · ${d.tamano||'N/A'}<br>
                 Vence: ${d.fechaProxima||'N/A'}<br>
                 <span style="color:${color}; font-weight:700;">${p.label}</span>
-                <div id="qr-et-${id}"></div>
+                <div id="qr-et-${id}" style="margin-top:8px;"></div>
             </div>`;
         }).join(''); 
+        
+        // Generar QR para cada etiqueta
         items.forEach(([id,d]) => {
-            new QRCode(document.getElementById('qr-et-'+id), {
-                text: window.location.origin + window.location.pathname + '?id=' + id,
-                width: 80,
-                height: 80,
-                colorDark: "#C62828",
-                colorLight: "#ffffff"
-            });
+            const container = document.getElementById('qr-et-'+id);
+            if (container) {
+                try {
+                    const url = window.location.href.split('?')[0] + '?id=' + id;
+                    new QRCode(container, {
+                        text: url,
+                        width: 80,
+                        height: 80,
+                        colorDark: "#C62828",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                } catch(e) {
+                    container.innerHTML = '<span style="color:#C62828;font-size:10px;">⚠️</span>';
+                }
+            }
         }); 
+    }
+
+    // ============================================================
+    // FUNCIONES PARA CHECKLIST GLOBAL
+    // ============================================================
+    function cargarSelectCLG() { 
+        const sel = document.getElementById('clg-sucursal'); 
+        if (!sel) return;
+        sel.innerHTML = Object.entries(SUCURSALES)
+            .map(([id,s]) => `<option value="${id}" ${id==='villeta'?'selected':''}>${s.nombre}</option>`).join('');
+        cargarExtintoresCLG();
+    }
+
+    function cargarExtintoresCLG() { 
+        const s = document.getElementById('clg-sucursal').value; 
+        const sel = document.getElementById('clg-extintor'); 
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Seleccionar...</option>'; 
+        if (!s) return; 
+        Object.entries(datosExtintores).forEach(([id,d]) => {
+            if (d.sucursal === s) sel.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
+        }); 
+    }
+
+    function generarItemsCLG() { 
+        const el = document.getElementById('clg-items'); 
+        if (!el) return;
+        el.innerHTML = CHECKLIST_ITEMS.map(i => 
+            `<div class="checklist-item">
+                <span class="nombre">${i}</span>
+                <div class="opciones">
+                    <button type="button" onclick="marcarCLG(this,'ok')">✅ OK</button>
+                    <button type="button" onclick="marcarCLG(this,'nook')">❌ NO OK</button>
+                </div>
+            </div>`
+        ).join(''); 
+        actualizarProgresoCLG(); 
+    }
+
+    function marcarCLG(btn,tipo) {
+        const p = btn.parentElement;
+        p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok','sel-nook'));
+        btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');
+        actualizarProgresoCLG();
+    }
+
+    function actualizarProgresoCLG() {
+        const t = CHECKLIST_ITEMS.length;
+        const m = document.querySelectorAll('#clg-items .sel-ok, #clg-items .sel-nook').length;
+        const el = document.getElementById('clg-progress');
+        if (el) el.style.width = ((m/t)*100)+'%';
+    }
+
+    function obtenerGPS(gpsId, mapaId) {
+        if (navigator.geolocation) { 
+            navigator.geolocation.getCurrentPosition(pos => { 
+                coordenadasActuales = { lat: pos.coords.latitude, lng: pos.coords.longitude }; 
+                const el = document.getElementById(gpsId);
+                if (el) el.innerHTML = `📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; 
+                if (mapaId) mostrarMiniMapa(pos.coords.latitude, pos.coords.longitude, mapaId); 
+            }, () => { 
+                const el = document.getElementById(gpsId);
+                if (el) el.textContent = '📍 GPS no disponible'; 
+            }); 
+        }
+    }
+
+    function mostrarMiniMapa(lat, lng, containerId) { 
+        const c = document.getElementById(containerId); 
+        if (!c) return; 
+        const url = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.002},${lat-0.001},${lng+0.002},${lat+0.001}&layer=mapnik&marker=${lat},${lng}`; 
+        c.innerHTML = `<iframe class="mapa-mini" src="${url}"></iframe><a class="mapa-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">📍 Google Maps</a>`; 
+    }
+
+    async function guardarChecklistGlobal(e) {
+        e.preventDefault(); 
+        const extintorId = document.getElementById('clg-extintor').value; 
+        const inspector = document.getElementById('clg-inspector').value.trim(); 
+        const suc = document.getElementById('clg-sucursal').value;
+        if (!extintorId || !inspector || !suc) return alert('Completá todos los campos');
+        
+        const items = {}; 
+        document.querySelectorAll('#clg-items .checklist-item').forEach((item, i) => {
+            const sel = item.querySelector('.sel-ok,.sel-nook');
+            items[CHECKLIST_ITEMS[i]] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : 'NO OK') : 'No verificado';
+        });
+        
+        let fotoURL = ''; 
+        const fi = document.getElementById('clg-foto'); 
+        if (fi.files[0]) {
+            try { 
+                fotoURL = await subirFotoImgBB(fi.files[0], `clg_${extintorId}_${Date.now()}`); 
+            } catch (err) {
+                console.error('Error al subir foto:', err);
+            }
+        }
+        
+        await db.ref('inspecciones').push({
+            extintorId, 
+            sucursal: suc, 
+            tipo: 'checklist', 
+            inspector, 
+            items, 
+            observaciones: document.getElementById('clg-obs').value.trim(), 
+            fotoURL, 
+            gps: document.getElementById('clg-gps').textContent, 
+            coordenadas: coordenadasActuales, 
+            fecha: new Date().toISOString()
+        });
+        
+        alert('✅ Checklist guardado!'); 
+        document.getElementById('clg-obs').value = ''; 
+        document.getElementById('clg-foto').value = ''; 
+        document.getElementById('clg-inspector').value = '';
+        document.querySelectorAll('#clg-items button').forEach(b => b.classList.remove('sel-ok','sel-nook')); 
+        actualizarProgresoCLG();
+    }
+
+    // ============================================================
+    // FUNCIONES DE UTILIDAD
+    // ============================================================
+    async function subirFotoImgBB(file, nombre) { 
+        const fd = new FormData(); 
+        fd.append('image', file, nombre || file.name); 
+        try {
+            const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {method:'POST', body:fd}); 
+            const d = await r.json(); 
+            if (d.success) return d.data.url; 
+            throw new Error('Error al subir a ImgBB');
+        } catch(error) {
+            console.error('Error en subirFotoImgBB:', error);
+            throw error;
+        }
     }
 
     // ============================================================
