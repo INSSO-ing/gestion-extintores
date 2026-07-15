@@ -1,4 +1,14 @@
-  {
+{
+  "name": "Gestión de Extintores · SuperSpuma",
+  "short_name": "GestionExt",
+  "description": "Sistema de gestión de extintores SuperSpuma",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#C62828",
+  "theme_color": "#C62828",
+  "orientation": "portrait",
+  "icons": [
+    {
       "src": "logo-insso.png",
       "sizes": "72x72",
       "type": "image/png",
