@@ -18,6 +18,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         /* ============================================================
@@ -478,6 +479,7 @@
         .btn-azul { background: #1565C0; }
         .btn-wsp { background: #25D366; color: white; }
         .btn-small { padding: 4px 10px; font-size: 10px; }
+        .btn-descargar { background: #7B1FA2; }
 
         .btn-outline {
             background: transparent;
@@ -618,6 +620,104 @@
         .qr-container-sucursal canvas {
             display: block !important;
             margin: 0 auto !important;
+        }
+
+        /* ============================================================
+           ETIQUETA PARA IMPRIMIR
+           ============================================================ */
+        .etiqueta-print { 
+            background: white; 
+            border: 2px solid var(--primary); 
+            border-radius: 12px; 
+            padding: 20px; 
+            width: 320px; 
+            display: inline-block; 
+            margin: 12px; 
+            font-family: Arial, sans-serif;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .etiqueta-print .header-etiqueta {
+            text-align: center;
+            border-bottom: 2px solid #C62828;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .etiqueta-print .header-etiqueta h4 {
+            color: #C62828;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .etiqueta-print .header-etiqueta small {
+            font-size: 9px;
+            color: #666;
+        }
+
+        .etiqueta-print .foto-extintor {
+            width: 100%;
+            max-height: 150px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin: 8px 0;
+            background: #f5f5f5;
+        }
+
+        .etiqueta-print .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 11px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .etiqueta-print .info-row .label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .etiqueta-print .info-row .value {
+            font-weight: 700;
+            color: #333;
+        }
+
+        .etiqueta-print .qr-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 8px 0;
+        }
+
+        .etiqueta-print .qr-wrapper canvas {
+            display: block !important;
+            margin: 0 auto !important;
+        }
+
+        .etiqueta-print .badge-prioridad {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .etiqueta-print .gps-info {
+            font-size: 8px;
+            color: #999;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .etiqueta-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
         }
 
         /* ============================================================
@@ -811,6 +911,12 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            .etiqueta-print {
+                width: 280px;
+                padding: 16px;
+                margin: 8px auto;
+            }
         }
 
         @media (max-width: 480px) {
@@ -906,18 +1012,6 @@
             font-weight: 600;
         }
 
-        .etiqueta-print { 
-            background: white; 
-            border: 2px solid var(--primary); 
-            border-radius: 12px; 
-            padding: 16px; 
-            width: 280px; 
-            display: inline-block; 
-            margin: 8px; 
-            font-family: Arial;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
         .toast { 
             position: fixed; 
             bottom: 24px; 
@@ -956,6 +1050,15 @@
 
         #qr-reader video {
             border-radius: 12px;
+        }
+
+        .gps-coordenadas {
+            font-size: 10px;
+            color: #666;
+            background: #f5f5f5;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
         }
     </style>
 </head>
@@ -1053,10 +1156,10 @@
                         <div>
                             <label>🏷️ Tipo *</label>
                             <select id="form-tipo" required>
-                                <option value="PQS ABC">PQS ABC</option>
+                                <option value="PQS">PQS</option>
                                 <option value="CO2">CO2</option>
-                                <option value="Agua">Agua</option>
-                                <option value="Espuma">Espuma</option>
+                                <option value="Espuma Mecánica">Espuma Mecánica</option>
+                                <option value="Eco">Eco</option>
                             </select>
                         </div>
                         <div>
@@ -1076,7 +1179,13 @@
                         </div>
                         <div class="full">
                             <label>📸 Foto (opcional)</label>
-                            <input type="file" id="form-foto" accept="image/*">
+                            <input type="file" id="form-foto" accept="image/*" capture="environment">
+                            <small style="font-size:10px;color:#666;">En celular abrirá la cámara</small>
+                        </div>
+                        <div class="full">
+                            <label>📍 GPS</label>
+                            <div id="form-gps" class="gps-coordenadas">Obteniendo ubicación...</div>
+                            <div id="form-mapa"></div>
                         </div>
                         <div class="full">
                             <label>📝 Observaciones</label>
@@ -1160,6 +1269,7 @@
         <div id="tab-escanear" class="tab-sucursal" style="display:none;">
             <div class="tabla-container">
                 <h3 style="color:var(--primary); margin-bottom:16px;">📷 Escanear QR</h3>
+                <p style="font-size:12px;color:#666;margin-bottom:12px;">Apuntá la cámara al código QR del extintor</p>
                 <div id="qr-reader" style="width:100%; max-width:400px; margin:0 auto;"></div>
                 <button class="btn" style="width:100%; margin-top:12px;" onclick="iniciarEscaner()">📸 Iniciar Escáner</button>
                 <button class="btn btn-rojo" style="width:100%; margin-top:8px;" onclick="detenerEscaner()">⏹ Detener</button>
@@ -1169,8 +1279,11 @@
         <div id="tab-etiquetas" class="tab-sucursal" style="display:none;">
             <div class="tabla-container">
                 <h3 style="color:var(--primary); margin-bottom:16px;">🏷️ Etiquetas para Imprimir</h3>
-                <button class="btn btn-azul" style="margin-bottom:16px;" onclick="generarEtiquetas()">🔄 Generar Etiquetas</button>
-                <div id="etiquetas-container" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+                    <button class="btn btn-azul" onclick="generarEtiquetas()">🔄 Generar Etiquetas</button>
+                    <button class="btn btn-descargar" onclick="descargarEtiquetas()">📥 Descargar Todas</button>
+                </div>
+                <div id="etiquetas-container" class="etiqueta-container"></div>
             </div>
         </div>
     </div>
@@ -1187,6 +1300,7 @@
                         <th>Tipo</th>
                         <th>Vence</th>
                         <th>Prioridad</th>
+                        <th>GPS</th>
                     </tr>
                 </thead>
                 <tbody id="tabla-historial"></tbody>
@@ -1294,7 +1408,7 @@
     const PASSWORD_MAESTRA = 'SuperSpuma2024!';
 
     // ============================================================
-    // DATOS - SOLO SUCURSAL VILLETA
+    // DATOS
     // ============================================================
     const SUCURSALES = {
         'villeta': { nombre: 'Villeta (Planta Industrial)', direccion: 'Ruta Ypané-Villeta' }
@@ -1369,6 +1483,10 @@
                 tamano: extintor.tamano || 'N/A',
                 fechaProxima: extintor.fechaProxima || 'N/A',
                 sucursal: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
+                fotoURL: extintor.fotoURL || '',
+                gps: extintor.gps || '',
+                coordenadas: extintor.coordenadas || null,
+                observaciones: extintor.observaciones || '',
                 empresa: 'SuperSpuma',
                 timestamp: new Date().toISOString()
             });
@@ -1439,6 +1557,9 @@
                 tamano: extintor.tamano || 'N/A',
                 fechaProxima: extintor.fechaProxima || 'N/A',
                 sucursal: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
+                fotoURL: extintor.fotoURL || '',
+                gps: extintor.gps || '',
+                coordenadas: extintor.coordenadas || null,
                 empresa: 'SuperSpuma'
             });
 
@@ -1542,7 +1663,6 @@
             <div style="margin-top:8px;font-size:11px;color:#2E7D32;font-weight:600;">✅ Sucursal principal</div>
         </div>`;
         
-        // Abrir automáticamente la sucursal
         abrirSucursal('villeta');
     }
 
@@ -1605,18 +1725,19 @@
         const idx = tabs.indexOf(tab);
         if (idx >= 0) document.querySelectorAll('#tabs-sucursal button')[idx]?.classList.add('activo');
         
-        // Inicializar tabs según corresponda
         if (tab === 'checklist') { 
             cargarSelectExtintoresCL(); 
             generarItemsCL(); 
             obtenerGPS('cl-gps','cl-mapa'); 
+        }
+        if (tab === 'agregar') {
+            obtenerGPS('form-gps','form-mapa');
         }
         if (tab === 'historial-cl') cargarHistorialCL();
         if (tab === 'visualizar') cargarVisualizar();
         if (tab === 'etiquetas') generarEtiquetas();
         if (tab !== 'escanear') detenerEscaner();
         if (tab === 'escanear') {
-            // Iniciar automáticamente el escáner al entrar
             setTimeout(iniciarEscaner, 500);
         }
     }
@@ -1683,11 +1804,19 @@
             <p><strong>Ubicación:</strong> ${d.ubicacion||'N/A'}</p>
             <p><strong>Tipo:</strong> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p>
             <p><strong>Vence:</strong> ${d.fechaProxima||'N/A'}</p>
-            <p><strong>Observaciones:</strong> ${d.observaciones||'N/A'}</p>
+            ${d.gps ? `<p><strong>📍 GPS:</strong> ${d.gps}</p>` : ''}
+            ${d.coordenadas ? `<p><strong>📍 Coordenadas:</strong> ${d.coordenadas.lat}, ${d.coordenadas.lng}</p>` : ''}
+            ${d.observaciones ? `<p><strong>Observaciones:</strong> ${d.observaciones}</p>` : ''}
             <div style="text-align:center; margin-top:12px;" id="qr-detalle"></div>
+            ${d.coordenadas ? `<div id="mapa-detalle"></div>` : ''}
         `;
         document.getElementById('modal-detalle').style.display='flex';
-        setTimeout(() => { generarQRDetalle(id); }, 200);
+        setTimeout(() => { 
+            generarQRDetalle(id);
+            if (d.coordenadas) {
+                mostrarMiniMapa(d.coordenadas.lat, d.coordenadas.lng, 'mapa-detalle');
+            }
+        }, 200);
     }
 
     function cerrarModalDetalle() { document.getElementById('modal-detalle').style.display='none'; }
@@ -1715,20 +1844,23 @@
         
         tbody.innerHTML = items.map(([id,d]) => {
             const p = calcularPrioridad(d.fechaProxima);
+            const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
             return `<tr>
                 <td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal||'N/A'}</td>
                 <td>${d.ubicacion||'N/A'}</td>
                 <td>${d.tipo||'N/A'}</td>
                 <td>${d.fechaProxima||'N/A'}</td>
                 <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                <td style="font-size:9px;">${gpsText}</td>
             </tr>`;
-        }).join('') || '<tr><td colspan="5"><div class="empty-state"><span class="icon">📋</span>No hay extintores registrados</div></td></tr>';
+        }).join('') || '<tr><td colspan="6"><div class="empty-state"><span class="icon">📋</span>No hay extintores registrados</div></td></tr>';
     }
 
     function exportarCSVHistorial() {
-        let csv = 'Sucursal,Ubicación,Tipo,Vence,Prioridad\n';
+        let csv = 'Sucursal,Ubicación,Tipo,Vence,Prioridad,GPS\n';
         Object.entries(datosExtintores).forEach(([id,d]) => {
-            csv += `"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${calcularPrioridad(d.fechaProxima).label}"\n`;
+            const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
+            csv += `"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${calcularPrioridad(d.fechaProxima).label}","${gpsText}"\n`;
         });
         const blob = new Blob(['\uFEFF'+csv], {type:'text/csv'}); 
         const a = document.createElement('a'); 
@@ -1766,6 +1898,10 @@
             }
         }
         
+        // Obtener GPS del formulario
+        const gpsText = document.getElementById('form-gps').textContent;
+        const coords = coordenadasActuales ? { lat: coordenadasActuales.lat, lng: coordenadasActuales.lng } : null;
+        
         const nuevoExtintor = {
             sucursal: sucursalActiva,
             ubicacion,
@@ -1774,6 +1910,8 @@
             fechaProxima,
             observaciones: obs,
             fotoURL,
+            gps: gpsText.includes('Obteniendo') ? '' : gpsText,
+            coordenadas: coords,
             createdAt: new Date().toISOString()
         };
         
@@ -1782,13 +1920,11 @@
             await ref.set(nuevoExtintor);
             alert('✅ Extintor agregado correctamente');
             
-            // Limpiar formulario
             document.getElementById('form-ubicacion').value = '';
             document.getElementById('form-fecha').value = '';
             document.getElementById('form-obs').value = '';
             document.getElementById('form-foto').value = '';
             
-            // Actualizar vista
             cargarExtintoresSucursal();
             cargarHeaderSucursal();
             
@@ -1802,29 +1938,22 @@
         const d = datosExtintores[id];
         if (!d) return;
         
-        // Cargar datos en el formulario de agregar
         document.getElementById('form-ubicacion').value = d.ubicacion || '';
-        document.getElementById('form-tipo').value = d.tipo || 'PQS ABC';
+        document.getElementById('form-tipo').value = d.tipo || 'PQS';
         document.getElementById('form-tamano').value = d.tamano || '5 kg';
         document.getElementById('form-fecha').value = d.fechaProxima || '';
         document.getElementById('form-obs').value = d.observaciones || '';
         
-        // Cambiar modo a edición
         editMode = true;
         currentEditId = id;
         
-        // Cambiar el botón del formulario
         const btn = document.querySelector('#tab-agregar form button[type="submit"]');
         btn.textContent = '✏️ Actualizar Extintor';
         btn.style.background = '#1565C0';
         
-        // Cambiar el título
         document.querySelector('#tab-agregar h3').textContent = '✏️ Editar Extintor';
-        
-        // Mostrar la pestaña de agregar
         mostrarTabSucursal('agregar');
         
-        // Cambiar el comportamiento del submit
         const form = document.querySelector('#tab-agregar form');
         form.onsubmit = function(e) {
             e.preventDefault();
@@ -1855,6 +1984,9 @@
             }
         }
         
+        const gpsText = document.getElementById('form-gps').textContent;
+        const coords = coordenadasActuales ? { lat: coordenadasActuales.lat, lng: coordenadasActuales.lng } : null;
+        
         const datosActualizados = {
             sucursal: sucursalActiva,
             ubicacion,
@@ -1863,20 +1995,17 @@
             fechaProxima,
             observaciones: obs,
             fotoURL,
+            gps: gpsText.includes('Obteniendo') ? datosExtintores[id]?.gps || '' : gpsText,
+            coordenadas: coords || datosExtintores[id]?.coordenadas || null,
             updatedAt: new Date().toISOString()
         };
         
         try {
             await db.ref('extintores/' + id).update(datosActualizados);
             alert('✅ Extintor actualizado correctamente');
-            
-            // Resetear formulario
             resetearFormularioAgregar();
-            
-            // Actualizar vista
             cargarExtintoresSucursal();
             cargarHeaderSucursal();
-            
         } catch (error) {
             console.error('Error al actualizar:', error);
             alert('❌ Error al actualizar el extintor');
@@ -1917,9 +2046,7 @@
         }); 
     }
 
-    function cargarDatosExtintorCL() {
-        // Función adicional si se necesita cargar datos del extintor seleccionado
-    }
+    function cargarDatosExtintorCL() {}
 
     function generarItemsCL() { 
         const el = document.getElementById('cl-items'); 
@@ -1972,6 +2099,9 @@
             }
         }
         
+        const gpsText = document.getElementById('cl-gps').textContent;
+        const coords = coordenadasActuales ? { lat: coordenadasActuales.lat, lng: coordenadasActuales.lng } : null;
+        
         await db.ref('inspecciones').push({
             extintorId, 
             sucursal: sucursalActiva, 
@@ -1980,8 +2110,8 @@
             items, 
             observaciones: document.getElementById('cl-obs').value.trim(), 
             fotoURL, 
-            gps: document.getElementById('cl-gps').textContent, 
-            coordenadas: coordenadasActuales, 
+            gps: gpsText.includes('Obteniendo') ? '' : gpsText,
+            coordenadas: coords,
             fecha: new Date().toISOString()
         });
         
@@ -2146,7 +2276,6 @@
                         const data = JSON.parse(text);
                         id = data.id || text;
                     } catch(e) {
-                        // Si no es JSON, usar el texto directo
                         id = text;
                     }
                     if (datosExtintores[id]) {
@@ -2193,13 +2322,37 @@
         container.innerHTML = items.map(([id,d]) => {
             const p = calcularPrioridad(d.fechaProxima);
             const color = {critico:'#FF0000', alta:'#FF6600', media:'#FFCC00', baja:'#33CCFF', normal:'#00CC66'}[p.prioridad];
-            return `<div class="etiqueta-print" style="display:inline-block;">
-                <div style="background:${color}; height:8px; border-radius:4px;"></div>
-                <strong>${d.ubicacion||'N/A'}</strong><br>
-                ${d.tipo||'N/A'} · ${d.tamano||'N/A'}<br>
-                Vence: ${d.fechaProxima||'N/A'}<br>
-                <span style="color:${color}; font-weight:700;">${p.label}</span>
-                <div id="qr-et-${id}" style="margin-top:8px;"></div>
+            const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
+            
+            return `<div class="etiqueta-print" id="etiqueta-${id}">
+                <div class="header-etiqueta">
+                    <h4>🧯 SUPERSPUMA</h4>
+                    <small>Seguridad Industrial</small>
+                </div>
+                ${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-extintor">` : ''}
+                <div class="info-row">
+                    <span class="label">Ubicación:</span>
+                    <span class="value">${d.ubicacion||'N/A'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Tipo:</span>
+                    <span class="value">${d.tipo||'N/A'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Tamaño:</span>
+                    <span class="value">${d.tamano||'N/A'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Vence:</span>
+                    <span class="value">${d.fechaProxima||'N/A'}</span>
+                </div>
+                <div class="info-row" style="border-bottom: none;">
+                    <span class="label">Estado:</span>
+                    <span class="badge-prioridad" style="background:${color};">${p.label}</span>
+                </div>
+                ${gpsText ? `<div class="gps-info">📍 ${gpsText}</div>` : ''}
+                <div class="qr-wrapper" id="qr-et-${id}"></div>
+                <div style="text-align:center;font-size:7px;color:#999;margin-top:4px;">ID: ${id.slice(0,8)}</div>
             </div>`;
         }).join(''); 
         
@@ -2208,11 +2361,25 @@
             const container = document.getElementById('qr-et-'+id);
             if (container) {
                 try {
-                    const url = window.location.href.split('?')[0] + '?id=' + id;
+                    // Crear un objeto con todos los datos del extintor para que el QR contenga toda la información
+                    const datosCompletos = {
+                        id: id,
+                        ubicacion: d.ubicacion || 'Sin ubicación',
+                        tipo: d.tipo || 'No especificado',
+                        tamano: d.tamano || 'N/A',
+                        fechaProxima: d.fechaProxima || 'N/A',
+                        sucursal: SUCURSALES[d.sucursal]?.nombre || d.sucursal || 'Sin sucursal',
+                        fotoURL: d.fotoURL || '',
+                        gps: d.gps || '',
+                        coordenadas: d.coordenadas || null,
+                        observaciones: d.observaciones || '',
+                        empresa: 'SuperSpuma'
+                    };
+                    
                     new QRCode(container, {
-                        text: url,
-                        width: 80,
-                        height: 80,
+                        text: JSON.stringify(datosCompletos),
+                        width: 100,
+                        height: 100,
                         colorDark: "#C62828",
                         colorLight: "#ffffff",
                         correctLevel: QRCode.CorrectLevel.H
@@ -2222,6 +2389,52 @@
                 }
             }
         }); 
+    }
+
+    // Función para descargar todas las etiquetas como imagen (captura de pantalla)
+    function descargarEtiquetas() {
+        const container = document.getElementById('etiquetas-container');
+        if (!container || container.children.length === 0) {
+            alert('❌ No hay etiquetas para descargar. Generá etiquetas primero.');
+            return;
+        }
+        
+        // Usar html2canvas para capturar todas las etiquetas
+        html2canvas(container, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#f5f0e8'
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'etiquetas_superspuma.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(err => {
+            console.error('Error al capturar:', err);
+            alert('❌ Error al generar la imagen. Intentá descargar individualmente o usar la impresión.');
+        });
+    }
+
+    // Función para descargar etiqueta individual (por si falla la descarga masiva)
+    function descargarEtiquetaIndividual(id) {
+        const etiqueta = document.getElementById(`etiqueta-${id}`);
+        if (!etiqueta) return;
+        
+        html2canvas(etiqueta, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: 'white'
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `etiqueta_${id.slice(0,8)}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(err => {
+            console.error('Error:', err);
+            alert('❌ Error al descargar la etiqueta');
+        });
     }
 
     // ============================================================
@@ -2276,16 +2489,19 @@
     }
 
     function obtenerGPS(gpsId, mapaId) {
+        const gpsElement = document.getElementById(gpsId);
+        if (!gpsElement) return;
+        
         if (navigator.geolocation) { 
             navigator.geolocation.getCurrentPosition(pos => { 
                 coordenadasActuales = { lat: pos.coords.latitude, lng: pos.coords.longitude }; 
-                const el = document.getElementById(gpsId);
-                if (el) el.innerHTML = `📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; 
+                gpsElement.innerHTML = `📍 ${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`; 
                 if (mapaId) mostrarMiniMapa(pos.coords.latitude, pos.coords.longitude, mapaId); 
             }, () => { 
-                const el = document.getElementById(gpsId);
-                if (el) el.textContent = '📍 GPS no disponible'; 
-            }); 
+                gpsElement.textContent = '📍 GPS no disponible'; 
+            }, { enableHighAccuracy: true, timeout: 10000 });
+        } else {
+            gpsElement.textContent = '📍 GPS no soportado';
         }
     }
 
@@ -2319,6 +2535,9 @@
             }
         }
         
+        const gpsText = document.getElementById('clg-gps').textContent;
+        const coords = coordenadasActuales ? { lat: coordenadasActuales.lat, lng: coordenadasActuales.lng } : null;
+        
         await db.ref('inspecciones').push({
             extintorId, 
             sucursal: suc, 
@@ -2327,8 +2546,8 @@
             items, 
             observaciones: document.getElementById('clg-obs').value.trim(), 
             fotoURL, 
-            gps: document.getElementById('clg-gps').textContent, 
-            coordenadas: coordenadasActuales, 
+            gps: gpsText.includes('Obteniendo') ? '' : gpsText,
+            coordenadas: coords,
             fecha: new Date().toISOString()
         });
         
@@ -2361,9 +2580,10 @@
     // INICIALIZAR
     // ============================================================
     cargarDatos();
-    console.log('🔥 SuperSpuma - Villeta (Planta Industrial)');
-    console.log('📱 Los QR se generan automáticamente');
-    console.log('📲 Instalación PWA disponible');
+    console.log('🔥 SuperSpuma - Sistema de Gestión de Extintores');
+    console.log('📱 Los QR contienen TODOS los datos del extintor (foto, GPS, ubicación, etc.)');
+    console.log('📲 Cualquier celular puede leer el QR y ver la información completa');
+    console.log('🏷️ Las etiquetas se pueden descargar como imagen para imprimir');
 </script>
 </body>
 </html>
