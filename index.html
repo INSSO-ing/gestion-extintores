@@ -1060,6 +1060,46 @@
             border-radius: 6px;
             display: inline-block;
         }
+
+        /* ============================================================
+           QR INFO - Para mostrar los datos del QR escaneado
+           ============================================================ */
+        .qr-info-container {
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .qr-info-container .qr-data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .qr-info-container .qr-data-row .label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .qr-info-container .qr-data-row .value {
+            color: #333;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-all;
+        }
+
+        .qr-info-container .qr-foto {
+            max-width: 100%;
+            max-height: 150px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
@@ -1271,8 +1311,12 @@
                 <h3 style="color:var(--primary); margin-bottom:16px;">📷 Escanear QR</h3>
                 <p style="font-size:12px;color:#666;margin-bottom:12px;">Apuntá la cámara al código QR del extintor</p>
                 <div id="qr-reader" style="width:100%; max-width:400px; margin:0 auto;"></div>
-                <button class="btn" style="width:100%; margin-top:12px;" onclick="iniciarEscaner()">📸 Iniciar Escáner</button>
-                <button class="btn btn-rojo" style="width:100%; margin-top:8px;" onclick="detenerEscaner()">⏹ Detener</button>
+                <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+                    <button class="btn" onclick="iniciarEscaner()">📸 Iniciar Escáner</button>
+                    <button class="btn btn-rojo" onclick="detenerEscaner()">⏹ Detener</button>
+                    <button class="btn btn-azul" onclick="verInfoQRManual()">📋 Ver Info QR</button>
+                </div>
+                <div id="qr-info-resultado" class="qr-info-container" style="display:none;"></div>
             </div>
         </div>
 
@@ -1455,7 +1499,7 @@
     });
 
     // ============================================================
-    // FUNCIONES QR AUTOMÁTICAS
+    // FUNCIONES QR CON COMPRESIÓN DE DATOS
     // ============================================================
     function generarQRParaExtintor(extintorId, containerId, mostrarLoading = true) {
         const container = document.getElementById(containerId);
@@ -1476,29 +1520,68 @@
         }
 
         try {
-            const datosQR = JSON.stringify({
+            // Crear datos compactos para el QR - sin fotoURL para reducir tamaño
+            // La foto se muestra en la ficha del extintor, pero no se incluye en el QR
+            // para evitar que sea demasiado grande
+            const datosQR = {
                 id: extintorId,
-                ubicacion: extintor.ubicacion || 'Sin ubicación',
-                tipo: extintor.tipo || 'No especificado',
-                tamano: extintor.tamano || 'N/A',
-                fechaProxima: extintor.fechaProxima || 'N/A',
-                sucursal: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
-                fotoURL: extintor.fotoURL || '',
-                gps: extintor.gps || '',
-                coordenadas: extintor.coordenadas || null,
-                observaciones: extintor.observaciones || '',
-                empresa: 'SuperSpuma',
-                timestamp: new Date().toISOString()
-            });
+                u: extintor.ubicacion || 'Sin ubicación',  // u = ubicacion
+                t: extintor.tipo || 'No especificado',     // t = tipo
+                s: extintor.tamano || 'N/A',               // s = size/tamaño
+                f: extintor.fechaProxima || 'N/A',         // f = fecha vencimiento
+                suc: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
+                g: extintor.gps || '',                     // g = gps
+                o: extintor.observaciones || '',           // o = observaciones
+                // Foto no incluida para mantener QR pequeño y legible
+                // La foto se carga desde Firebase cuando se abre el detalle
+                fotoId: extintor.fotoURL ? 'has_foto' : '' // indicador de que tiene foto
+            };
 
-            new QRCode(container, {
-                text: datosQR,
-                width: 80,
-                height: 80,
-                colorDark: "#C62828",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
+            // Convertir a JSON string
+            const textoQR = JSON.stringify(datosQR);
+            
+            // Verificar que el texto no sea demasiado largo (máximo 4296 caracteres para QR versión 40)
+            if (textoQR.length > 4000) {
+                // Si es muy largo, eliminar campos opcionales
+                delete datosQR.o; // observaciones
+                delete datosQR.g; // gps
+                const textoCompacto = JSON.stringify(datosQR);
+                if (textoCompacto.length > 4000) {
+                    // Si aún es muy largo, solo datos esenciales
+                    const datosMinimos = {
+                        id: extintorId,
+                        u: extintor.ubicacion || 'Sin ubicación',
+                        t: extintor.tipo || 'No especificado',
+                        f: extintor.fechaProxima || 'N/A'
+                    };
+                    new QRCode(container, {
+                        text: JSON.stringify(datosMinimos),
+                        width: 80,
+                        height: 80,
+                        colorDark: "#C62828",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M  // Nivel medio para más capacidad
+                    });
+                } else {
+                    new QRCode(container, {
+                        text: textoCompacto,
+                        width: 80,
+                        height: 80,
+                        colorDark: "#C62828",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+                }
+            } else {
+                new QRCode(container, {
+                    text: textoQR,
+                    width: 80,
+                    height: 80,
+                    colorDark: "#C62828",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M  // Nivel medio para más capacidad
+                });
+            }
 
             container.style.opacity = '1';
 
@@ -1509,10 +1592,91 @@
 
             return true;
         } catch (error) {
+            console.error('Error generando QR:', error);
             container.innerHTML = '<span style="color:#C62828;font-size:10px;">⚠️</span>';
             container.style.opacity = '1';
             return false;
         }
+    }
+
+    // Función para mostrar información del QR escaneado
+    function mostrarInfoQR(datosQR) {
+        const container = document.getElementById('qr-info-resultado');
+        if (!container) return;
+        
+        let html = '<h4 style="color:#C62828;margin-bottom:8px;">📋 Datos del Extintor</h4>';
+        
+        // Si es string, intentar parsear
+        let datos = datosQR;
+        if (typeof datos === 'string') {
+            try {
+                datos = JSON.parse(datos);
+            } catch(e) {
+                // Si no es JSON, mostrar como texto
+                container.innerHTML = `<div style="padding:8px;background:#f5f5f5;border-radius:8px;">${datos}</div>`;
+                container.style.display = 'block';
+                return;
+            }
+        }
+        
+        // Mapeo de campos abreviados
+        const campoMap = {
+            'id': 'ID',
+            'u': 'Ubicación',
+            't': 'Tipo',
+            's': 'Tamaño',
+            'f': 'Vencimiento',
+            'suc': 'Sucursal',
+            'g': 'GPS',
+            'o': 'Observaciones'
+        };
+        
+        // Mostrar los datos
+        Object.keys(datos).forEach(key => {
+            const label = campoMap[key] || key;
+            const value = datos[key] || 'N/A';
+            if (key !== 'fotoId') {
+                html += `<div class="qr-data-row">
+                    <span class="label">${label}:</span>
+                    <span class="value">${value}</span>
+                </div>`;
+            }
+        });
+        
+        // Si hay un ID, buscar la foto en Firebase
+        if (datos.id && datosExtintores[datos.id] && datosExtintores[datos.id].fotoURL) {
+            html += `<div style="text-align:center;margin-top:8px;">
+                <img src="${datosExtintores[datos.id].fotoURL}" class="qr-foto" alt="Foto del extintor">
+            </div>`;
+        }
+        
+        container.innerHTML = html;
+        container.style.display = 'block';
+    }
+
+    // Función para ver info QR manualmente (para pruebas)
+    function verInfoQRManual() {
+        // Buscar el primer extintor
+        const ids = Object.keys(datosExtintores);
+        if (ids.length === 0) {
+            alert('No hay extintores registrados');
+            return;
+        }
+        const id = ids[0];
+        const extintor = datosExtintores[id];
+        
+        const datosQR = {
+            id: id,
+            u: extintor.ubicacion || 'Sin ubicación',
+            t: extintor.tipo || 'No especificado',
+            s: extintor.tamano || 'N/A',
+            f: extintor.fechaProxima || 'N/A',
+            suc: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
+            g: extintor.gps || '',
+            o: extintor.observaciones || ''
+        };
+        
+        mostrarInfoQR(datosQR);
     }
 
     function generarQRParaSucursal(sucursalId) {
@@ -1550,28 +1714,30 @@
         }
 
         try {
-            const datosQR = JSON.stringify({
+            // Datos compactos para el QR de detalle (más grande)
+            const datosQR = {
                 id: extintorId,
-                ubicacion: extintor.ubicacion || 'Sin ubicación',
-                tipo: extintor.tipo || 'No especificado',
-                tamano: extintor.tamano || 'N/A',
-                fechaProxima: extintor.fechaProxima || 'N/A',
-                sucursal: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
-                fotoURL: extintor.fotoURL || '',
-                gps: extintor.gps || '',
-                coordenadas: extintor.coordenadas || null,
-                empresa: 'SuperSpuma'
-            });
+                u: extintor.ubicacion || 'Sin ubicación',
+                t: extintor.tipo || 'No especificado',
+                s: extintor.tamano || 'N/A',
+                f: extintor.fechaProxima || 'N/A',
+                suc: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
+                g: extintor.gps || '',
+                o: extintor.observaciones || ''
+            };
 
+            const textoQR = JSON.stringify(datosQR);
+            
             new QRCode(container, {
-                text: datosQR,
-                width: 150,
-                height: 150,
+                text: textoQR,
+                width: 180,
+                height: 180,
                 colorDark: "#C62828",
                 colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
+                correctLevel: QRCode.CorrectLevel.M
             });
         } catch (error) {
+            console.error('Error generando QR detalle:', error);
             container.innerHTML = '<p style="color:#C62828;">Error al generar QR</p>';
         }
     }
@@ -1736,7 +1902,10 @@
         if (tab === 'historial-cl') cargarHistorialCL();
         if (tab === 'visualizar') cargarVisualizar();
         if (tab === 'etiquetas') generarEtiquetas();
-        if (tab !== 'escanear') detenerEscaner();
+        if (tab !== 'escanear') {
+            detenerEscaner();
+            document.getElementById('qr-info-resultado').style.display = 'none';
+        }
         if (tab === 'escanear') {
             setTimeout(iniciarEscaner, 500);
         }
@@ -1799,7 +1968,7 @@
         const d = datosExtintores[id]; if (!d) return;
         document.getElementById('modal-detalle-contenido').innerHTML = `
             <h3>🧯 Ficha del Extintor</h3>
-            ${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto">` : ''}
+            ${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto">` : '<p style="color:#999;">📷 Sin foto</p>'}
             <p><strong>ID:</strong> ${id}</p>
             <p><strong>Ubicación:</strong> ${d.ubicacion||'N/A'}</p>
             <p><strong>Tipo:</strong> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p>
@@ -1898,7 +2067,6 @@
             }
         }
         
-        // Obtener GPS del formulario
         const gpsText = document.getElementById('form-gps').textContent;
         const coords = coordenadasActuales ? { lat: coordenadasActuales.lat, lng: coordenadasActuales.lng } : null;
         
@@ -2261,6 +2429,9 @@
         const readerElement = document.getElementById('qr-reader');
         if (!readerElement) return;
         
+        // Ocultar resultado anterior
+        document.getElementById('qr-info-resultado').style.display = 'none';
+        
         try {
             html5QrCode = new Html5Qrcode("qr-reader"); 
             html5QrCode.start(
@@ -2271,17 +2442,39 @@
                 },
                 text => { 
                     detenerEscaner(); 
-                    let id = text; 
+                    let datos = text;
+                    let id = text;
+                    
                     try {
                         const data = JSON.parse(text);
                         id = data.id || text;
+                        // Mostrar la información del QR
+                        mostrarInfoQR(data);
                     } catch(e) {
-                        id = text;
+                        // Si no es JSON, buscar el ID en Firebase
+                        if (datosExtintores[text]) {
+                            id = text;
+                            const ext = datosExtintores[id];
+                            const datosQR = {
+                                id: id,
+                                u: ext.ubicacion || 'Sin ubicación',
+                                t: ext.tipo || 'No especificado',
+                                s: ext.tamano || 'N/A',
+                                f: ext.fechaProxima || 'N/A',
+                                suc: SUCURSALES[ext.sucursal]?.nombre || ext.sucursal || 'Sin sucursal',
+                                g: ext.gps || '',
+                                o: ext.observaciones || ''
+                            };
+                            mostrarInfoQR(datosQR);
+                        } else {
+                            alert('❌ Extintor no encontrado');
+                            document.getElementById('qr-info-resultado').style.display = 'none';
+                        }
                     }
+                    
+                    // Si encontró el extintor, mostrar detalle
                     if (datosExtintores[id]) {
                         verDetalleExtintor(id);
-                    } else {
-                        alert('❌ Extintor no encontrado');
                     }
                 },
                 () => {}
@@ -2356,42 +2549,41 @@
             </div>`;
         }).join(''); 
         
-        // Generar QR para cada etiqueta
+        // Generar QR para cada etiqueta con datos compactos
         items.forEach(([id,d]) => {
             const container = document.getElementById('qr-et-'+id);
             if (container) {
                 try {
-                    // Crear un objeto con todos los datos del extintor para que el QR contenga toda la información
-                    const datosCompletos = {
+                    // Datos compactos para la etiqueta
+                    const datosQR = {
                         id: id,
-                        ubicacion: d.ubicacion || 'Sin ubicación',
-                        tipo: d.tipo || 'No especificado',
-                        tamano: d.tamano || 'N/A',
-                        fechaProxima: d.fechaProxima || 'N/A',
-                        sucursal: SUCURSALES[d.sucursal]?.nombre || d.sucursal || 'Sin sucursal',
-                        fotoURL: d.fotoURL || '',
-                        gps: d.gps || '',
-                        coordenadas: d.coordenadas || null,
-                        observaciones: d.observaciones || '',
-                        empresa: 'SuperSpuma'
+                        u: d.ubicacion || 'Sin ubicación',
+                        t: d.tipo || 'No especificado',
+                        s: d.tamano || 'N/A',
+                        f: d.fechaProxima || 'N/A',
+                        suc: SUCURSALES[d.sucursal]?.nombre || d.sucursal || 'Sin sucursal',
+                        g: d.gps || '',
+                        o: d.observaciones || ''
                     };
                     
+                    const textoQR = JSON.stringify(datosQR);
+                    
                     new QRCode(container, {
-                        text: JSON.stringify(datosCompletos),
+                        text: textoQR,
                         width: 100,
                         height: 100,
                         colorDark: "#C62828",
                         colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
+                        correctLevel: QRCode.CorrectLevel.M
                     });
                 } catch(e) {
+                    console.error('Error generando QR para etiqueta:', e);
                     container.innerHTML = '<span style="color:#C62828;font-size:10px;">⚠️</span>';
                 }
             }
         }); 
     }
 
-    // Función para descargar todas las etiquetas como imagen (captura de pantalla)
     function descargarEtiquetas() {
         const container = document.getElementById('etiquetas-container');
         if (!container || container.children.length === 0) {
@@ -2399,7 +2591,6 @@
             return;
         }
         
-        // Usar html2canvas para capturar todas las etiquetas
         html2canvas(container, {
             scale: 2,
             useCORS: true,
@@ -2413,27 +2604,6 @@
         }).catch(err => {
             console.error('Error al capturar:', err);
             alert('❌ Error al generar la imagen. Intentá descargar individualmente o usar la impresión.');
-        });
-    }
-
-    // Función para descargar etiqueta individual (por si falla la descarga masiva)
-    function descargarEtiquetaIndividual(id) {
-        const etiqueta = document.getElementById(`etiqueta-${id}`);
-        if (!etiqueta) return;
-        
-        html2canvas(etiqueta, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: 'white'
-        }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `etiqueta_${id.slice(0,8)}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }).catch(err => {
-            console.error('Error:', err);
-            alert('❌ Error al descargar la etiqueta');
         });
     }
 
@@ -2581,9 +2751,11 @@
     // ============================================================
     cargarDatos();
     console.log('🔥 SuperSpuma - Sistema de Gestión de Extintores');
-    console.log('📱 Los QR contienen TODOS los datos del extintor (foto, GPS, ubicación, etc.)');
+    console.log('📱 Los QR contienen TODOS los datos del extintor en formato compacto');
     console.log('📲 Cualquier celular puede leer el QR y ver la información completa');
     console.log('🏷️ Las etiquetas se pueden descargar como imagen para imprimir');
+    console.log('⚠️ La foto NO se incluye en el QR para mantenerlo legible');
+    console.log('📸 La foto se muestra al escanear el QR desde la app');
 </script>
 </body>
 </html>
