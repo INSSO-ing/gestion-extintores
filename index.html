@@ -2,1500 +2,1892 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#C62828">
-    <title>INSSO - Gestión de Extintores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SuperSpuma · Gestión de Extintores</title>
     
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SuperSpuma">
     <link rel="manifest" href="manifest.json">
-    
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="apple-touch-icon" href="https://i.imgur.com/MbDDBwH.png">
+    <meta name="theme-color" content="#C62828">
+    <meta name="description" content="Sistema de gestión de extintores SuperSpuma">
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
     <style>
+        /* ============================================================
+           VARIABLES Y ESTILOS PRINCIPALES
+           ============================================================ */
         :root {
             --primary: #C62828;
-            --primary-dark: #8E0000;
-            --primary-light: #FF5F52;
-            --bg: #F5F5F5;
-            --surface: #FFFFFF;
-            --text: #212121;
-            --text-secondary: #757575;
+            --primary-dark: #B71C1C;
+            --primary-light: #EF5350;
+            --secondary: #D32F2F;
+            --accent: #FF6F00;
             --success: #2E7D32;
-            --warning: #F9A825;
+            --warning: #F57F17;
             --danger: #C62828;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1);
-            --radius: 12px;
-            --radius-sm: 8px;
-            --nav-height: 70px;
+            --bg: #f5f0e8;
+            --card-bg: rgba(255,255,255,0.92);
+            --text: #1a1a1a;
+            --text-sec: #5D4037;
+            --header-bg: linear-gradient(135deg, #C62828, #B71C1C);
+            --sombra: 0 4px 20px rgba(198, 40, 40, 0.15);
+            --marron: #C62828;
+            --crema: #FFF8E1;
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #121212;
-                --surface: #1E1E1E;
-                --text: #E0E0E0;
-                --text-secondary: #B0B0B0;
-            }
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            padding-bottom: calc(var(--nav-height) + 20px);
+        .dark-mode {
+            --bg: #121212;
+            --card-bg: rgba(30,30,30,0.95);
+            --text: #FFF8E1;
+            --text-sec: #ccc;
+            --header-bg: linear-gradient(135deg, #8B0000, #5C0000);
+            --sombra: 0 4px 20px rgba(255,0,0,0.1);
+            --crema: #1a1a1a;
         }
 
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-lg);
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
         }
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            min-height: 100vh; 
+            transition: var(--transition);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(198, 40, 40, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(198, 40, 40, 0.03) 0%, transparent 50%);
+        }
+
+        .app-container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 16px; 
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header { 
+            background: var(--header-bg); 
+            color: #FFF8E1; 
+            padding: 16px 24px; 
+            border-radius: var(--border-radius); 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap;
+            box-shadow: 0 4px 20px rgba(198, 40, 40, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '🧯';
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            font-size: 120px;
+            opacity: 0.05;
+            transform: rotate(-15deg);
+        }
+
+        .header img { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 12px; 
+            background: #FFF8E1; 
+            padding: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header h1 { 
+            font-size: 22px; 
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header small { 
+            opacity: 0.85; 
+            font-weight: 400;
+            display: block;
+            font-size: 12px;
+        }
+
+        .header .header-right { 
+            margin-left: auto; 
+            display: flex; 
+            gap: 8px; 
+            align-items: center; 
+        }
+
+        .btn-icon { 
+            background: rgba(255,255,255,0.15); 
+            border: 1px solid rgba(255,255,255,0.2); 
+            color: #FFF8E1; 
+            padding: 10px 14px; 
+            border-radius: 12px; 
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-icon:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .conexion-dot { 
+            width: 10px; 
+            height: 10px; 
+            border-radius: 50%; 
+            background: #4CAF50; 
+            display: inline-block;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ============================================================
+           NAVEGACIÓN PRINCIPAL
+           ============================================================ */
+        .nav-principal { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap;
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--sombra);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-principal button { 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            font-size: 13px; 
+            cursor: pointer; 
+            background: transparent;
+            color: var(--text-sec);
+            transition: var(--transition);
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .nav-principal button:hover {
+            background: rgba(198, 40, 40, 0.08);
+        }
+
+        .nav-principal button.activo { 
+            background: var(--primary); 
+            color: #FFF8E1;
+            box-shadow: 0 4px 15px rgba(198, 40, 40, 0.3);
+        }
+
+        /* ============================================================
+           CARDS
+           ============================================================ */
+        .grid-sucursales { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 16px; 
+            margin-bottom: 20px; 
+        }
+
+        .card-sucursal { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px); 
+            border-radius: var(--border-radius); 
+            padding: 20px; 
+            cursor: pointer; 
+            transition: var(--transition); 
+            border-left: 5px solid var(--primary);
+            box-shadow: var(--sombra);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-sucursal::after {
+            content: '→';
+            position: absolute;
+            right: 16px;
+            bottom: 16px;
+            font-size: 24px;
+            opacity: 0.2;
+            transition: var(--transition);
+        }
+
+        .card-sucursal:hover { 
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(198, 40, 40, 0.2);
+        }
+
+        .card-sucursal:hover::after {
+            opacity: 0.6;
+            transform: translateX(4px);
+        }
+
+        .card-sucursal h3 { 
+            font-size: 18px; 
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .card-sucursal .direccion {
+            font-size: 12px;
+            color: var(--text-sec);
+            opacity: 0.7;
+        }
+
+        .card-sucursal .stats-mini {
+            margin-top: 12px;
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+        }
+
+        .card-sucursal .stats-mini span {
+            background: rgba(198, 40, 40, 0.08);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .card-sucursal .stats-mini .critico {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        /* ============================================================
+           SUCURSAL HEADER
+           ============================================================ */
+        .sucursal-header { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px); 
+            border-radius: var(--border-radius); 
+            padding: 24px; 
+            margin-bottom: 20px; 
+            border-left: 6px solid var(--primary);
+            box-shadow: var(--sombra);
+        }
+
+        .sucursal-header .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             gap: 12px;
-            font-size: 1.5rem;
-            font-weight: 700;
         }
 
-        .install-banner {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow-lg);
-            z-index: 1000;
-            display: none;
-            max-width: 90%;
-            width: 400px;
-        }
-
-        .install-banner.show { display: block; }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            border-left: 4px solid var(--primary);
-        }
-
-        .stat-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .stat-card-title {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .stat-card-value {
-            font-size: 2.5rem;
-            font-weight: 700;
+        .sucursal-header h2 {
+            font-size: 22px;
             color: var(--primary);
         }
 
-        .stat-card.success { border-left-color: var(--success); }
-        .stat-card.success .stat-card-value { color: var(--success); }
-        .stat-card.warning { border-left-color: var(--warning); }
-        .stat-card.warning .stat-card-value { color: var(--warning); }
-        .stat-card.danger { border-left-color: var(--danger); }
-        .stat-card.danger .stat-card-value { color: var(--danger); }
-
-        .card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow);
+        .sucursal-header .direccion {
+            font-size: 13px;
+            color: var(--text-sec);
+            opacity: 0.7;
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid var(--bg);
+        .stats { 
+            display: flex; 
+            gap: 12px; 
+            margin-top: 16px; 
+            flex-wrap: wrap; 
         }
 
-        .card-title {
-            font-size: 1.25rem;
+        .stat { 
+            text-align: center; 
+            background: var(--crema); 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            min-width: 80px;
+            flex: 1;
+            min-width: 70px;
+            transition: var(--transition);
+        }
+
+        .stat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .stat .num { 
+            font-size: 28px; 
+            font-weight: 800; 
+            color: var(--primary);
+        }
+
+        .stat .lbl { 
+            font-size: 10px; 
+            color: var(--text-sec); 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* ============================================================
+           TABS
+           ============================================================ */
+        .tabs { 
+            display: flex; 
+            gap: 4px; 
+            margin-bottom: 16px; 
+            flex-wrap: wrap;
+            background: var(--card-bg);
+            padding: 6px;
+            border-radius: 12px;
+            box-shadow: var(--sombra);
+        }
+
+        .tabs button { 
+            padding: 10px 16px; 
+            border: none; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-size: 12px; 
+            cursor: pointer; 
+            background: transparent;
+            color: var(--text-sec);
+            transition: var(--transition);
+            flex: 1;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .tabs button:hover {
+            background: rgba(198, 40, 40, 0.06);
+        }
+
+        .tabs button.activo { 
+            background: var(--primary); 
+            color: #FFF8E1;
+            box-shadow: 0 4px 15px rgba(198, 40, 40, 0.25);
+        }
+
+        /* ============================================================
+           TABLA
+           ============================================================ */
+        .tabla-container { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(8px); 
+            border-radius: var(--border-radius); 
+            padding: 16px; 
+            box-shadow: var(--sombra); 
+            margin-bottom: 16px; 
+            overflow-x: auto;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 12px; 
+        }
+
+        th { 
+            background: var(--primary); 
+            color: #FFF8E1; 
+            padding: 12px 14px; 
+            text-align: left; 
+            font-size: 10px; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
-        .btn {
+        td { 
+            padding: 10px 14px; 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(198, 40, 40, 0.03);
+        }
+
+        /* ============================================================
+           BADGES
+           ============================================================ */
+        .badge { 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-size: 9px; 
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: inline-block;
+        }
+
+        .badge.critico { background: #FF0000; color: white; box-shadow: 0 2px 10px rgba(255,0,0,0.3); }
+        .badge.alta { background: #FF6600; color: white; box-shadow: 0 2px 10px rgba(255,102,0,0.3); }
+        .badge.media { background: #FFCC00; color: #333; }
+        .badge.baja { background: #33CCFF; color: #333; }
+        .badge.normal { background: #00CC66; color: white; }
+        .badge.completado { background: #2E7D32; color: white; }
+        .badge.pendiente { background: #C62828; color: white; }
+
+        /* ============================================================
+           BOTONES
+           ============================================================ */
+        .btn { 
+            padding: 8px 16px; 
+            border: none; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-size: 11px; 
+            cursor: pointer; 
+            background: var(--primary); 
+            color: #FFF8E1;
+            transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
+            gap: 4px;
         }
 
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-secondary { background: var(--bg); color: var(--text); border: 2px solid var(--text-secondary); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-sm { padding: 8px 16px; font-size: 0.85rem; width: auto; }
-        .btn-whatsapp { background: #25D366; color: white; }
-        .btn-download { background: #1976D2; color: white; }
-
-        .form-group { margin-bottom: 20px; }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(198, 40, 40, 0.3);
         }
 
-        .form-control {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: var(--radius-sm);
-            background: var(--surface);
+        .btn-rojo { background: #C62828; }
+        .btn-verde { background: #2E7D32; }
+        .btn-azul { background: #1565C0; }
+        .btn-wsp { background: #25D366; color: white; }
+        .btn-small { padding: 4px 10px; font-size: 10px; }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ============================================================
+           FORMULARIOS
+           ============================================================ */
+        .form-row { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-bottom: 12px; 
+        }
+
+        .form-row .full { 
+            grid-column: 1 / -1; 
+        }
+
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px 14px; 
+            border: 2px solid rgba(198, 40, 40, 0.15); 
+            border-radius: 12px; 
+            font-size: 13px; 
+            background: var(--card-bg); 
             color: var(--text);
-            font-size: 1rem;
+            transition: var(--transition);
         }
 
-        .form-control:focus {
-            outline: none;
+        input:focus, select:focus, textarea:focus {
             border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(198, 40, 40, 0.1);
         }
 
-        .bottom-nav {
+        label { 
+            display: block; 
+            font-weight: 600; 
+            font-size: 11px; 
+            color: var(--text-sec); 
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ============================================================
+           CHECKLIST
+           ============================================================ */
+        .checklist-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 10px 0; 
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .checklist-item .nombre { 
+            flex: 1; 
+            font-weight: 600; 
+            font-size: 13px; 
+        }
+
+        .checklist-item .opciones button { 
+            padding: 6px 16px; 
+            border-radius: 8px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            border: 2px solid #ccc; 
+            cursor: pointer; 
+            background: white; 
+            color: #333;
+            transition: var(--transition);
+        }
+
+        .checklist-item .opciones button:hover {
+            transform: scale(1.05);
+        }
+
+        .checklist-item .opciones button.sel-ok { 
+            background: #2E7D32; 
+            color: white; 
+            border-color: #2E7D32;
+            box-shadow: 0 2px 10px rgba(46, 125, 50, 0.3);
+        }
+
+        .checklist-item .opciones button.sel-nook { 
+            background: #C62828; 
+            color: white; 
+            border-color: #C62828;
+            box-shadow: 0 2px 10px rgba(198, 40, 40, 0.3);
+        }
+
+        .progress-bar { 
+            width: 100%; 
+            height: 8px; 
+            background: rgba(0,0,0,0.05); 
+            border-radius: 4px; 
+            margin: 12px 0; 
+            overflow: hidden; 
+        }
+
+        .progress-bar .fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #C62828, #EF5350);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+        }
+
+        /* ============================================================
+           QR
+           ============================================================ */
+        .qr-container-sucursal { 
+            background: white; 
+            padding: 8px; 
+            border-radius: 12px; 
+            display: inline-block; 
+            margin: 4px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            min-width: 100px;
+            min-height: 100px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .qr-container-sucursal:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transform: scale(1.02);
+        }
+
+        .qr-container-sucursal canvas {
+            display: block !important;
+            margin: 0 auto !important;
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-overlay { 
+            position: fixed; 
+            top:0; 
+            left:0; 
+            width:100%; 
+            height:100%; 
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(10px);
+            display:flex; 
+            align-items:center; 
+            justify-content:center; 
+            z-index:1000; 
+            padding: 16px; 
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal { 
+            background: var(--card-bg); 
+            border-radius: var(--border-radius); 
+            padding: 28px; 
+            max-width: 650px; 
+            width: 100%; 
+            max-height: 90vh; 
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal h3 {
+            color: var(--primary);
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .modal-detalle-foto { 
+            width: 100%; 
+            max-height: 250px; 
+            object-fit: contain; 
+            background: rgba(0,0,0,0.03); 
+            border-radius: 12px; 
+            margin-bottom: 12px; 
+        }
+
+        /* ============================================================
+           BANNER DE INSTALACIÓN PWA
+           ============================================================ */
+        .install-banner {
+            display: none;
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            height: var(--nav-height);
-            background: var(--surface);
-            box-shadow: 0 -4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
+            background: linear-gradient(135deg, #C62828, #B71C1C);
+            color: #FFF8E1;
+            padding: 16px 24px;
+            z-index: 999;
+            box-shadow: 0 -4px 30px rgba(198, 40, 40, 0.4);
+            animation: slideUp 0.5s ease-out;
             align-items: center;
-            z-index: 1000;
-        }
-
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 8px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .nav-item.active { color: var(--primary); }
-        .nav-item-icon { font-size: 1.5rem; }
-
-        .view { display: none; animation: fadeIn 0.3s ease; }
-        .view.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th, td { padding: 16px; text-align: left; border-bottom: 1px solid var(--bg); }
-        th { background: var(--bg); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; }
-
-        .list-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px;
-            border-bottom: 1px solid var(--bg);
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .list-item:hover { background: var(--bg); }
-        .list-item-icon { font-size: 2.5rem; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: var(--bg); border-radius: var(--radius-sm); }
-        .list-item-content { flex: 1; }
-        .list-item-title { font-weight: 700; margin-bottom: 4px; }
-        .list-item-subtitle { font-size: 0.9rem; color: var(--text-secondary); }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal.active { display: flex; }
-
-        .modal-content {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 32px;
-            width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 16px; right: 16px;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-        }
-
-        /* DETALLE EXTINTOR */
-        .extintor-detalle {
-            text-align: center;
-        }
-
-        .extintor-detalle-foto {
-            width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-            border-radius: var(--radius);
-            margin-bottom: 20px;
-            background: var(--bg);
-        }
-
-        .extintor-detalle-foto-placeholder {
-            width: 100%;
-            height: 200px;
-            background: var(--bg);
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 6rem;
-            margin-bottom: 20px;
-        }
-
-        .extintor-detalle-qr {
-            background: white;
-            padding: 20px;
-            border-radius: var(--radius);
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-
-        .extintor-detalle-info {
-            text-align: left;
-            background: var(--bg);
-            padding: 20px;
-            border-radius: var(--radius);
-            margin-bottom: 20px;
-        }
-
-        .extintor-detalle-info-row {
-            display: flex;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .extintor-detalle-info-row:last-child {
-            border-bottom: none;
-        }
-
-        .extintor-detalle-info-label {
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .extintor-detalle-info-value {
-            font-weight: 700;
-            color: var(--text);
-            text-align: right;
-        }
-
-        .extintor-detalle-acciones {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-top: 20px;
+            flex-wrap: wrap;
         }
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+        .install-banner.show {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .install-banner .install-text {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .install-banner .install-text strong {
+            font-size: 16px;
+            display: block;
+        }
+
+        .install-banner .install-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .install-banner .btn-install {
+            background: white;
+            color: #C62828;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .install-banner .btn-install:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .install-banner .btn-close-install {
+            background: rgba(255,255,255,0.15);
+            color: #FFF8E1;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .install-banner .btn-close-install:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 768px) {
+            .form-row { 
+                grid-template-columns: 1fr; 
+            }
+
+            .header { 
+                flex-direction: column; 
+                text-align: center; 
+            }
+
+            .header::before {
+                font-size: 80px;
+                right: -10px;
+                top: -10px;
+            }
+
+            .grid-sucursales { 
+                grid-template-columns: 1fr; 
+            }
+
+            .tabs button {
+                font-size: 10px;
+                padding: 8px 12px;
+                min-width: 50px;
+            }
+
+            .nav-principal button {
+                font-size: 11px;
+                padding: 10px 12px;
+                min-width: 60px;
+            }
+
+            .stats {
+                gap: 8px;
+            }
+
+            .stat {
+                padding: 10px 14px;
+                min-width: 60px;
+            }
+
+            .stat .num {
+                font-size: 22px;
+            }
+
+            .install-banner {
+                flex-direction: column;
+                text-align: center;
+                padding: 16px;
+            }
+
+            .install-banner .install-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .sucursal-header .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 12px 16px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .card-sucursal {
+                padding: 16px;
+            }
+
+            .tabla-container {
+                padding: 10px;
+            }
+
+            table {
+                font-size: 10px;
+            }
+
+            th, td {
+                padding: 6px 8px;
+            }
+
+            .btn {
+                font-size: 10px;
+                padding: 6px 12px;
+            }
+        }
+
+        /* ============================================================
+           SCROLLBAR PERSONALIZADA
+           ============================================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* ============================================================
+           OTROS
+           ============================================================ */
+        .foto-mini { 
+            width: 40px; 
+            height: 40px; 
+            object-fit: contain; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            background: rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: var(--transition);
+        }
+
+        .foto-mini:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .mapa-mini { 
+            width: 100%; 
+            height: 150px; 
+            border-radius: 12px; 
+            margin-top: 8px; 
+            border: 1px solid rgba(0,0,0,0.05); 
+        }
+
+        .mapa-link { 
+            font-size: 11px; 
+            color: var(--primary); 
+            cursor: pointer; 
+            text-decoration: underline; 
+            display: block; 
+            margin-top: 4px;
             font-weight: 600;
         }
 
-        .badge-success { background: #E8F5E9; color: var(--success); }
-        .badge-warning { background: #FFF8E1; color: var(--warning); }
-        .badge-danger { background: #FFEBEE; color: var(--danger); }
-
-        #reader { width: 100%; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 20px; }
-
-        .search-filter { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-        .search-filter input, .search-filter select { flex: 1; min-width: 200px; }
-
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
-        .empty-state-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.5; }
-
-        .extintor-info-card {
-            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
-            border: 2px solid var(--primary);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 20px;
+        .etiqueta-print { 
+            background: white; 
+            border: 2px solid var(--primary); 
+            border-radius: 12px; 
+            padding: 16px; 
+            width: 280px; 
+            display: inline-block; 
+            margin: 8px; 
+            font-family: Arial;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        .extintor-info-header {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 16px;
+        .toast { 
+            position: fixed; 
+            bottom: 24px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: var(--primary); 
+            color: #FFF8E1; 
+            padding: 12px 24px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            z-index: 2000; 
+            font-size: 14px;
+            box-shadow: 0 4px 20px rgba(198, 40, 40, 0.3);
+            animation: slideUp 0.3s ease-out;
         }
 
-        .extintor-foto {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: var(--radius-sm);
-            border: 3px solid var(--primary);
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-sec);
+            opacity: 0.6;
         }
 
-        .extintor-detalles h3 {
-            color: var(--primary);
+        .empty-state .icon {
+            font-size: 48px;
+            display: block;
             margin-bottom: 12px;
-            font-size: 1.3rem;
-        }
-
-        .extintor-detalles p {
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .extintor-info-header { flex-direction: column; align-items: center; text-align: center; }
-            .extintor-detalle-acciones { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <span>🧯</span>
-                <span>INSSO Extintores</span>
-            </div>
-            <button id="btn-install" class="btn btn-sm" style="width: auto; background: white; color: var(--primary); display: none;" onclick="installApp()">
-                📲 Instalar
-            </button>
-        </div>
-    </header>
+<!-- ============================================================
+     BANNER DE INSTALACIÓN PWA
+     ============================================================ -->
+<div class="install-banner" id="installBanner">
+    <div class="install-text">
+        <strong>🧯 Instalar SuperSpuma</strong>
+        <span>Instalá la app para acceso rápido y sin conexión</span>
+    </div>
+    <div class="install-buttons">
+        <button class="btn-install" id="btnInstall">📲 Instalar</button>
+        <button class="btn-close-install" id="btnCloseInstall">✕</button>
+    </div>
+</div>
 
-    <div id="install-banner" class="install-banner">
-        <h3>📲 Instalar Aplicación</h3>
-        <p>Accede rápidamente desde tu pantalla de inicio</p>
-        <div style="display: flex; gap: 8px; margin-top: 16px;">
-            <button class="btn btn-primary" onclick="installApp()">Instalar</button>
-            <button class="btn btn-secondary" onclick="closeInstallBanner()">Ahora no</button>
+<!-- ============================================================
+     CONTENEDOR PRINCIPAL
+     ============================================================ -->
+<div class="app-container">
+    
+    <!-- HEADER -->
+    <div class="header">
+        <img src="https://i.imgur.com/MbDDBwH.png" alt="SuperSpuma">
+        <div>
+            <h1>SuperSpuma</h1>
+            <small>Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small>
+        </div>
+        <div class="header-right">
+            <button class="btn-icon" onclick="toggleDarkMode()" title="Modo oscuro">🌓</button>
+            <button class="btn-icon" onclick="regenerarQRSucursal()" title="Regenerar QR">📱</button>
         </div>
     </div>
 
-    <div class="container">
-
-        <!-- Dashboard -->
-        <div id="view-dashboard" class="view active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Total</span>
-                        <span>🧯</span>
-                    </div>
-                    <div class="stat-card-value" id="stat-total">0</div>
-                </div>
-                <div class="stat-card success">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Operativos</span>
-                        <span>✅</span>
-                    </div>
-                    <div class="stat-card-value" id="stat-operativos">0</div>
-                </div>
-                <div class="stat-card warning">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Próximos</span>
-                        <span>⚠️</span>
-                    </div>
-                    <div class="stat-card-value" id="stat-proximos">0</div>
-                </div>
-                <div class="stat-card danger">
-                    <div class="stat-card-header">
-                        <span class="stat-card-title">Vencidos</span>
-                        <span>❌</span>
-                    </div>
-                    <div class="stat-card-value" id="stat-vencidos">0</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><span>️</span> Próximos a Vencer</h2>
-                </div>
-                <div id="lista-proximos"></div>
-            </div>
-        </div>
-
-        <!-- Inventario -->
-        <div id="view-inventario" class="view">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><span></span> Inventario</h2>
-                </div>
-                
-                <div class="search-filter">
-                    <input type="text" id="search-inventario" class="form-control" placeholder="🔍 Buscar...">
-                    <select id="filter-estado" class="form-control">
-                        <option value="todos">Todos</option>
-                        <option value="operativo">Operativo</option>
-                        <option value="proximo">Próximo</option>
-                        <option value="vencido">Vencido</option>
-                    </select>
-                </div>
-
-                <div class="search-filter">
-                    <button class="btn btn-secondary btn-sm" onclick="exportCSV()">📥 CSV</button>
-                    <button class="btn btn-secondary btn-sm" onclick="exportPDF()">📄 PDF</button>
-                    <button class="btn btn-secondary btn-sm" onclick="regenerateAllQR()">🔄 QRs</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Foto</th>
-                                <th>Ubicación</th>
-                                <th>Tipo</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-inventario"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Agregar/Editar -->
-        <div id="view-agregar" class="view">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title" id="form-title"><span>➕</span> Nuevo Extintor</h2>
-                </div>
-
-                <form id="form-extintor">
-                    <input type="hidden" id="ext-id">
-
-                    <div class="form-group">
-                        <label class="form-label">📍 Ubicación *</label>
-                        <input type="text" id="ext-ubicacion" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">🧯 Tipo *</label>
-                        <select id="ext-tipo" class="form-control" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="Espuma mecánica">🧼 Espuma mecánica</option>
-                            <option value="PQS">🧯 PQS</option>
-                            <option value="CO2">💨 CO2</option>
-                            <option value="Carrito de Espuma">🛒 Carrito</option>
-                            <option value="Alogenado (eco)">🔬 Alogenado</option>
-                            <option value="Otro">📦 Otro</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📏 Tamaño *</label>
-                        <select id="ext-tamano" class="form-control" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="25 kg">25 kg</option>
-                            <option value="50 kg">50 kg</option>
-                            <option value="18 kg">18 kg</option>
-                            <option value="10 kg">10 kg</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label"> Fecha Recarga *</label>
-                        <input type="date" id="ext-fecha" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">🔢 Número de Serie *</label>
-                        <input type="text" id="ext-serie" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📝 Notas</label>
-                        <textarea id="ext-notas" class="form-control" rows="3"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📸 Foto del Extintor</label>
-                        <input type="file" id="ext-foto" class="form-control" accept="image/*" capture="environment">
-                        <div id="foto-preview" style="display: none; margin-top: 12px;">
-                            <img id="img-preview" style="max-width: 100%; border-radius: 8px;">
-                            <p id="foto-status" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-secondary);"></p>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📍 GPS</label>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" id="ext-gps" class="form-control" placeholder="Lat, Lng" readonly>
-                            <button type="button" class="btn btn-primary btn-sm" onclick="captureGPS()" style="width: auto;">Capturar</button>
-                        </div>
-                        <p id="gps-status" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-secondary);"></p>
-                    </div>
-
-                    <div style="display: flex; gap: 12px;">
-                        <button type="submit" class="btn btn-primary" id="btn-save-ext">💾 Guardar</button>
-                        <button type="button" class="btn btn-secondary" onclick="resetForm()" style="width: auto;">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Escanear -->
-        <div id="view-escanear" class="view">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><span>📷</span> Escanear QR</h2>
-                </div>
-                <div id="reader"></div>
-                <div style="display: flex; gap: 12px; margin-bottom: 20px;">
-                    <button class="btn btn-primary" onclick="startScanner()"> Iniciar</button>
-                    <button class="btn btn-danger" onclick="stopScanner()">️ Detener</button>
-                </div>
-                <div id="scan-result" style="display: none;">
-                    <div class="form-group">
-                        <label class="form-label">Resultado:</label>
-                        <input type="text" id="scan-text" class="form-control" readonly>
-                    </div>
-                    <div style="display: flex; gap: 12px;">
-                        <button class="btn btn-primary" onclick="handleScanAction('ver')">👁️ Ver Detalle</button>
-                        <button class="btn btn-secondary" onclick="handleScanAction('crear')">➕ Crear</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Inspecciones -->
-        <div id="view-inspecciones" class="view">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><span>✅</span> Nueva Inspección</h2>
-                </div>
-
-                <form id="form-inspeccion">
-                    <div class="form-group">
-                        <label class="form-label"> Seleccionar Extintor *</label>
-                        <select id="insp-extintor" class="form-control" required onchange="mostrarInfoExtintor()">
-                            <option value="">Seleccionar extintor...</option>
-                        </select>
-                    </div>
-
-                    <div id="extintor-info-panel" style="display: none;">
-                        <div class="extintor-info-card">
-                            <div class="extintor-info-header">
-                                <img id="info-foto" class="extintor-foto" src="" alt="Foto extintor">
-                                <div class="extintor-detalles">
-                                    <h3 id="info-ubicacion"></h3>
-                                    <p><strong>Tipo:</strong> <span id="info-tipo"></span></p>
-                                    <p><strong>Tamaño:</strong> <span id="info-tamano"></span></p>
-                                    <p><strong>N° Serie:</strong> <span id="info-serie"></span></p>
-                                    <p><strong>Próxima Recarga:</strong> <span id="info-fecha"></span></p>
-                                    <p id="info-estado"></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">👤 Inspector *</label>
-                        <input type="text" id="insp-nombre" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📊 Resultado *</label>
-                        <select id="insp-resultado" class="form-control" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="Aprobado">✅ Aprobado</option>
-                            <option value="Rechazado">❌ Rechazado</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">📝 Observaciones</label>
-                        <textarea id="insp-obs" class="form-control" rows="3"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-success">💾 Registrar</button>
-                </form>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title"><span>📜</span> Historial</h2>
-                </div>
-                <div id="lista-inspecciones"></div>
-            </div>
-        </div>
-
+    <!-- NAVEGACIÓN -->
+    <div class="nav-principal">
+        <button class="activo" onclick="mostrarVista('sucursales')">🏢 Sucursal</button>
+        <button onclick="mostrarVista('historial')">📋 Historial</button>
+        <button onclick="mostrarVista('checklist-global')">✅ Checklist</button>
     </div>
 
-    <!-- Bottom Nav -->
-    <nav class="bottom-nav">
-        <a class="nav-item active" onclick="navigate('dashboard', this)">
-            <span class="nav-item-icon"></span>
-            <span>Inicio</span>
-        </a>
-        <a class="nav-item" onclick="navigate('inventario', this)">
-            <span class="nav-item-icon"></span>
-            <span>Inventario</span>
-        </a>
-        <a class="nav-item" onclick="navigate('agregar', this)">
-            <span class="nav-item-icon">➕</span>
-            <span>Agregar</span>
-        </a>
-        <a class="nav-item" onclick="navigate('escanear', this)">
-            <span class="nav-item-icon"></span>
-            <span>Escanear</span>
-        </a>
-        <a class="nav-item" onclick="navigate('inspecciones', this)">
-            <span class="nav-item-icon">✅</span>
-            <span>Inspecciones</span>
-        </a>
-    </nav>
-
-    <!-- MODAL DETALLE EXTINTOR -->
-    <div id="modal-detalle" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModalDetalle()">×</button>
-            
-            <div class="extintor-detalle">
-                <h2 style="margin-bottom: 20px; color: var(--primary);">🧯 Detalle del Extintor</h2>
-                
-                <!-- Foto del Extintor -->
-                <div id="detalle-foto-container"></div>
-                
-                <!-- Código QR -->
-                <div class="extintor-detalle-qr" id="detalle-qr-container"></div>
-                
-                <!-- Información Completa -->
-                <div class="extintor-detalle-info" id="detalle-info"></div>
-                
-                <!-- Acciones -->
-                <div class="extintor-detalle-acciones">
-                    <button class="btn btn-whatsapp" onclick="compartirWhatsAppDetalle()">
-                        📱 WhatsApp
-                    </button>
-                    <button class="btn btn-download" onclick="descargarDetalle()">
-                         Descargar
-                    </button>
-                    <button class="btn btn-primary" onclick="editarDesdeDetalle()">
-                        ✏️ Editar
-                    </button>
-                    <button class="btn btn-danger" onclick="eliminarDesdeDetalle()">
-                        🗑️ Eliminar
-                    </button>
-                </div>
-            </div>
+    <!-- VISTA SUCURSALES -->
+    <div id="vista-sucursales" class="vista" style="display:block;">
+        <div class="grid-sucursales" id="grid-sucursales-container">
+            <p>Cargando extintores...</p>
         </div>
     </div>
 
-    <script>
-        // Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyArNANQ-R-RsiMJz8w401pLkwmNhxXW9UY",
-            authDomain: "gestion-extintores-42b55.firebaseapp.com",
-            databaseURL: "https://gestion-extintores-42b55-default-rtdb.firebaseio.com",
-            projectId: "gestion-extintores-42b55",
-            storageBucket: "gestion-extintores-42b55.firebasestorage.app",
-            messagingSenderId: "420148708853",
-            appId: "1:420148708853:web:3d90792c1b3c83be904cbc"
-        };
+    <!-- VISTA PANEL SUCURSAL -->
+    <div id="vista-panel-sucursal" class="vista" style="display:none;">
+        <div class="sucursal-header" id="sucursal-header"></div>
+        
+        <div class="tabs" id="tabs-sucursal">
+            <button class="activo" onclick="mostrarTabSucursal('extintores')">🧯 Extintores</button>
+            <button onclick="mostrarTabSucursal('agregar')">➕ Agregar</button>
+            <button onclick="mostrarTabSucursal('checklist')">✅ Checklist</button>
+            <button onclick="mostrarTabSucursal('historial-cl')">📋 Historial</button>
+            <button onclick="mostrarTabSucursal('visualizar')">👁️ Visualizar</button>
+            <button onclick="mostrarTabSucursal('escanear')">📷 Escanear</button>
+            <button onclick="mostrarTabSucursal('etiquetas')">🏷️ Etiquetas</button>
+        </div>
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        <div id="tab-extintores" class="tab-sucursal">
+            <div class="tabla-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Ubicación</th>
+                            <th>Tipo</th>
+                            <th>Vence</th>
+                            <th>Prioridad</th>
+                            <th>CL</th>
+                            <th>QR</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-extintores-sucursal"></tbody>
+                </table>
+            </div>
+        </div>
 
-        let extintores = [];
-        let inspecciones = [];
-        let html5QrCode = null;
-        let currentScanData = null;
-        let currentDetalleId = null;
-        let fotoBase64 = null;
-        let deferredPrompt = null;
+        <div id="tab-agregar" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-checklist" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-historial-cl" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-visualizar" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-escanear" class="tab-sucursal" style="display:none;"></div>
+        <div id="tab-etiquetas" class="tab-sucursal" style="display:none;"></div>
+    </div>
 
-        // PWA
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('btn-install').style.display = 'inline-flex';
-            setTimeout(() => document.getElementById('install-banner').classList.add('show'), 3000);
-        });
-
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                    deferredPrompt = null;
-                    document.getElementById('btn-install').style.display = 'none';
-                    document.getElementById('install-banner').classList.remove('show');
-                });
-            }
-        }
-
-        function closeInstallBanner() {
-            document.getElementById('install-banner').classList.remove('show');
-        }
-
-        // Service Worker
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                self.addEventListener('install', e => e.waitUntil(self.skipWaiting()));
-                self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-                self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('Offline'))));
-            `;
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            navigator.serviceWorker.register(URL.createObjectURL(blob));
-        }
-
-        // Navigation
-        function navigate(viewId, navElement) {
-            if (viewId !== 'escanear' && html5QrCode) stopScanner();
-            
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${viewId}`).classList.add('active');
-            
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            if (navElement) navElement.classList.add('active');
-
-            if (viewId === 'dashboard') renderDashboard();
-            else if (viewId === 'inventario') renderInventario();
-            else if (viewId === 'inspecciones') renderInspecciones();
-        }
-
-        // Firebase
-        function initFirebase() {
-            db.ref('extintores').on('value', snapshot => {
-                extintores = [];
-                snapshot.forEach(child => extintores.push({ id: child.key, ...child.val() }));
-                renderCurrentView();
-            });
-
-            db.ref('inspecciones').on('value', snapshot => {
-                inspecciones = [];
-                snapshot.forEach(child => inspecciones.push({ id: child.key, ...child.val() }));
-                inspecciones.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
-                renderCurrentView();
-            });
-        }
-
-        function renderCurrentView() {
-            const active = document.querySelector('.view.active').id.replace('view-', '');
-            if (active === 'dashboard') renderDashboard();
-            else if (active === 'inventario') renderInventario();
-            else if (active === 'inspecciones') renderInspecciones();
-        }
-
-        // Dashboard
-        function renderDashboard() {
-            const hoy = new Date();
-            let total = extintores.length, operativos = 0, proximos = 0, vencidos = 0;
-
-            extintores.forEach(ext => {
-                const diff = Math.ceil((new Date(ext.fechaProxima) - hoy) / (1000 * 60 * 60 * 24));
-                if (diff < 0) vencidos++;
-                else if (diff <= 30) proximos++;
-                else operativos++;
-            });
-
-            document.getElementById('stat-total').textContent = total;
-            document.getElementById('stat-operativos').textContent = operativos;
-            document.getElementById('stat-proximos').textContent = proximos;
-            document.getElementById('stat-vencidos').textContent = vencidos;
-
-            const proximosLista = extintores
-                .map(ext => ({ ...ext, diffDays: Math.ceil((new Date(ext.fechaProxima) - hoy) / (1000 * 60 * 60 * 24)) }))
-                .filter(ext => ext.diffDays <= 30)
-                .sort((a, b) => a.diffDays - b.diffDays)
-                .slice(0, 10);
-
-            const container = document.getElementById('lista-proximos');
-            if (proximosLista.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎉</div><div>¡Todo en orden!</div></div>';
-            } else {
-                container.innerHTML = proximosLista.map(ext => {
-                    const badge = ext.diffDays < 0 ? 'badge-danger' : 'badge-warning';
-                    const texto = ext.diffDays < 0 ? `Vencido (${Math.abs(ext.diffDays)} días)` : `Vence en ${ext.diffDays} días`;
-                    return `
-                        <div class="list-item" onclick="verDetalleExtintor('${ext.id}')">
-                            <div class="list-item-icon"></div>
-                            <div class="list-item-content">
-                                <div class="list-item-title">${ext.ubicacion}</div>
-                                <div class="list-item-subtitle">${ext.tipo} - ${ext.numeroSerie}</div>
-                            </div>
-                            <span class="badge ${badge}">${texto}</span>
-                        </div>
-                    `;
-                }).join('');
-            }
-        }
-
-        // Inventario
-        function renderInventario() {
-            const search = document.getElementById('search-inventario').value.toLowerCase();
-            const filter = document.getElementById('filter-estado').value;
-            const hoy = new Date();
-
-            const filtrados = extintores.filter(ext => {
-                const match = ext.ubicacion.toLowerCase().includes(search) || ext.numeroSerie.toLowerCase().includes(search);
-                if (!match) return false;
-                if (filter === 'todos') return true;
-                const diff = Math.ceil((new Date(ext.fechaProxima) - hoy) / (1000 * 60 * 60 * 24));
-                if (filter === 'operativo' && diff > 30) return true;
-                if (filter === 'proximo' && diff >= 0 && diff <= 30) return true;
-                if (filter === 'vencido' && diff < 0) return true;
-                return false;
-            });
-
-            const tbody = document.getElementById('tabla-inventario');
-            tbody.innerHTML = filtrados.map(ext => {
-                const diff = Math.ceil((new Date(ext.fechaProxima) - hoy) / (1000 * 60 * 60 * 24));
-                let estado = 'Operativo', badge = 'badge-success';
-                if (diff < 0) { estado = 'Vencido'; badge = 'badge-danger'; }
-                else if (diff <= 30) { estado = 'Próximo'; badge = 'badge-warning'; }
-
-                const fotoHTML = ext.fotoURL 
-                    ? `<img src="${ext.fotoURL}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; cursor: pointer;" onclick="verDetalleExtintor('${ext.id}')">`
-                    : `<div style="width: 50px; height: 50px; background: var(--bg); border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="verDetalleExtintor('${ext.id}')">🧯</div>`;
-
-                return `
+    <!-- VISTA HISTORIAL -->
+    <div id="vista-historial" class="vista" style="display:none;">
+        <h2 style="color: var(--primary); margin-bottom: 16px;">📋 Historial de Vencimientos</h2>
+        <div class="tabla-container">
+            <table>
+                <thead>
                     <tr>
-                        <td>${fotoHTML}</td>
-                        <td style="cursor: pointer;" onclick="verDetalleExtintor('${ext.id}')">${ext.ubicacion}</td>
-                        <td>${ext.tipo}</td>
-                        <td><span class="badge ${badge}">${estado}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="verDetalleExtintor('${ext.id}')" style="margin-right: 4px;">👁️</button>
-                            <button class="btn btn-sm btn-secondary" onclick="editarExtintor('${ext.id}')" style="margin-right: 4px;">✏️</button>
-                            <button class="btn btn-sm btn-danger" onclick="eliminarExtintor('${ext.id}')">️</button>
-                        </td>
+                        <th>Sucursal</th>
+                        <th>Ubicación</th>
+                        <th>Tipo</th>
+                        <th>Vence</th>
+                        <th>Prioridad</th>
                     </tr>
-                `;
-            }).join('');
+                </thead>
+                <tbody id="tabla-historial"></tbody>
+            </table>
+        </div>
+        <button class="btn btn-azul" onclick="exportarCSVHistorial()">📥 Exportar CSV</button>
+    </div>
+
+    <!-- VISTA CHECKLIST GLOBAL -->
+    <div id="vista-checklist-global" class="vista" style="display:none;">
+        <h2 style="color: var(--primary); margin-bottom: 16px;">✅ Checklist de Inspección</h2>
+        <div class="tabla-container">
+            <form onsubmit="guardarChecklistGlobal(event)">
+                <div class="form-row">
+                    <div>
+                        <label>🏢 Sucursal</label>
+                        <select id="clg-sucursal" required onchange="cargarExtintoresCLG()">
+                            <option value="">Seleccionar...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>🧯 Extintor</label>
+                        <select id="clg-extintor" required>
+                            <option value="">Primero sucursal</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>👤 Inspector</label>
+                        <input type="text" id="clg-inspector" required placeholder="Nombre del inspector">
+                    </div>
+                    <div>
+                        <label>📸 Foto</label>
+                        <input type="file" id="clg-foto" accept="image/*" capture="environment">
+                    </div>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="fill" id="clg-progress" style="width:0%;"></div>
+                </div>
+
+                <div id="clg-items"></div>
+
+                <div class="form-row" style="margin-top:12px;">
+                    <div class="full">
+                        <label>Observaciones</label>
+                        <textarea id="clg-obs" rows="2" placeholder="Notas adicionales..."></textarea>
+                    </div>
+                </div>
+
+                <div class="gps-info" id="clg-gps">📍 Obteniendo ubicación...</div>
+                <div id="clg-mapa"></div>
+
+                <button type="submit" class="btn btn-verde" style="width:100%; margin-top:16px; padding: 14px; font-size: 14px;">
+                    ✅ Guardar Checklist
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODALES
+     ============================================================ -->
+<div class="modal-overlay" id="modal-detalle" style="display:none;" onclick="cerrarModalDetalle()">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div id="modal-detalle-contenido"></div>
+        <button class="btn btn-rojo" style="width:100%; margin-top:16px;" onclick="cerrarModalDetalle()">Cerrar</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-password" style="display:none;">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h3>🔒 Contraseña</h3>
+        <input type="password" id="input-password" placeholder="Ingresá la contraseña maestra">
+        <div style="display:flex; gap:8px; margin-top:12px;">
+            <button class="btn btn-rojo" id="btn-confirmar-eliminar">Eliminar</button>
+            <button class="btn" onclick="cerrarModalPassword()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-cl-detalle" style="display:none;" onclick="cerrarModalCLDetalle()">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div id="modal-cl-detalle-contenido"></div>
+        <button class="btn btn-rojo" style="width:100%; margin-top:16px;" onclick="cerrarModalCLDetalle()">Cerrar</button>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // CONFIGURACIÓN FIREBASE
+    // ============================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyArNANQ-R-RsiMJz8w401pLkwmNhxXW9UY", 
+        authDomain: "gestion-extintores-42b55.firebaseapp.com",
+        projectId: "gestion-extintores-42b55", 
+        storageBucket: "gestion-extintores-42b55.firebasestorage.app",
+        messagingSenderId: "420148708853", 
+        appId: "1:420148708853:web:3d90792c1b3c83be904cbc",
+        databaseURL: "https://gestion-extintores-42b55-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const IMGBB_API_KEY = 'ccace8b069999997554d73161868c495';
+    const PASSWORD_MAESTRA = 'SuperSpuma2024!';
+
+    // ============================================================
+    // DATOS - SOLO SUCURSAL VILLETA
+    // ============================================================
+    const SUCURSALES = {
+        'villeta': { nombre: 'Villeta (Planta Industrial)', direccion: 'Ruta Ypané-Villeta' }
+    };
+
+    const CHECKLIST_ITEMS = ['Manómetro', 'Manguera', 'Precinto', 'Boquilla', 'Etiqueta', 'Gatillo', 'Pintura', 'Soporte'];
+    let datosExtintores = {}, datosChecklists = {}, sucursalActiva = 'villeta', html5QrCode = null, editMode = false, currentEditId = null, coordenadasActuales = null;
+
+    // ============================================================
+    // PWA - INSTALACIÓN
+    // ============================================================
+    let deferredPrompt = null;
+    const installBanner = document.getElementById('installBanner');
+    const btnInstall = document.getElementById('btnInstall');
+    const btnCloseInstall = document.getElementById('btnCloseInstall');
+
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        installBanner.style.display = 'none';
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBanner.classList.add('show');
+    });
+
+    btnInstall.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const result = await deferredPrompt.userChoice;
+            if (result.outcome === 'accepted') {
+                installBanner.classList.remove('show');
+            }
+            deferredPrompt = null;
+        }
+    });
+
+    btnCloseInstall.addEventListener('click', () => {
+        installBanner.classList.remove('show');
+    });
+
+    window.addEventListener('appinstalled', () => {
+        installBanner.classList.remove('show');
+    });
+
+    // ============================================================
+    // FUNCIONES QR AUTOMÁTICAS
+    // ============================================================
+    function generarQRParaExtintor(extintorId, containerId, mostrarLoading = true) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = '';
+        container.className = 'qr-container-sucursal';
+
+        const extintor = datosExtintores[extintorId];
+        if (!extintor) {
+            container.innerHTML = '<span style="color:#C62828;font-size:10px;">❌</span>';
+            return;
         }
 
-        document.getElementById('search-inventario').addEventListener('input', renderInventario);
-        document.getElementById('filter-estado').addEventListener('change', renderInventario);
+        if (mostrarLoading) {
+            container.innerHTML = '<span style="color:#888;font-size:10px;">⏳</span>';
+            container.style.opacity = '0.6';
+        }
 
-        // MODAL DETALLE EXTINTOR
-        function verDetalleExtintor(id) {
-            const ext = extintores.find(e => e.id === id);
-            if (!ext) return;
+        try {
+            const datosQR = JSON.stringify({
+                id: extintorId,
+                ubicacion: extintor.ubicacion || 'Sin ubicación',
+                tipo: extintor.tipo || 'No especificado',
+                tamano: extintor.tamano || 'N/A',
+                fechaProxima: extintor.fechaProxima || 'N/A',
+                sucursal: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
+                empresa: 'SuperSpuma',
+                timestamp: new Date().toISOString()
+            });
 
-            currentDetalleId = id;
+            new QRCode(container, {
+                text: datosQR,
+                width: 80,
+                height: 80,
+                colorDark: "#C62828",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
 
-            // Foto
-            const fotoContainer = document.getElementById('detalle-foto-container');
-            if (ext.fotoURL) {
-                fotoContainer.innerHTML = `<img src="${ext.fotoURL}" class="extintor-detalle-foto" alt="Foto extintor">`;
-            } else {
-                fotoContainer.innerHTML = `<div class="extintor-detalle-foto-placeholder">🧯</div>`;
-            }
+            container.style.opacity = '1';
 
-            // QR
-            const qrContainer = document.getElementById('detalle-qr-container');
-            qrContainer.innerHTML = '';
-            new QRCode(qrContainer, {
-                text: id,
+            const infoDiv = document.createElement('div');
+            infoDiv.style.cssText = 'font-size:6px;color:#888;text-align:center;margin-top:2px;';
+            infoDiv.textContent = extintorId.slice(0,8);
+            container.appendChild(infoDiv);
+
+            return true;
+        } catch (error) {
+            container.innerHTML = '<span style="color:#C62828;font-size:10px;">⚠️</span>';
+            container.style.opacity = '1';
+            return false;
+        }
+    }
+
+    function generarQRParaSucursal(sucursalId) {
+        if (!sucursalId) return;
+        const extintores = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalId);
+        extintores.forEach(([id], index) => {
+            setTimeout(() => {
+                generarQRParaExtintor(id, `qr-${id}`, true);
+            }, 100 + (index * 50));
+        });
+        return extintores.length;
+    }
+
+    function regenerarQRSucursal() {
+        if (!sucursalActiva) {
+            alert('❌ No hay sucursal seleccionada');
+            return;
+        }
+        const nombre = SUCURSALES[sucursalActiva]?.nombre || sucursalActiva;
+        if (!confirm(`¿Regenerar todos los QR de ${nombre}?`)) return;
+        const total = generarQRParaSucursal(sucursalActiva);
+        alert(`✅ ${total} QR regenerados correctamente`);
+    }
+
+    function generarQRDetalle(extintorId) {
+        const container = document.getElementById('qr-detalle');
+        if (!container) return;
+        container.innerHTML = '';
+        container.style.textAlign = 'center';
+
+        const extintor = datosExtintores[extintorId];
+        if (!extintor) {
+            container.innerHTML = '<p style="color:#C62828;">Extintor no encontrado</p>';
+            return;
+        }
+
+        try {
+            const datosQR = JSON.stringify({
+                id: extintorId,
+                ubicacion: extintor.ubicacion || 'Sin ubicación',
+                tipo: extintor.tipo || 'No especificado',
+                tamano: extintor.tamano || 'N/A',
+                fechaProxima: extintor.fechaProxima || 'N/A',
+                sucursal: SUCURSALES[extintor.sucursal]?.nombre || extintor.sucursal || 'Sin sucursal',
+                empresa: 'SuperSpuma'
+            });
+
+            new QRCode(container, {
+                text: datosQR,
                 width: 150,
                 height: 150,
                 colorDark: "#C62828",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
-
-            // Información completa
-            const hoy = new Date();
-            const diff = Math.ceil((new Date(ext.fechaProxima) - hoy) / (1000 * 60 * 60 * 24));
-            let estadoHTML = '';
-            let estadoTexto = '';
-            if (diff < 0) {
-                estadoHTML = '<span class="badge badge-danger">❌ Vencido</span>';
-                estadoTexto = `Vencido hace ${Math.abs(diff)} días`;
-            } else if (diff <= 30) {
-                estadoHTML = '<span class="badge badge-warning">⚠️ Próximo a vencer</span>';
-                estadoTexto = `Vence en ${diff} días`;
-            } else {
-                estadoHTML = '<span class="badge badge-success">✅ Operativo</span>';
-                estadoTexto = `Operativo (${diff} días restantes)`;
-            }
-
-            // Obtener inspecciones de este extintor
-            const inspeccionesExt = inspecciones.filter(i => i.extintorId === id).slice(0, 5);
-            let inspeccionesHTML = inspeccionesExt.length > 0 
-                ? inspeccionesExt.map(i => {
-                    const badge = i.resultado === 'Aprobado' ? 'badge-success' : 'badge-danger';
-                    return `<div style="padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
-                        <span class="badge ${badge}">${i.resultado}</span>
-                        <span style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 8px;">
-                            ${i.inspector} - ${new Date(i.fecha).toLocaleDateString()}
-                        </span>
-                    </div>`;
-                }).join('')
-                : '<p style="color: var(--text-secondary); font-size: 0.9rem;">Sin inspecciones registradas</p>';
-
-            document.getElementById('detalle-info').innerHTML = `
-                <div class="extintor-detalle-info-row">
-                    <span class="extintor-detalle-info-label">📍 Ubicación</span>
-                    <span class="extintor-detalle-info-value">${ext.ubicacion}</span>
-                </div>
-                <div class="extintor-detalle-info-row">
-                    <span class="extintor-detalle-info-label">🧯 Tipo</span>
-                    <span class="extintor-detalle-info-value">${ext.tipo}</span>
-                </div>
-                <div class="extintor-detalle-info-row">
-                    <span class="extintor-detalle-info-label">📏 Tamaño</span>
-                    <span class="extintor-detalle-info-value">${ext.tamano}</span>
-                </div>
-                <div class="extintor-detalle-info-row">
-                    <span class="extintor-detalle-info-label">🔢 N° Serie</span>
-                    <span class="extintor-detalle-info-value">${ext.numeroSerie}</span>
-                </div>
-                <div class="extintor-detalle-info-row">
-                    <span class="extintor-detalle-info-label">📅 Próxima Recarga</span>
-                    <span class="extintor-detalle-info-value">${ext.fechaProxima}</span>
-                </div>
-                <div class="extintor-detalle-info-row">
-                    <span class="extintor-detalle-info-label">📊 Estado</span>
-                    <span class="extintor-detalle-info-value">${estadoHTML}</span>
-                </div>
-                ${ext.gps ? `
-                <div class="extintor-detalle-info-row">
-                    <span class="extintor-detalle-info-label">📍 GPS</span>
-                    <span class="extintor-detalle-info-value" style="font-size: 0.85rem;">
-                        <a href="https://maps.google.com/?q=${ext.gps}" target="_blank" style="color: var(--primary);">Ver en mapa</a>
-                    </span>
-                </div>
-                ` : ''}
-                ${ext.notas ? `
-                <div class="extintor-detalle-info-row" style="flex-direction: column; align-items: flex-start;">
-                    <span class="extintor-detalle-info-label" style="margin-bottom: 8px;">📝 Notas</span>
-                    <span class="extintor-detalle-info-value" style="text-align: left; font-weight: normal;">${ext.notas}</span>
-                </div>
-                ` : ''}
-                <div style="margin-top: 16px; padding-top: 16px; border-top: 2px solid var(--primary);">
-                    <strong style="color: var(--primary);"> Últimas Inspecciones:</strong>
-                    ${inspeccionesHTML}
-                </div>
-            `;
-
-            document.getElementById('modal-detalle').classList.add('active');
+        } catch (error) {
+            container.innerHTML = '<p style="color:#C62828;">Error al generar QR</p>';
         }
+    }
 
-        function closeModalDetalle() {
-            document.getElementById('modal-detalle').classList.remove('active');
-            currentDetalleId = null;
+    // ============================================================
+    // FUNCIONES PRINCIPALES
+    // ============================================================
+    db.ref('.info/connected').on('value', snap => { 
+        document.getElementById('conexion-dot').style.background = snap.val() ? '#4CAF50' : '#f44336'; 
+    });
+
+    function toggleDarkMode() { 
+        document.body.classList.toggle('dark-mode'); 
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); 
+    }
+    if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+
+    function cargarDatos() {
+        db.ref('extintores').once('value', snap => { datosExtintores = snap.val() || {}; cargarGridSucursales(); });
+        db.ref('inspecciones').once('value', snap => { datosChecklists = snap.val() || {}; });
+        db.ref('extintores').on('value', snap => { datosExtintores = snap.val() || {}; actualizarTodo(); });
+        db.ref('inspecciones').on('value', snap => { datosChecklists = snap.val() || {}; actualizarTodo(); });
+    }
+
+    function actualizarTodo() {
+        cargarGridSucursales();
+        if (sucursalActiva) { 
+            cargarHeaderSucursal(); 
+            cargarExtintoresSucursal(); 
+            cargarSelectExtintoresCL(); 
+            cargarHistorialCL(); 
+            cargarVisualizar(); 
         }
+    }
 
-        function compartirWhatsAppDetalle() {
-            const ext = extintores.find(e => e.id === currentDetalleId);
-            if (!ext) return;
-
-            const hoy = new Date();
-            const diff = Math.ceil((new Date(ext.fechaProxima) - hoy) / (1000 * 60 * 60 * 24));
-            let estadoTexto = '';
-            if (diff < 0) estadoTexto = `❌ Vencido hace ${Math.abs(diff)} días`;
-            else if (diff <= 30) estadoTexto = `⚠️ Vence en ${diff} días`;
-            else estadoTexto = `✅ Operativo (${diff} días restantes)`;
-
-            const texto = `🧯 *INFORMACIÓN DE EXTINTOR - INSSO*\n\n` +
-                `📍 *Ubicación:* ${ext.ubicacion}\n` +
-                `🧯 *Tipo:* ${ext.tipo}\n` +
-                `📏 *Tamaño:* ${ext.tamano}\n` +
-                `🔢 *N° Serie:* ${ext.numeroSerie}\n` +
-                ` *Próxima Recarga:* ${ext.fechaProxima}\n` +
-                `📊 *Estado:* ${estadoTexto}\n` +
-                `${ext.gps ? `📍 *GPS:* ${ext.gps}\n` : ''}` +
-                `${ext.notas ? `📝 *Notas:* ${ext.notas}\n` : ''}\n` +
-                `_Gestionado por INSSO - Sistema de Gestión de Extintores_`;
-
-            window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
+    function mostrarVista(v) {
+        document.getElementById('vista-sucursales').style.display = 'none';
+        document.getElementById('vista-panel-sucursal').style.display = 'none';
+        document.getElementById('vista-historial').style.display = 'none';
+        document.getElementById('vista-checklist-global').style.display = 'none';
+        
+        if (v === 'sucursales') {
+            document.getElementById('vista-sucursales').style.display = 'block';
+            cargarHeaderSucursal();
+            cargarExtintoresSucursal();
+        } else if (v === 'panel-sucursal') {
+            document.getElementById('vista-panel-sucursal').style.display = 'block';
+        } else {
+            document.getElementById('vista-'+v).style.display = 'block';
         }
+        
+        document.querySelectorAll('.nav-principal button').forEach(b => b.classList.remove('activo'));
+        const vistas = ['sucursales','historial','checklist-global'];
+        const idx = vistas.indexOf(v);
+        if (idx >= 0) document.querySelectorAll('.nav-principal button')[idx]?.classList.add('activo');
+        
+        if (v === 'historial') cargarHistorial();
+        if (v === 'checklist-global') { cargarSelectCLG(); generarItemsCLG(); obtenerGPS('clg-gps','clg-mapa'); }
+        detenerEscaner();
+    }
 
-        async function descargarDetalle() {
-            const ext = extintores.find(e => e.id === currentDetalleId);
-            if (!ext) return;
+    function cargarGridSucursales() {
+        const container = document.getElementById('grid-sucursales-container');
+        const id = 'villeta';
+        const s = SUCURSALES[id];
+        const ext = Object.values(datosExtintores).filter(e => e.sucursal === id);
+        const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
+        
+        container.innerHTML = `<div class="card-sucursal" onclick="abrirSucursal('${id}')" style="border-left-color: #2E7D32;">
+            <h3>🏭 ${s.nombre}</h3>
+            <div class="direccion">📍 ${s.direccion}</div>
+            <div class="stats-mini">
+                <span>📦 ${ext.length} extintores</span>
+                ${cri > 0 ? `<span class="critico">🔴 ${cri} críticos</span>` : ''}
+            </div>
+            <div style="margin-top:8px;font-size:11px;color:#2E7D32;font-weight:600;">✅ Sucursal principal</div>
+        </div>`;
+        
+        abrirSucursal('villeta');
+    }
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+    function abrirSucursal(id) {
+        sucursalActiva = id;
+        document.getElementById('vista-sucursales').style.display = 'none';
+        document.getElementById('vista-panel-sucursal').style.display = 'block';
+        document.querySelectorAll('.nav-principal button').forEach(b => b.classList.remove('activo'));
+        document.querySelectorAll('.nav-principal button')[0]?.classList.add('activo');
+        cargarHeaderSucursal(); 
+        cargarExtintoresSucursal(); 
+        cargarSelectExtintoresCL(); 
+        cargarHistorialCL(); 
+        cargarVisualizar();
+        mostrarTabSucursal('extintores');
+    }
 
-            // Header
-            doc.setFillColor(198, 40, 40);
-            doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(20);
-            doc.text("INSSO - Ficha de Extintor", 105, 20, { align: 'center' });
-            doc.setFontSize(10);
-            doc.text(`Generado: ${new Date().toLocaleDateString()}`, 105, 30, { align: 'center' });
+    function cerrarSucursal() { 
+        document.getElementById('vista-panel-sucursal').style.display = 'none';
+        document.getElementById('vista-sucursales').style.display = 'block';
+    }
 
-            // Foto (si existe)
-            let yOffset = 50;
-            if (ext.fotoURL) {
-                try {
-                    const response = await fetch(ext.fotoURL);
-                    const blob = await response.blob();
-                    const imgData = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.readAsDataURL(blob);
-                    });
-                    doc.addImage(imgData, 'JPEG', 75, yOffset, 60, 60);
-                    yOffset += 70;
-                } catch (err) {
-                    console.log('Error al cargar imagen:', err);
-                }
-            }
+    function cargarHeaderSucursal() {
+        if (!sucursalActiva) return;
+        const s = SUCURSALES[sucursalActiva];
+        const ext = Object.values(datosExtintores).filter(e => e.sucursal === sucursalActiva);
+        const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
+        
+        document.getElementById('sucursal-header').innerHTML = `
+            <div class="header-top">
+                <div>
+                    <h2>🏭 ${s.nombre}</h2>
+                    <div class="direccion">📍 ${s.direccion}</div>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-azul" onclick="regenerarQRSucursal()">📱 QR</button>
+                    <button class="btn" onclick="cerrarSucursal()">⬅ Volver</button>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="num">${ext.length}</div>
+                    <div class="lbl">Total</div>
+                </div>
+                <div class="stat">
+                    <div class="num" style="color:#FF0000;">${cri}</div>
+                    <div class="lbl">Críticos</div>
+                </div>
+            </div>
+        `;
+    }
 
-            // Información
-            doc.setTextColor(0, 0, 0);
-            doc.setFontSize(14);
-            doc.text("Información del Extintor", 14, yOffset);
-            yOffset += 10;
+    function mostrarTabSucursal(tab) {
+        document.querySelectorAll('.tab-sucursal').forEach(t => t.style.display = 'none');
+        document.getElementById('tab-'+tab).style.display = 'block';
+        document.querySelectorAll('#tabs-sucursal button').forEach(b => b.classList.remove('activo'));
+        const tabs = ['extintores','agregar','checklist','historial-cl','visualizar','escanear','etiquetas'];
+        const idx = tabs.indexOf(tab);
+        if (idx >= 0) document.querySelectorAll('#tabs-sucursal button')[idx]?.classList.add('activo');
+        if (tab === 'checklist') { cargarSelectExtintoresCL(); generarItemsCL(); obtenerGPS('cl-gps','cl-mapa'); }
+        if (tab === 'historial-cl') cargarHistorialCL();
+        if (tab === 'visualizar') cargarVisualizar();
+        if (tab !== 'escanear') detenerEscaner();
+    }
 
-            doc.setFontSize(11);
-            const hoy = new Date();
-            const diff = Math.ceil((new Date(ext.fechaProxima) - hoy) / (1000 * 60 * 60 * 24));
-            let estado = 'Operativo';
-            if (diff < 0) estado = 'Vencido';
-            else if (diff <= 30) estado = 'Próximo a vencer';
-
-            const info = [
-                ['Ubicación:', ext.ubicacion],
-                ['Tipo:', ext.tipo],
-                ['Tamaño:', ext.tamano],
-                ['N° Serie:', ext.numeroSerie],
-                ['Próxima Recarga:', ext.fechaProxima],
-                ['Estado:', estado],
-                ['GPS:', ext.gps || 'No registrado'],
-                ['Notas:', ext.notas || 'Sin notas']
-            ];
-
-            info.forEach(([label, value]) => {
-                doc.setFont(undefined, 'bold');
-                doc.text(label, 14, yOffset);
-                doc.setFont(undefined, 'normal');
-                doc.text(String(value), 70, yOffset);
-                yOffset += 8;
-            });
-
-            // QR Code
-            yOffset += 10;
-            doc.setFontSize(14);
-            doc.text("Código QR", 14, yOffset);
-            yOffset += 5;
-            
-            try {
-                const qrResponse = await fetch(ext.qrURL);
-                const qrBlob = await qrResponse.blob();
-                const qrData = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.readAsDataURL(qrBlob);
-                });
-                doc.addImage(qrData, 'PNG', 75, yOffset, 60, 60);
-            } catch (err) {
-                console.log('Error al cargar QR:', err);
-            }
-
-            doc.save(`Extintor_${ext.numeroSerie}_${ext.ubicacion.replace(/\s+/g, '_')}.pdf`);
-        }
-
-        function editarDesdeDetalle() {
-            closeModalDetalle();
-            editarExtintor(currentDetalleId);
-        }
-
-        function eliminarDesdeDetalle() {
-            if (confirm('¿Estás seguro de eliminar este extintor?')) {
-                db.ref(`extintores/${currentDetalleId}`).remove();
-                closeModalDetalle();
-            }
-        }
-
-        // Upload Image to ImgBB
-        document.getElementById('ext-foto').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            document.getElementById('foto-preview').style.display = 'block';
-            document.getElementById('img-preview').src = URL.createObjectURL(file);
-            document.getElementById('foto-status').textContent = ' Subiendo a ImgBB...';
-
-            try {
-                const formData = new FormData();
-                formData.append('image', file);
-                
-                const response = await fetch('https://api.imgbb.com/1/upload?key=ccace8b069999997554d73161868c495', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    fotoBase64 = data.data.url;
-                    document.getElementById('foto-status').textContent = '✅ Imagen subida correctamente';
-                } else {
-                    throw new Error('Error en ImgBB');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('foto-status').textContent = '❌ Error al subir. Intenta de nuevo.';
-            }
+    function cargarExtintoresSucursal() {
+        if (!sucursalActiva) return;
+        let items = Object.entries(datosExtintores).filter(([id,d]) => d.sucursal === sucursalActiva);
+        items.sort((a,b) => { 
+            const o={critico:0,alta:1,media:2,baja:3,normal:4}; 
+            return o[calcularPrioridad(a[1].fechaProxima).prioridad] - o[calcularPrioridad(b[1].fechaProxima).prioridad]; 
         });
+        
+        document.getElementById('tabla-extintores-sucursal').innerHTML = items.map(([id,d]) => {
+            const p = calcularPrioridad(d.fechaProxima);
+            const cl = Object.values(datosChecklists).filter(c => c.extintorId === id).sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
+            const qrId = `qr-${id}`;
+            return `<tr onclick="verDetalleExtintor('${id}')">
+                <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '📷'}</td>
+                <td><strong>${d.ubicacion||'N/A'}</strong></td>
+                <td>${d.tipo||'N/A'}</td>
+                <td>${d.fechaProxima||'N/A'}</td>
+                <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                <td>${cl ? '<span class="badge completado">✅</span>' : '<span class="badge pendiente">❌</span>'}</td>
+                <td>
+                    <div id="${qrId}" class="qr-container-sucursal" style="min-width:80px;min-height:80px;">
+                        <span style="color:#888;font-size:9px;">⏳</span>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-small" onclick="event.stopPropagation();editarExtintor('${id}')">✏️</button>
+                    <button class="btn btn-small btn-rojo" onclick="event.stopPropagation();pedirPasswordEliminar('${id}')">🗑️</button>
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="8"><div class="empty-state"><span class="icon">🧯</span>No hay extintores registrados</div></td></tr>';
 
-        // GPS
-        function captureGPS() {
-            const status = document.getElementById('gps-status');
-            if (navigator.geolocation) {
-                status.textContent = '⏳ Obteniendo ubicación...';
-                navigator.geolocation.getCurrentPosition(
-                    pos => {
-                        document.getElementById('ext-gps').value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
-                        status.textContent = '✅ GPS capturado';
-                    },
-                    err => { status.textContent = `❌ Error: ${err.message}`; }
-                );
+        setTimeout(() => {
+            items.forEach(([id], index) => {
+                setTimeout(() => {
+                    const container = document.getElementById(`qr-${id}`);
+                    if (container && container.innerHTML.includes('⏳')) {
+                        generarQRParaExtintor(id, `qr-${id}`, true);
+                    }
+                }, 200 + (index * 50));
+            });
+        }, 300);
+    }
+
+    function calcularPrioridad(fecha) {
+        if (!fecha) return { prioridad: 'normal', label: 'Normal' };
+        const diff = Math.ceil((new Date(fecha) - new Date()) / (1000*60*60*24));
+        if (diff < 0) return { prioridad: 'critico', label: 'CRÍTICO' };
+        if (diff <= 7) return { prioridad: 'alta', label: 'ALTA' };
+        if (diff <= 15) return { prioridad: 'media', label: 'MEDIA' };
+        return { prioridad: 'normal', label: 'Normal' };
+    }
+
+    function verDetalleExtintor(id) {
+        const d = datosExtintores[id]; if (!d) return;
+        document.getElementById('modal-detalle-contenido').innerHTML = `
+            <h3>🧯 Ficha del Extintor</h3>
+            ${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto">` : ''}
+            <p><strong>ID:</strong> ${id}</p>
+            <p><strong>Ubicación:</strong> ${d.ubicacion||'N/A'}</p>
+            <p><strong>Tipo:</strong> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p>
+            <p><strong>Vence:</strong> ${d.fechaProxima||'N/A'}</p>
+            <div style="text-align:center; margin-top:12px;" id="qr-detalle"></div>
+        `;
+        document.getElementById('modal-detalle').style.display='flex';
+        setTimeout(() => { generarQRDetalle(id); }, 200);
+    }
+
+    function cerrarModalDetalle() { document.getElementById('modal-detalle').style.display='none'; }
+
+    function pedirPasswordEliminar(id) {
+        document.getElementById('input-password').value=''; 
+        document.getElementById('modal-password').style.display='flex';
+        document.getElementById('btn-confirmar-eliminar').onclick=()=>{
+            if(document.getElementById('input-password').value===PASSWORD_MAESTRA){
+                db.ref('extintores/'+id).remove();
+                cerrarModalPassword();
             } else {
-                status.textContent = '❌ No soportado';
+                alert('❌ Contraseña incorrecta');
             }
-        }
+        };
+    }
 
-        // Save Extintor
-        document.getElementById('form-extintor').addEventListener('submit', async function(e) {
-            e.preventDefault();
+    function cerrarModalPassword() { document.getElementById('modal-password').style.display='none'; }
 
-            const id = document.getElementById('ext-id').value || db.ref().child('extintores').push().key;
-            const qrURL = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${id}`;
+    function cargarHistorial() {
+        document.getElementById('tabla-historial').innerHTML = Object.entries(datosExtintores)
+            .sort((a,b) => new Date(a[1].fechaProxima||'9999') - new Date(b[1].fechaProxima||'9999'))
+            .map(([id,d]) => {
+                const p = calcularPrioridad(d.fechaProxima);
+                return `<tr>
+                    <td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal}</td>
+                    <td>${d.ubicacion||''}</td>
+                    <td>${d.tipo||''}</td>
+                    <td>${d.fechaProxima||''}</td>
+                    <td><span class="badge ${p.prioridad}">${p.label}</span></td>
+                </tr>`;
+            }).join('');
+    }
 
-            const extData = {
-                id,
-                ubicacion: document.getElementById('ext-ubicacion').value,
-                tipo: document.getElementById('ext-tipo').value,
-                tamano: document.getElementById('ext-tamano').value,
-                fechaProxima: document.getElementById('ext-fecha').value,
-                numeroSerie: document.getElementById('ext-serie').value,
-                notas: document.getElementById('ext-notas').value,
-                fotoURL: fotoBase64,
-                gps: document.getElementById('ext-gps').value,
-                qrURL,
-                fechaCreacion: firebase.database.ServerValue.TIMESTAMP
-            };
-
-            try {
-                await db.ref(`extintores/${id}`).set(extData);
-                alert('✅ Guardado correctamente');
-                resetForm();
-                navigate('inventario', document.querySelectorAll('.nav-item')[1]);
-            } catch (err) {
-                alert('❌ Error: ' + err.message);
-            }
+    function exportarCSVHistorial() {
+        let csv = 'Sucursal,Ubicación,Tipo,Vence,Prioridad\n';
+        Object.entries(datosExtintores).forEach(([id,d]) => {
+            csv += `"${SUCURSALES[d.sucursal]?.nombre||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${calcularPrioridad(d.fechaProxima).label}"\n`;
         });
+        const blob = new Blob(['\uFEFF'+csv], {type:'text/csv'}); 
+        const a = document.createElement('a'); 
+        a.href = URL.createObjectURL(blob); 
+        a.download = 'historial.csv'; 
+        a.click();
+    }
 
-        function editarExtintor(id) {
-            const ext = extintores.find(e => e.id === id);
-            if (!ext) return;
+    function cargarSelectCLG() { 
+        document.getElementById('clg-sucursal').innerHTML = Object.entries(SUCURSALES)
+            .map(([id,s]) => `<option value="${id}" ${id==='villeta'?'selected':''}>${s.nombre}</option>`).join('');
+        cargarExtintoresCLG();
+    }
 
-            document.getElementById('ext-id').value = ext.id;
-            document.getElementById('ext-ubicacion').value = ext.ubicacion;
-            document.getElementById('ext-tipo').value = ext.tipo;
-            document.getElementById('ext-tamano').value = ext.tamano;
-            document.getElementById('ext-fecha').value = ext.fechaProxima;
-            document.getElementById('ext-serie').value = ext.numeroSerie;
-            document.getElementById('ext-notas').value = ext.notas || '';
-            document.getElementById('ext-gps').value = ext.gps || '';
+    function cargarExtintoresCLG() { 
+        const s = document.getElementById('clg-sucursal').value; 
+        const sel = document.getElementById('clg-extintor'); 
+        sel.innerHTML = '<option value="">Seleccionar...</option>'; 
+        if (!s) return; 
+        Object.entries(datosExtintores).forEach(([id,d]) => {
+            if (d.sucursal === s) sel.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
+        }); 
+    }
 
-            if (ext.fotoURL) {
-                fotoBase64 = ext.fotoURL;
-                document.getElementById('foto-preview').style.display = 'block';
-                document.getElementById('img-preview').src = ext.fotoURL;
-                document.getElementById('foto-status').textContent = '✅ Imagen existente';
-            }
+    function generarItemsCLG() { 
+        document.getElementById('clg-items').innerHTML = CHECKLIST_ITEMS.map(i => 
+            `<div class="checklist-item">
+                <span class="nombre">${i}</span>
+                <div class="opciones">
+                    <button type="button" onclick="marcarCLG(this,'ok')">✅ OK</button>
+                    <button type="button" onclick="marcarCLG(this,'nook')">❌ NO OK</button>
+                </div>
+            </div>`
+        ).join(''); 
+        actualizarProgresoCLG(); 
+    }
 
-            document.getElementById('form-title').innerHTML = '<span>️</span> Editar';
-            document.getElementById('btn-save-ext').textContent = '💾 Actualizar';
-            navigate('agregar', document.querySelectorAll('.nav-item')[2]);
+    function marcarCLG(btn,tipo) {
+        const p = btn.parentElement;
+        p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok','sel-nook'));
+        btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');
+        actualizarProgresoCLG();
+    }
+
+    function actualizarProgresoCLG() {
+        const t = CHECKLIST_ITEMS.length;
+        const m = document.querySelectorAll('#clg-items .sel-ok, #clg-items .sel-nook').length;
+        document.getElementById('clg-progress').style.width = ((m/t)*100)+'%';
+    }
+
+    function obtenerGPS(gpsId, mapaId) {
+        if (navigator.geolocation) { 
+            navigator.geolocation.getCurrentPosition(pos => { 
+                coordenadasActuales = { lat: pos.coords.latitude, lng: pos.coords.longitude }; 
+                document.getElementById(gpsId).innerHTML = `📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; 
+                if (mapaId) mostrarMiniMapa(pos.coords.latitude, pos.coords.longitude, mapaId); 
+            }, () => { document.getElementById(gpsId).textContent = '📍 GPS no disponible'; }); 
         }
+    }
 
-        function eliminarExtintor(id) {
-            if (confirm('¿Eliminar este extintor?')) {
-                db.ref(`extintores/${id}`).remove();
-            }
-        }
+    function mostrarMiniMapa(lat, lng, containerId) { 
+        const c = document.getElementById(containerId); 
+        if (!c) return; 
+        const url = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.002},${lat-0.001},${lng+0.002},${lat+0.001}&layer=mapnik&marker=${lat},${lng}`; 
+        c.innerHTML = `<iframe class="mapa-mini" src="${url}"></iframe><a class="mapa-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">📍 Google Maps</a>`; 
+    }
 
-        function resetForm() {
-            document.getElementById('form-extintor').reset();
-            document.getElementById('ext-id').value = '';
-            document.getElementById('form-title').innerHTML = '<span>➕</span> Nuevo Extintor';
-            document.getElementById('btn-save-ext').textContent = '💾 Guardar';
-            document.getElementById('foto-preview').style.display = 'none';
-            document.getElementById('gps-status').textContent = '';
-            fotoBase64 = null;
-        }
+    async function subirFotoImgBB(file, nombre) { 
+        const fd = new FormData(); 
+        fd.append('image', file, nombre || file.name); 
+        const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {method:'POST', body:fd}); 
+        const d = await r.json(); 
+        if (d.success) return d.data.url; 
+        throw new Error('Error'); 
+    }
 
-        // Scanner
-        function startScanner() {
-            if (html5QrCode) return;
-            html5QrCode = new Html5Qrcode("reader");
-            html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, 
-                decodedText => {
-                    currentScanData = decodedText;
-                    document.getElementById('scan-result').style.display = 'block';
-                    document.getElementById('scan-text').value = decodedText;
-                    stopScanner();
-                }, () => {});
-        }
-
-        function stopScanner() {
-            if (html5QrCode) {
-                html5QrCode.stop().then(() => { html5QrCode.clear(); html5QrCode = null; });
-            }
-        }
-
-        function handleScanAction(action) {
-            if (!currentScanData) return;
-            if (action === 'ver') {
-                verDetalleExtintor(currentScanData);
-            } else {
-                resetForm();
-                document.getElementById('ext-serie').value = currentScanData;
-                navigate('agregar', document.querySelectorAll('.nav-item')[2]);
-            }
-            document.getElementById('scan-result').style.display = 'none';
-        }
-
-        // Inspections
-        function renderInspecciones() {
-            const select = document.getElementById('insp-extintor');
-            select.innerHTML = '<option value="">Seleccionar extintor...</option>';
-            extintores.forEach(ext => {
-                const opt = document.createElement('option');
-                opt.value = ext.id;
-                opt.textContent = `${ext.ubicacion} - ${ext.numeroSerie}`;
-                select.appendChild(opt);
-            });
-
-            const container = document.getElementById('lista-inspecciones');
-            if (inspecciones.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📜</div><div>Sin inspecciones</div></div>';
-            } else {
-                container.innerHTML = inspecciones.slice(0, 20).map(insp => {
-                    const ext = extintores.find(e => e.id === insp.extintorId);
-                    const badge = insp.resultado === 'Aprobado' ? 'badge-success' : 'badge-danger';
-                    return `
-                        <div class="list-item">
-                            <div class="list-item-content">
-                                <div class="list-item-title">${ext ? ext.ubicacion : 'Eliminado'}</div>
-                                <div class="list-item-subtitle">${insp.inspector} - ${new Date(insp.fecha).toLocaleDateString()}</div>
-                            </div>
-                            <span class="badge ${badge}">${insp.resultado}</span>
-                        </div>
-                    `;
-                }).join('');
-            }
-        }
-
-        function mostrarInfoExtintor() {
-            const id = document.getElementById('insp-extintor').value;
-            const panel = document.getElementById('extintor-info-panel');
-            
-            if (!id) {
-                panel.style.display = 'none';
-                return;
-            }
-
-            const ext = extintores.find(e => e.id === id);
-            if (!ext) {
-                panel.style.display = 'none';
-                return;
-            }
-
-            const fotoImg = document.getElementById('info-foto');
-            if (ext.fotoURL) {
-                fotoImg.src = ext.fotoURL;
-                fotoImg.style.display = 'block';
-            } else {
-                fotoImg.style.display = 'none';
-            }
-
-            document.getElementById('info-ubicacion').textContent = ext.ubicacion;
-            document.getElementById('info-tipo').textContent = ext.tipo;
-            document.getElementById('info-tamano').textContent = ext.tamano;
-            document.getElementById('info-serie').textContent = ext.numeroSerie;
-            document.getElementById('info-fecha').textContent = ext.fechaProxima;
-
-            const hoy = new Date();
-            const diff = Math.ceil((new Date(ext.fechaProxima) - hoy) / (1000 * 60 * 60 * 24));
-            let estadoHTML = '';
-            if (diff < 0) estadoHTML = '<span class="badge badge-danger">❌ Vencido</span>';
-            else if (diff <= 30) estadoHTML = '<span class="badge badge-warning">⚠️ Próximo a vencer</span>';
-            else estadoHTML = '<span class="badge badge-success">✅ Operativo</span>';
-            document.getElementById('info-estado').innerHTML = estadoHTML;
-
-            panel.style.display = 'block';
-        }
-
-        document.getElementById('form-inspeccion').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const inspId = db.ref().child('inspecciones').push().key;
-            const inspData = {
-                id: inspId,
-                extintorId: document.getElementById('insp-extintor').value,
-                inspector: document.getElementById('insp-nombre').value,
-                resultado: document.getElementById('insp-resultado').value,
-                observaciones: document.getElementById('insp-obs').value,
-                fecha: firebase.database.ServerValue.TIMESTAMP
-            };
-
-            try {
-                await db.ref(`inspecciones/${inspId}`).set(inspData);
-                alert('✅ Inspección registrada');
-                this.reset();
-                document.getElementById('extintor-info-panel').style.display = 'none';
-            } catch (err) {
-                alert('❌ Error: ' + err.message);
-            }
+    async function guardarChecklistGlobal(e) {
+        e.preventDefault(); 
+        const extintorId = document.getElementById('clg-extintor').value; 
+        const inspector = document.getElementById('clg-inspector').value.trim(); 
+        const suc = document.getElementById('clg-sucursal').value;
+        if (!extintorId || !inspector || !suc) return alert('Completá todos los campos');
+        
+        const items = {}; 
+        document.querySelectorAll('#clg-items .checklist-item').forEach((item, i) => {
+            const sel = item.querySelector('.sel-ok,.sel-nook');
+            items[CHECKLIST_ITEMS[i]] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : 'NO OK') : 'No verificado';
         });
+        
+        let fotoURL = ''; 
+        const fi = document.getElementById('clg-foto'); 
+        if (fi.files[0]) {
+            try { fotoURL = await subirFotoImgBB(fi.files[0], `clg_${extintorId}`); } 
+            catch (err) {}
+        }
+        
+        await db.ref('inspecciones').push({
+            extintorId, 
+            sucursal: suc, 
+            tipo: 'checklist', 
+            inspector, 
+            items, 
+            observaciones: document.getElementById('clg-obs').value.trim(), 
+            fotoURL, 
+            gps: document.getElementById('clg-gps').textContent, 
+            coordenadas: coordenadasActuales, 
+            fecha: new Date().toISOString()
+        });
+        
+        alert('✅ Checklist guardado!'); 
+        document.getElementById('clg-obs').value = ''; 
+        document.getElementById('clg-foto').value = ''; 
+        document.querySelectorAll('#clg-items button').forEach(b => b.classList.remove('sel-ok','sel-nook')); 
+        actualizarProgresoCLG();
+    }
 
-        // Export
-        async function regenerateAllQR() {
-            if (!confirm('¿Regenerar todos los QR?')) return;
-            const updates = {};
-            extintores.forEach(ext => {
-                updates[`extintores/${ext.id}/qrURL`] = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${ext.id}`;
+    function cargarSelectExtintoresCL() { 
+        if (!sucursalActiva) return; 
+        const sel = document.getElementById('cl-extintor'); 
+        if (!sel) return; 
+        sel.innerHTML = '<option value="">Seleccionar...</option>'; 
+        Object.entries(datosExtintores).forEach(([id,d]) => {
+            if (d.sucursal === sucursalActiva) sel.innerHTML += `<option value="${id}">${d.ubicacion||'N/A'} - ${d.tipo||'N/A'}</option>`;
+        }); 
+    }
+
+    function generarItemsCL() { 
+        const el = document.getElementById('cl-items'); 
+        if (!el) return; 
+        el.innerHTML = CHECKLIST_ITEMS.map(i => 
+            `<div class="checklist-item">
+                <span class="nombre">${i}</span>
+                <div class="opciones">
+                    <button type="button" onclick="marcarCL(this,'ok')">✅ OK</button>
+                    <button type="button" onclick="marcarCL(this,'nook')">❌ NO OK</button>
+                </div>
+            </div>`
+        ).join(''); 
+        actualizarProgresoCL(); 
+    }
+
+    function marcarCL(btn,tipo) {
+        const p = btn.parentElement;
+        p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok','sel-nook'));
+        btn.classList.add(tipo==='ok'?'sel-ok':'sel-nook');
+        actualizarProgresoCL();
+    }
+
+    function actualizarProgresoCL() {
+        const t = CHECKLIST_ITEMS.length;
+        const m = document.querySelectorAll('#cl-items .sel-ok, #cl-items .sel-nook').length;
+        const el = document.getElementById('cl-progress');
+        if (el) el.style.width = ((m/t)*100)+'%';
+    }
+
+    function cargarHistorialCL() {
+        if (!sucursalActiva) return;
+        const items = Object.values(datosChecklists)
+            .filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva)
+            .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
+            .slice(0,20);
+        
+        document.getElementById('tabla-historial-cl').innerHTML = items.map(c => {
+            const ext = datosExtintores[c.extintorId];
+            const ok = Object.values(c.items||{}).every(v => v === 'OK');
+            return `<tr>
+                <td>${new Date(c.fecha).toLocaleDateString()}</td>
+                <td>${ext?.ubicacion||c.extintorId}</td>
+                <td>${c.inspector}</td>
+                <td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ OK':'❌ Fallas'}</span></td>
+                <td><button class="btn btn-small btn-azul" onclick="verDetalleCL('${c.fecha}','${c.extintorId}')">🔍 Ver</button></td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="5"><div class="empty-state"><span class="icon">📋</span>Sin checklists</div></td></tr>';
+    }
+
+    function verDetalleCL(fecha, extintorId) {
+        const cl = Object.values(datosChecklists)
+            .filter(c => c.tipo === 'checklist' && c.fecha === fecha && c.extintorId === extintorId)[0]; 
+        if (!cl) return;
+        const ext = datosExtintores[cl.extintorId]; 
+        const ok = Object.values(cl.items||{}).every(v => v === 'OK');
+        
+        let h = `<h3>📋 Detalle de Checklist</h3>
+            <table style="width:100%; margin:12px 0;">
+                <tr><td><strong>Fecha:</strong></td><td>${new Date(cl.fecha).toLocaleString()}</td></tr>
+                <tr><td><strong>Extintor:</strong></td><td>${ext?.ubicacion||cl.extintorId}</td></tr>
+                <tr><td><strong>Inspector:</strong></td><td>${cl.inspector}</td></tr>
+                <tr><td><strong>Resultado:</strong></td><td><span class="badge ${ok?'completado':'pendiente'}">${ok?'✅ Todo OK':'❌ Con fallas'}</span></td></tr>
+            </table>
+            <h4>🔍 Items</h4>
+            <table>`;
+        
+        Object.entries(cl.items||{}).forEach(([k,v]) => {
+            h += `<tr><td>${k}</td><td><span class="badge ${v==='OK'?'completado':'pendiente'}">${v}</span></td></tr>`;
+        });
+        h += `</table>`;
+        if (cl.fotoURL) h += `<img src="${cl.fotoURL}" class="modal-detalle-foto">`;
+        if (cl.observaciones) h += `<p><strong>Obs:</strong> ${cl.observaciones}</p>`;
+        if (cl.gps) h += `<p>${cl.gps}</p>`;
+        if (cl.coordenadas) h += `<div id="mapa-cl-detalle"></div>`;
+        h += `<button class="btn btn-wsp" style="width:100%; margin-top:12px;" onclick="compartirChecklistWhatsApp('${cl.fecha}','${cl.extintorId}')">📤 Compartir por WhatsApp</button>`;
+        
+        document.getElementById('modal-cl-detalle-contenido').innerHTML = h;
+        document.getElementById('modal-cl-detalle').style.display = 'flex';
+        if (cl.coordenadas) {
+            setTimeout(() => { mostrarMiniMapa(cl.coordenadas.lat, cl.coordenadas.lng, 'mapa-cl-detalle'); }, 200);
+        }
+    }
+
+    function compartirChecklistWhatsApp(fecha, extintorId) {
+        const cl = Object.values(datosChecklists)
+            .filter(c => c.tipo === 'checklist' && c.fecha === fecha && c.extintorId === extintorId)[0];
+        if (!cl) return;
+        const ext = datosExtintores[cl.extintorId]; 
+        const suc = SUCURSALES[cl.sucursal]?.nombre || cl.sucursal;
+        const ok = Object.values(cl.items||{}).every(v => v === 'OK');
+        
+        let texto = `🧯 *CHECKLIST SUPERSPUMA*%0A%0A`;
+        texto += `📅 *Fecha:* ${new Date(cl.fecha).toLocaleString()}%0A`;
+        texto += `🏢 *Sucursal:* ${suc}%0A`;
+        texto += `📍 *Extintor:* ${ext?.ubicacion||'N/A'} (${ext?.tipo||''} ${ext?.tamano||''})%0A`;
+        texto += `👤 *Inspector:* ${cl.inspector}%0A`;
+        texto += `📊 *Resultado:* ${ok ? '✅ TODO OK' : '❌ CON FALLAS'}%0A%0A🔍 *Items:*%0A`;
+        Object.entries(cl.items||{}).forEach(([k, v]) => { 
+            texto += `${v === 'OK' ? '✅' : '❌'} ${k}: ${v}%0A`; 
+        });
+        if (cl.observaciones) texto += `%0A📝 *Obs:* ${cl.observaciones}%0A`;
+        if (cl.gps) texto += `%0A📍 ${cl.gps.replace('📍 ','')}%0A`;
+        window.open(`https://wa.me/?text=${texto}`, '_blank');
+    }
+
+    function cerrarModalCLDetalle() { document.getElementById('modal-cl-detalle').style.display='none'; }
+
+    function cargarVisualizar() {
+        if (!sucursalActiva) return;
+        const ext = Object.values(datosExtintores).filter(e => e.sucursal === sucursalActiva);
+        const total = ext.length;
+        const cri = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'critico').length;
+        const alt = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'alta').length;
+        const nor = ext.filter(e => calcularPrioridad(e.fechaProxima).prioridad === 'normal').length;
+        const conCL = ext.filter(e => Object.values(datosChecklists).some(c => c.extintorId === e.id)).length;
+        const sinCL = total - conCL;
+        const urgentes = ext.filter(e => { 
+            const p = calcularPrioridad(e.fechaProxima); 
+            return p.prioridad === 'critico' || p.prioridad === 'alta'; 
+        }).sort((a,b) => new Date(a.fechaProxima) - new Date(b.fechaProxima));
+        const ultimosCL = Object.values(datosChecklists)
+            .filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva)
+            .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
+            .slice(0,5);
+
+        let html = `<div class="stats" style="margin-bottom:16px;">
+            <div class="stat"><div class="num">${total}</div><div class="lbl">Total</div></div>
+            <div class="stat"><div class="num" style="color:#FF0000;">${cri}</div><div class="lbl">Críticos</div></div>
+            <div class="stat"><div class="num" style="color:#FF6600;">${alt}</div><div class="lbl">Alta</div></div>
+            <div class="stat"><div class="num" style="color:#00CC66;">${nor}</div><div class="lbl">Normal</div></div>
+            <div class="stat"><div class="num" style="color:#2E7D32;">${conCL}</div><div class="lbl">Con CL</div></div>
+            <div class="stat"><div class="num" style="color:#C62828;">${sinCL}</div><div class="lbl">Sin CL</div></div>
+        </div>`;
+
+        html += `<h4>📊 Gráfico de Estado</h4><div style="margin-bottom:16px;">`;
+        if (nor > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(nor/total)*100}%;background:#00CC66;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${nor} Normales</span></div>`;
+        if (alt > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(alt/total)*100}%;background:#FF6600;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${alt} Altos</span></div>`;
+        if (cri > 0) html += `<div style="display:flex;align-items:center;margin-bottom:4px;"><div style="width:${(cri/total)*100}%;background:#FF0000;height:20px;border-radius:4px;min-width:2px;"></div><span style="margin-left:8px;font-size:11px;">${cri} Críticos</span></div>`;
+        html += `</div>`;
+
+        html += `<h4>⚠️ Urgentes</h4><div>${urgentes.length > 0 ? urgentes.map(e => `<div style="padding:4px 0;border-bottom:1px solid #eee;font-size:11px;">🔴 ${e.ubicacion||'N/A'} - ${e.tipo||''} - Vence: ${e.fechaProxima||'N/A'}</div>`).join('') : '<p style="color:green;">✅ No hay urgentes</p>'}</div>`;
+        html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.ubicacion||c.extintorId} - ${c.inspector} - <span style="color:${o?'green':'red'};">${o?'✅ OK':'❌ Fallas'}</span></div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
+
+        document.getElementById('visualizar-contenido').innerHTML = html;
+    }
+
+    function iniciarEscaner() { 
+        detenerEscaner(); 
+        html5QrCode = new Html5Qrcode("qr-reader"); 
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            text => { 
+                detenerEscaner(); 
+                let id = text; 
+                if (text.includes('?id=')) id = new URLSearchParams(text.split('?')[1]).get('id') || text; 
+                verDetalleExtintor(id); 
+            },
+            () => {}
+        ).catch(() => { alert('Error cámara'); detenerEscaner(); }); 
+    }
+
+    function detenerEscaner() { 
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => html5QrCode.clear()).catch(() => {}); 
+            html5QrCode = null; 
+        } 
+    }
+
+    function generarEtiquetas() { 
+        if (!sucursalActiva) return; 
+        const items = Object.entries(datosExtintores).filter(([id,d]) => d.sucursal === sucursalActiva); 
+        document.getElementById('etiquetas-container').innerHTML = items.map(([id,d]) => {
+            const p = calcularPrioridad(d.fechaProxima);
+            const color = {critico:'#FF0000', alta:'#FF6600', media:'#FFCC00', baja:'#33CCFF', normal:'#00CC66'}[p.prioridad];
+            return `<div class="etiqueta-print">
+                <div style="background:${color}; height:8px; border-radius:4px;"></div>
+                <strong>${d.ubicacion}</strong><br>
+                ${d.tipo} · ${d.tamano}<br>
+                Vence: ${d.fechaProxima||'N/A'}<br>
+                <span style="color:${color}; font-weight:700;">${p.label}</span>
+                <div id="qr-et-${id}"></div>
+            </div>`;
+        }).join(''); 
+        items.forEach(([id,d]) => {
+            new QRCode(document.getElementById('qr-et-'+id), {
+                text: window.location.origin + window.location.pathname + '?id=' + id,
+                width: 80,
+                height: 80,
+                colorDark: "#C62828",
+                colorLight: "#ffffff"
             });
-            try {
-                await db.ref().update(updates);
-                alert('✅ QRs regenerados');
-            } catch (err) { alert('❌ Error'); }
-        }
+        }); 
+    }
 
-        function exportCSV() {
-            const headers = ["ID", "Ubicacion", "Tipo", "Tamano", "FechaProxima", "NumeroSerie", "GPS"];
-            const rows = extintores.map(ext => [ext.id, ext.ubicacion, ext.tipo, ext.tamano, ext.fechaProxima, ext.numeroSerie, ext.gps || '']);
-            const csv = "\uFEFF" + [headers.join(","), ...rows.map(r => r.map(c => `"${c}"`).join(","))].join("\n");
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `inventario_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-        }
-
-        function exportPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.text("INSSO - Inventario de Extintores", 14, 20);
-            doc.setFontSize(10);
-            doc.text(`Generado: ${new Date().toLocaleDateString()}`, 14, 28);
-            
-            const tableData = extintores.map(ext => [ext.id.substring(0,8), ext.ubicacion, ext.tipo, ext.fechaProxima]);
-            doc.autoTable({
-                head: [['ID', 'Ubicación', 'Tipo', 'Recarga']],
-                body: tableData,
-                startY: 35,
-                styles: { fontSize: 8 },
-                headStyles: { fillColor: [198, 40, 40] }
-            });
-            doc.save(`inventario_${new Date().toISOString().split('T')[0]}.pdf`);
-        }
-
-        // Init
-        window.addEventListener('DOMContentLoaded', initFirebase);
-        document.getElementById('modal-detalle').addEventListener('click', e => { if (e.target.id === 'modal-detalle') closeModalDetalle(); });
-    </script>
+    // ============================================================
+    // INICIALIZAR
+    // ============================================================
+    cargarDatos();
+    console.log('🔥 SuperSpuma - Villeta (Planta Industrial)');
+    console.log('📱 Los QR se generan automáticamente');
+    console.log('📲 Instalación PWA disponible');
+</script>
 </body>
 </html>
