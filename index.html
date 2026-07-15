@@ -6,7 +6,7 @@
     <title>Gestión de Extintores · SuperSpuma</title>
     
     <!-- ============================================================
-         PWA - MANIFEST Y META TAGS PARA INSTALACIÓN
+         PWA - CONFIGURACIÓN COMO EN MARCACIÓN (SIN SW)
          ============================================================ -->
     <link rel="manifest" href="manifest.json">
     
@@ -16,7 +16,6 @@
     <meta name="theme-color" content="#C62828">
     <meta name="description" content="Sistema de gestión de extintores SuperSpuma">
     
-    <!-- Íconos para la app -->
     <link rel="icon" type="image/png" href="logo-insso.png">
     <link rel="apple-touch-icon" href="logo-insso.png">
     
@@ -1535,7 +1534,7 @@
     let datosExtintores = {}, datosChecklists = {}, sucursalActiva = 'villeta', html5QrCode = null, editMode = false, currentEditId = null, coordenadasActuales = null;
 
     // ============================================================
-    // PWA - INSTALACIÓN
+    // PWA - INSTALACIÓN (COMO EN MARCACIÓN)
     // ============================================================
     let deferredPrompt = null;
     const installBanner = document.getElementById('installBanner');
@@ -1543,7 +1542,6 @@
     const btnCloseInstall = document.getElementById('btnCloseInstall');
     const installFloatBtn = document.getElementById('installFloatBtn');
 
-    // Verificar si ya está instalado
     if (window.matchMedia('(display-mode: standalone)').matches) {
         installBanner.style.display = 'none';
         installFloatBtn.style.display = 'none';
@@ -1556,7 +1554,6 @@
         installFloatBtn.style.display = 'flex';
     });
 
-    // Función para instalar desde cualquiera de los botones
     async function instalarApp() {
         if (deferredPrompt) {
             deferredPrompt.prompt();
@@ -2751,21 +2748,6 @@
     console.log('📱 PWA instalable en cualquier dispositivo móvil');
     console.log('📲 Botón de instalación flotante disponible');
     console.log('📋 QR con solo el ID del extintor - ¡Siempre funciona!');
-
-    // ============================================================
-    // REGISTRO DEL SERVICE WORKER
-    // ============================================================
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register('sw.js')
-                .then(function(registration) {
-                    console.log('✅ Service Worker registrado con éxito:', registration);
-                })
-                .catch(function(error) {
-                    console.log('❌ Error al registrar Service Worker:', error);
-                });
-        });
-    }
 </script>
 </body>
 </html>
