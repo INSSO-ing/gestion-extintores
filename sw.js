@@ -1,5 +1,5 @@
-// sw.js - Service Worker para INSSO Gestión de Extintores
-const CACHE_NAME = 'insso-extintores-v2';
+// sw.js - Service Worker para SuperSpuma Gestión de Extintores
+const CACHE_NAME = 'superspuma-extintores-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -7,7 +7,8 @@ const urlsToCache = [
   'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js',
   'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
-  'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js'
+  'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'
 ];
 
 // Instalación
@@ -15,10 +16,11 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('✅ Cache de INSSO Extintores abierto');
+        console.log('✅ Cache de SuperSpuma Extintores abierto');
         return cache.addAll(urlsToCache);
       })
   );
+  self.skipWaiting();
 });
 
 // Activación
@@ -35,6 +37,7 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  self.clients.claim();
 });
 
 // Fetch - estrategia Cache First
@@ -64,7 +67,7 @@ self.addEventListener('fetch', event => {
 
 // Notificaciones push (opcional)
 self.addEventListener('push', function(event) {
-  const title = 'INSSO Extintores';
+  const title = '🔔 SuperSpuma Extintores';
   const options = {
     body: event.data ? event.data.text() : 'Revisá los extintores con vencimiento próximo',
     icon: 'logo-insso.png',
