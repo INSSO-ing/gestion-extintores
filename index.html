@@ -6,7 +6,7 @@
     <title>Gestión de Extintores · SuperSpuma</title>
     
     <!-- ============================================================
-         PWA - MANIFEST EMBEBIDO (como en marcación)
+         PWA - MANIFEST EMBEBIDO
          ============================================================ -->
     <script>
         (function() {
@@ -123,9 +123,6 @@
             padding: 16px; 
         }
 
-        /* ============================================================
-           HEADER
-           ============================================================ */
         .header { 
             background: var(--header-bg); 
             color: #FFF8E1; 
@@ -213,9 +210,6 @@
             50% { opacity: 0.5; }
         }
 
-        /* ============================================================
-           NAVEGACIÓN PRINCIPAL
-           ============================================================ */
         .nav-principal { 
             display: flex; 
             gap: 8px; 
@@ -253,9 +247,6 @@
             box-shadow: 0 4px 15px rgba(198, 40, 40, 0.3);
         }
 
-        /* ============================================================
-           CARDS
-           ============================================================ */
         .grid-sucursales { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
@@ -326,9 +317,6 @@
             font-weight: 700;
         }
 
-        /* ============================================================
-           SUCURSAL HEADER
-           ============================================================ */
         .sucursal-header { 
             background: var(--card-bg); 
             backdrop-filter: blur(10px); 
@@ -395,9 +383,6 @@
             font-weight: 600;
         }
 
-        /* ============================================================
-           TABS
-           ============================================================ */
         .tabs { 
             display: flex; 
             gap: 4px; 
@@ -434,9 +419,6 @@
             box-shadow: 0 4px 15px rgba(198, 40, 40, 0.25);
         }
 
-        /* ============================================================
-           TABLA
-           ============================================================ */
         .tabla-container { 
             background: var(--card-bg); 
             backdrop-filter: blur(8px); 
@@ -475,9 +457,6 @@
             background: rgba(198, 40, 40, 0.03);
         }
 
-        /* ============================================================
-           BADGES
-           ============================================================ */
         .badge { 
             padding: 4px 10px; 
             border-radius: 20px; 
@@ -496,9 +475,6 @@
         .badge.completado { background: #2E7D32; color: white; }
         .badge.pendiente { background: #C62828; color: white; }
 
-        /* ============================================================
-           BOTONES
-           ============================================================ */
         .btn { 
             padding: 8px 16px; 
             border: none; 
@@ -526,20 +502,6 @@
         .btn-small { padding: 4px 10px; font-size: 10px; }
         .btn-descargar { background: #7B1FA2; }
 
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-outline:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* ============================================================
-           FORMULARIOS
-           ============================================================ */
         .form-row { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -578,9 +540,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* ============================================================
-           CHECKLIST
-           ============================================================ */
         .checklist-item { 
             display: flex; 
             align-items: center; 
@@ -641,9 +600,6 @@
             border-radius: 4px;
         }
 
-        /* ============================================================
-           QR
-           ============================================================ */
         .qr-container-sucursal { 
             background: white; 
             padding: 8px; 
@@ -669,9 +625,6 @@
             height: auto !important;
         }
 
-        /* ============================================================
-           ETIQUETA PARA IMPRIMIR
-           ============================================================ */
         .etiqueta-print { 
             background: white; 
             border: 2px solid var(--primary); 
@@ -769,9 +722,6 @@
             justify-content: center;
         }
 
-        /* ============================================================
-           MODAL
-           ============================================================ */
         .modal-overlay { 
             position: fixed; 
             top:0; 
@@ -820,9 +770,6 @@
             margin-bottom: 12px; 
         }
 
-        /* ============================================================
-           BANNER DE INSTALACIÓN PWA
-           ============================================================ */
         .install-banner {
             display: none;
             position: fixed;
@@ -897,9 +844,6 @@
             background: rgba(255,255,255,0.25);
         }
 
-        /* ============================================================
-           INSTALL BUTTON FLOATING
-           ============================================================ */
         .install-float-btn {
             position: fixed;
             bottom: 24px;
@@ -944,70 +888,55 @@
             }
         }
 
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
         @media (max-width: 768px) {
             .form-row { 
                 grid-template-columns: 1fr; 
             }
-
             .header { 
                 flex-direction: column; 
                 text-align: center; 
             }
-
             .header::before {
                 font-size: 80px;
                 right: -10px;
                 top: -10px;
             }
-
             .grid-sucursales { 
                 grid-template-columns: 1fr; 
             }
-
             .tabs button {
                 font-size: 10px;
                 padding: 8px 12px;
                 min-width: 50px;
             }
-
             .nav-principal button {
                 font-size: 11px;
                 padding: 10px 12px;
                 min-width: 60px;
             }
-
             .stats {
                 gap: 8px;
             }
-
             .stat {
                 padding: 10px 14px;
                 min-width: 60px;
             }
-
             .stat .num {
                 font-size: 22px;
             }
-
             .install-banner {
                 flex-direction: column;
                 text-align: center;
                 padding: 16px;
             }
-
             .install-banner .install-buttons {
                 width: 100%;
                 justify-content: center;
             }
-
             .sucursal-header .header-top {
                 flex-direction: column;
                 align-items: flex-start;
             }
-
             .etiqueta-print {
                 width: 280px;
                 padding: 16px;
@@ -1019,40 +948,30 @@
             .app-container {
                 padding: 10px;
             }
-
             .header {
                 padding: 12px 16px;
             }
-
             .header h1 {
                 font-size: 18px;
             }
-
             .card-sucursal {
                 padding: 16px;
             }
-
             .tabla-container {
                 padding: 10px;
             }
-
             table {
                 font-size: 10px;
             }
-
             th, td {
                 padding: 6px 8px;
             }
-
             .btn {
                 font-size: 10px;
                 padding: 6px 12px;
             }
         }
 
-        /* ============================================================
-           SCROLLBAR PERSONALIZADA
-           ============================================================ */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -1071,9 +990,6 @@
             background: var(--primary-dark);
         }
 
-        /* ============================================================
-           OTROS
-           ============================================================ */
         .foto-mini { 
             width: 40px; 
             height: 40px; 
@@ -1208,9 +1124,7 @@
 </head>
 <body>
 
-<!-- ============================================================
-     BANNER DE INSTALACIÓN PWA
-     ============================================================ -->
+<!-- BANNER DE INSTALACIÓN PWA -->
 <div class="install-banner" id="installBanner">
     <div class="install-text">
         <strong>📱 Instalar Gestión de Extintores</strong>
@@ -1222,17 +1136,13 @@
     </div>
 </div>
 
-<!-- ============================================================
-     BOTÓN FLOTANTE DE INSTALACIÓN
-     ============================================================ -->
+<!-- BOTÓN FLOTANTE DE INSTALACIÓN -->
 <button class="install-float-btn" id="installFloatBtn" title="Instalar App">
     <span class="icon">📲</span>
     <span>Instalar App</span>
 </button>
 
-<!-- ============================================================
-     CONTENEDOR PRINCIPAL
-     ============================================================ -->
+<!-- CONTENEDOR PRINCIPAL -->
 <div class="app-container">
     
     <!-- HEADER -->
@@ -1322,6 +1232,7 @@
                                 <option value="10 kg">10 kg</option>
                                 <option value="15 kg">15 kg</option>
                                 <option value="20 kg">20 kg</option>
+                                <option value="25 kg">25 kg</option>
                                 <option value="50 kg">50 kg</option>
                             </select>
                         </div>
@@ -1517,9 +1428,7 @@
     </div>
 </div>
 
-<!-- ============================================================
-     MODALES
-     ============================================================ -->
+<!-- MODALES -->
 <div class="modal-overlay" id="modal-detalle" style="display:none;" onclick="cerrarModalDetalle()">
     <div class="modal" onclick="event.stopPropagation()">
         <div id="modal-detalle-contenido"></div>
@@ -1561,7 +1470,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const IMGBB_API_KEY = 'ccace8b069999997554d73161868c495';
-    const PASSWORD_MAESTRA = 'SuperSpuma2024!';
+    const PASSWORD_MAESTRA = '1234';
 
     // ============================================================
     // DATOS
@@ -1676,7 +1585,6 @@
         
         let html = '<h4 style="color:#C62828;margin-bottom:8px;">📋 Datos del Extintor</h4>';
         
-        // Si es una URL con ?id=, extraer el ID
         let id = datosQR;
         if (typeof datosQR === 'string' && datosQR.includes('?id=')) {
             const params = new URLSearchParams(datosQR.split('?')[1]);
@@ -1708,7 +1616,6 @@
                 </div>`;
             }
             
-            // Botón para abrir la ficha pública
             const baseURL = window.location.origin + window.location.pathname;
             html += `<div style="margin-top:12px;">
                 <a href="${baseURL}?id=${id}" target="_blank" class="btn" style="width:100%;text-align:center;text-decoration:none;">🔗 Ver Ficha Pública</a>
@@ -1827,242 +1734,248 @@
             normal: '#00CC66'
         }[p.prioridad] || '#00CC66';
         
-        const html = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Ficha - ${extintor.ubicacion || 'Extintor'}</title>
-                <style>
-                    * { margin:0; padding:0; box-sizing:border-box; }
-                    body { 
-                        font-family:'Segoe UI',sans-serif; 
-                        background:#f5f0e8; 
-                        padding:20px;
-                        min-height:100vh;
-                        display:flex;
-                        justify-content:center;
-                        align-items:center;
-                    }
-                    .ficha {
-                        background:white;
-                        max-width:500px;
-                        width:100%;
-                        border-radius:20px;
-                        padding:30px;
-                        box-shadow:0 10px 40px rgba(0,0,0,0.15);
-                        border-left:6px solid #C62828;
-                    }
-                    .logo {
-                        text-align:center;
-                        margin-bottom:20px;
-                    }
-                    .logo img {
-                        width:60px;
-                        height:60px;
-                        border-radius:12px;
-                        background:#C62828;
-                        padding:8px;
-                    }
-                    .logo h1 {
-                        color:#C62828;
-                        font-size:20px;
-                        margin-top:4px;
-                    }
-                    .logo small {
-                        color:#666;
-                        font-size:11px;
-                        display:block;
-                    }
-                    .foto {
-                        width:100%;
-                        max-height:200px;
-                        object-fit:contain;
-                        border-radius:12px;
-                        background:#f5f5f5;
-                        margin:12px 0;
-                    }
-                    .campo {
-                        display:flex;
-                        justify-content:space-between;
-                        padding:8px 0;
-                        border-bottom:1px solid #eee;
-                        font-size:14px;
-                    }
-                    .campo .label {
-                        color:#666;
-                        font-weight:600;
-                    }
-                    .campo .valor {
-                        font-weight:700;
-                        color:#1a1a1a;
-                        text-align:right;
-                        max-width:60%;
-                        word-break:break-all;
-                    }
-                    .prioridad {
-                        display:inline-block;
-                        padding:4px 16px;
-                        border-radius:20px;
-                        color:white;
-                        font-weight:700;
-                        font-size:12px;
-                        text-transform:uppercase;
-                    }
-                    .botones {
-                        display:flex;
-                        gap:10px;
-                        margin-top:20px;
-                        flex-wrap:wrap;
-                    }
-                    .botones button {
-                        flex:1;
-                        padding:12px;
-                        border:none;
-                        border-radius:12px;
-                        font-weight:700;
-                        font-size:13px;
-                        cursor:pointer;
-                        transition:transform 0.2s;
-                        min-width:120px;
-                    }
-                    .botones button:hover {
-                        transform:scale(1.02);
-                    }
-                    .btn-wsp { background:#25D366; color:white; }
-                    .btn-descargar { background:#7B1FA2; color:white; }
-                    .btn-volver { background:#C62828; color:white; }
-                    .btn-mapa { background:#1565C0; color:white; }
-                    .qr-mini {
-                        text-align:center;
-                        margin:12px 0;
-                        background:#f5f5f5;
-                        padding:12px;
-                        border-radius:12px;
-                    }
-                    .qr-mini canvas {
-                        margin:0 auto !important;
-                    }
-                    .footer {
-                        text-align:center;
-                        font-size:10px;
-                        color:#999;
-                        margin-top:16px;
-                        border-top:1px solid #eee;
-                        padding-top:12px;
-                    }
-                    @media print {
-                        .botones { display:none; }
-                        .ficha { box-shadow:none; border:1px solid #ddd; }
-                        body { background:white; padding:0; }
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="ficha" id="ficha-para-descargar">
-                    <div class="logo">
-                        <img src="LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma">
-                        <h1>🧯 SUPERSPUMA</h1>
-                        <small>Ficha Técnica del Extintor</small>
-                    </div>
-                    
-                    ${extintor.fotoURL ? `<img src="${extintor.fotoURL}" class="foto" alt="Foto del extintor">` : ''}
-                    
-                    <div class="campo">
-                        <span class="label">ID</span>
-                        <span class="valor">${id}</span>
-                    </div>
-                    <div class="campo">
-                        <span class="label">📍 Ubicación</span>
-                        <span class="valor">${extintor.ubicacion || 'N/A'}</span>
-                    </div>
-                    <div class="campo">
-                        <span class="label">🏷️ Tipo</span>
-                        <span class="valor">${extintor.tipo || 'N/A'} · ${extintor.tamano || 'N/A'}</span>
-                    </div>
-                    <div class="campo">
-                        <span class="label">📅 Vence</span>
-                        <span class="valor">${extintor.fechaProxima || 'N/A'}</span>
-                    </div>
-                    <div class="campo">
-                        <span class="label">⚠️ Prioridad</span>
-                        <span class="valor"><span class="prioridad" style="background:${colorPrioridad};">${p.label}</span></span>
-                    </div>
-                    ${extintor.gps ? `<div class="campo"><span class="label">📍 GPS</span><span class="valor">${extintor.gps}</span></div>` : ''}
-                    ${extintor.coordenadas ? `<div class="campo"><span class="label">📌 Coordenadas</span><span class="valor">${extintor.coordenadas.lat}, ${extintor.coordenadas.lng}</span></div>` : ''}
-                    ${extintor.observaciones ? `<div class="campo"><span class="label">📝 Observaciones</span><span class="valor">${extintor.observaciones}</span></div>` : ''}
-                    
-                    <div class="qr-mini" id="qr-mini-ficha"></div>
-                    
-                    <div class="footer">
-                        Ficha generada el ${new Date().toLocaleDateString('es-ES')} · SuperSpuma Seguridad Industrial
-                    </div>
+        const fichaHTML = `
+            <div id="ficha-para-descargar">
+                <div class="logo">
+                    <img src="LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma">
+                    <h1>🧯 SUPERSPUMA</h1>
+                    <small>Ficha Técnica del Extintor</small>
                 </div>
                 
-                <div class="botones">
-                    <button class="btn-wsp" onclick="compartirWhatsApp()">📤 WhatsApp</button>
-                    <button class="btn-descargar" onclick="descargarFicha()">📥 Descargar</button>
-                    ${extintor.coordenadas ? `<button class="btn-mapa" onclick="verMapa(${extintor.coordenadas.lat}, ${extintor.coordenadas.lng})">🗺️ Ver Mapa</button>` : ''}
-                    <button class="btn-volver" onclick="location.href='/'">⬅ Volver</button>
-                </div>
+                ${extintor.fotoURL ? `<img src="${extintor.fotoURL}" class="foto" alt="Foto del extintor">` : ''}
                 
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
-                <script>
-                    setTimeout(() => {
-                        const container = document.getElementById('qr-mini-ficha');
-                        if (container && typeof QRCode !== 'undefined') {
-                            new QRCode(container, {
-                                text: '${id}',
-                                width: 80,
-                                height: 80,
-                                colorDark: "#C62828",
-                                colorLight: "#ffffff",
-                                correctLevel: QRCode.CorrectLevel.H
-                            });
-                        }
-                    }, 100);
-                    
-                    function compartirWhatsApp() {
-                        const texto = encodeURIComponent(
-                            '🧯 *SUPERSPUMA - Ficha del Extintor*%0A%0A' +
-                            '📍 *Ubicación:* ${extintor.ubicacion || 'N/A'}%0A' +
-                            '🏷️ *Tipo:* ${extintor.tipo || 'N/A'} · ${extintor.tamano || 'N/A'}%0A' +
-                            '📅 *Vence:* ${extintor.fechaProxima || 'N/A'}%0A' +
-                            '⚠️ *Prioridad:* ${p.label}%0A' +
-                            '🆔 *ID:* ${id}%0A' +
-                            (extintor.gps ? '📍 *GPS:* ${extintor.gps}%0A' : '') +
-                            '🔗 *Ver ficha:* ${window.location.href}'
-                        );
-                        window.open('https://wa.me/?text=' + texto, '_blank');
-                    }
-                    
-                    function descargarFicha() {
-                        const elemento = document.getElementById('ficha-para-descargar');
-                        html2canvas(elemento, {
-                            scale: 2,
-                            useCORS: true,
-                            backgroundColor: '#f5f0e8',
-                            allowTaint: true
-                        }).then(canvas => {
-                            const link = document.createElement('a');
-                            link.download = 'ficha_extintor_${id.slice(0,8)}.png';
-                            link.href = canvas.toDataURL('image/png');
-                            link.click();
-                        }).catch(err => {
-                            alert('Error al generar la imagen. Usá la impresión de pantalla.');
-                        });
-                    }
-                    
-                    function verMapa(lat, lng) {
-                        window.open('https://www.google.com/maps?q=' + lat + ',' + lng, '_blank');
-                    }
-                <\/script>
-            </body>
-            </html>
+                <div class="campo">
+                    <span class="label">ID</span>
+                    <span class="valor">${id}</span>
+                </div>
+                <div class="campo">
+                    <span class="label">📍 Ubicación</span>
+                    <span class="valor">${extintor.ubicacion || 'N/A'}</span>
+                </div>
+                <div class="campo">
+                    <span class="label">🏷️ Tipo</span>
+                    <span class="valor">${extintor.tipo || 'N/A'} · ${extintor.tamano || 'N/A'}</span>
+                </div>
+                <div class="campo">
+                    <span class="label">📅 Vence</span>
+                    <span class="valor">${extintor.fechaProxima || 'N/A'}</span>
+                </div>
+                <div class="campo">
+                    <span class="label">⚠️ Prioridad</span>
+                    <span class="valor"><span class="prioridad" style="background:${colorPrioridad};">${p.label}</span></span>
+                </div>
+                ${extintor.gps ? `<div class="campo"><span class="label">📍 GPS</span><span class="valor">${extintor.gps}</span></div>` : ''}
+                ${extintor.coordenadas ? `<div class="campo"><span class="label">📌 Coordenadas</span><span class="valor">${extintor.coordenadas.lat}, ${extintor.coordenadas.lng}</span></div>` : ''}
+                ${extintor.observaciones ? `<div class="campo"><span class="label">📝 Observaciones</span><span class="valor">${extintor.observaciones}</span></div>` : ''}
+                
+                <div class="qr-mini" id="qr-mini-ficha"></div>
+                
+                <div class="footer">
+                    Ficha generada el ${new Date().toLocaleDateString('es-ES')} · SuperSpuma Seguridad Industrial
+                </div>
+            </div>
         `;
         
-        document.body.innerHTML = html;
+        const estilos = `
+            <style>
+                * { margin:0; padding:0; box-sizing:border-box; }
+                body { 
+                    font-family:'Segoe UI',sans-serif; 
+                    background:#f5f0e8; 
+                    padding:20px;
+                    min-height:100vh;
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    flex-direction:column;
+                }
+                #contenedor-ficha {
+                    background:white;
+                    max-width:500px;
+                    width:100%;
+                    border-radius:20px;
+                    padding:30px;
+                    box-shadow:0 10px 40px rgba(0,0,0,0.15);
+                    border-left:6px solid #C62828;
+                }
+                .logo {
+                    text-align:center;
+                    margin-bottom:20px;
+                }
+                .logo img {
+                    width:60px;
+                    height:60px;
+                    border-radius:12px;
+                    background:#C62828;
+                    padding:8px;
+                }
+                .logo h1 {
+                    color:#C62828;
+                    font-size:20px;
+                    margin-top:4px;
+                }
+                .logo small {
+                    color:#666;
+                    font-size:11px;
+                    display:block;
+                }
+                .foto {
+                    width:100%;
+                    max-height:200px;
+                    object-fit:contain;
+                    border-radius:12px;
+                    background:#f5f5f5;
+                    margin:12px 0;
+                }
+                .campo {
+                    display:flex;
+                    justify-content:space-between;
+                    padding:8px 0;
+                    border-bottom:1px solid #eee;
+                    font-size:14px;
+                }
+                .campo .label {
+                    color:#666;
+                    font-weight:600;
+                }
+                .campo .valor {
+                    font-weight:700;
+                    color:#1a1a1a;
+                    text-align:right;
+                    max-width:60%;
+                    word-break:break-all;
+                }
+                .prioridad {
+                    display:inline-block;
+                    padding:4px 16px;
+                    border-radius:20px;
+                    color:white;
+                    font-weight:700;
+                    font-size:12px;
+                    text-transform:uppercase;
+                }
+                .botones {
+                    display:flex;
+                    gap:10px;
+                    margin-top:20px;
+                    flex-wrap:wrap;
+                    max-width:500px;
+                    width:100%;
+                }
+                .botones button {
+                    flex:1;
+                    padding:12px;
+                    border:none;
+                    border-radius:12px;
+                    font-weight:700;
+                    font-size:13px;
+                    cursor:pointer;
+                    transition:transform 0.2s;
+                    min-width:100px;
+                }
+                .botones button:hover {
+                    transform:scale(1.02);
+                }
+                .btn-wsp { background:#25D366; color:white; }
+                .btn-descargar { background:#7B1FA2; color:white; }
+                .btn-volver { background:#C62828; color:white; }
+                .btn-mapa { background:#1565C0; color:white; }
+                .qr-mini {
+                    text-align:center;
+                    margin:12px 0;
+                    background:#f5f5f5;
+                    padding:12px;
+                    border-radius:12px;
+                }
+                .qr-mini canvas {
+                    margin:0 auto !important;
+                }
+                .footer {
+                    text-align:center;
+                    font-size:10px;
+                    color:#999;
+                    margin-top:16px;
+                    border-top:1px solid #eee;
+                    padding-top:12px;
+                }
+                @media print {
+                    .botones { display:none; }
+                    #contenedor-ficha { box-shadow:none; border:1px solid #ddd; }
+                    body { background:white; padding:0; }
+                }
+                @media (max-width:480px) {
+                    #contenedor-ficha { padding:16px; }
+                    .campo { font-size:12px; }
+                    .botones button { font-size:11px; padding:10px; min-width:70px; }
+                }
+            </style>
+        `;
+        
+        document.body.innerHTML = `
+            ${estilos}
+            <div id="contenedor-ficha">
+                ${fichaHTML}
+            </div>
+            <div class="botones">
+                <button class="btn-wsp" onclick="compartirWhatsAppFicha()">📤 WhatsApp</button>
+                <button class="btn-descargar" onclick="descargarFicha()">📥 Descargar</button>
+                ${extintor.coordenadas ? `<button class="btn-mapa" onclick="verMapaFicha(${extintor.coordenadas.lat}, ${extintor.coordenadas.lng})">🗺️ Ver Mapa</button>` : ''}
+                <button class="btn-volver" onclick="location.href='/'">⬅ Volver</button>
+            </div>
+            
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+            <script>
+                setTimeout(() => {
+                    const container = document.getElementById('qr-mini-ficha');
+                    if (container && typeof QRCode !== 'undefined') {
+                        new QRCode(container, {
+                            text: '${id}',
+                            width: 80,
+                            height: 80,
+                            colorDark: "#C62828",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    }
+                }, 100);
+                
+                function compartirWhatsAppFicha() {
+                    const texto = encodeURIComponent(
+                        '🧯 *SUPERSPUMA - Ficha del Extintor*%0A%0A' +
+                        '📍 *Ubicación:* ${extintor.ubicacion || 'N/A'}%0A' +
+                        '🏷️ *Tipo:* ${extintor.tipo || 'N/A'} · ${extintor.tamano || 'N/A'}%0A' +
+                        '📅 *Vence:* ${extintor.fechaProxima || 'N/A'}%0A' +
+                        '⚠️ *Prioridad:* ${p.label}%0A' +
+                        '🆔 *ID:* ${id}%0A' +
+                        (extintor.gps ? '📍 *GPS:* ${extintor.gps}%0A' : '') +
+                        '🔗 *Ver ficha:* ${window.location.href}'
+                    );
+                    window.open('https://wa.me/?text=' + texto, '_blank');
+                }
+                
+                function descargarFicha() {
+                    const elemento = document.getElementById('ficha-para-descargar');
+                    html2canvas(elemento, {
+                        scale: 2,
+                        useCORS: true,
+                        backgroundColor: '#f5f0e8',
+                        allowTaint: true,
+                        logging: false
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = 'ficha_extintor_${id.slice(0,8)}.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    }).catch(err => {
+                        alert('Error al generar la imagen. Usá la impresión de pantalla.');
+                    });
+                }
+                
+                function verMapaFicha(lat, lng) {
+                    window.open('https://www.google.com/maps?q=' + lat + ',' + lng, '_blank');
+                }
+            <\/script>
+        `;
     }
 
     // ============================================================
@@ -2082,7 +1995,6 @@
         db.ref('extintores').once('value', snap => { 
             datosExtintores = snap.val() || {}; 
             cargarGridSucursales(); 
-            // Verificar si hay ?id= en la URL
             const params = new URLSearchParams(window.location.search);
             if (params.has('id')) {
                 verFichaPublica();
@@ -2773,7 +2685,6 @@
                 text => { 
                     detenerEscaner(); 
                     
-                    // Si es una URL con ?id=, extraer el ID
                     let id = text.trim();
                     if (id.includes('?id=')) {
                         const params = new URLSearchParams(id.split('?')[1]);
@@ -3061,8 +2972,9 @@
     cargarDatos();
     console.log('🔥 Gestión de Extintores - SuperSpuma');
     console.log('📱 QR con URL pública - Cualquiera puede ver la ficha');
-    console.log('📤 Botones de WhatsApp y descarga disponibles');
-    console.log('📲 PWA instalable en cualquier dispositivo móvil');
+    console.log('📤 Botones de WhatsApp y descarga funcionando');
+    console.log('🔑 Contraseña: 1234');
+    console.log('📏 Tamaños disponibles: 2.5, 5, 10, 15, 20, 25 y 50 kg');
 </script>
 </body>
 </html>
