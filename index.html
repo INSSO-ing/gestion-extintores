@@ -6,9 +6,49 @@
     <title>Gestión de Extintores · SuperSpuma</title>
     
     <!-- ============================================================
-         PWA - CONFIGURACIÓN COMO EN MARCACIÓN (SIN SW)
+         PWA - MANIFEST EMBEBIDO (como en marcación)
          ============================================================ -->
-    <link rel="manifest" href="manifest.json">
+    <script>
+        (function() {
+            const manifest = {
+                "name": "Gestión de Extintores · SuperSpuma",
+                "short_name": "GestionExt",
+                "description": "Sistema de gestión de extintores SuperSpuma",
+                "start_url": "index.html",
+                "display": "standalone",
+                "background_color": "#C62828",
+                "theme_color": "#C62828",
+                "orientation": "portrait",
+                "icons": [
+                    {
+                        "src": "LOGO_NVO_SUPERSPUMA.webp",
+                        "sizes": "192x192",
+                        "type": "image/webp",
+                        "purpose": "any"
+                    },
+                    {
+                        "src": "LOGO_NVO_SUPERSPUMA.webp",
+                        "sizes": "512x512",
+                        "type": "image/webp",
+                        "purpose": "any"
+                    },
+                    {
+                        "src": "LOGO_NVO_SUPERSPUMA.webp",
+                        "sizes": "192x192",
+                        "type": "image/webp",
+                        "purpose": "maskable"
+                    }
+                ]
+            };
+            
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('link');
+            link.rel = 'manifest';
+            link.href = url;
+            document.head.appendChild(link);
+        })();
+    </script>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,8 +56,8 @@
     <meta name="theme-color" content="#C62828">
     <meta name="description" content="Sistema de gestión de extintores SuperSpuma">
     
-    <link rel="icon" type="image/png" href="logo-insso.png">
-    <link rel="apple-touch-icon" href="logo-insso.png">
+    <link rel="icon" type="image/webp" href="LOGO_NVO_SUPERSPUMA.webp">
+    <link rel="apple-touch-icon" href="LOGO_NVO_SUPERSPUMA.webp">
     
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -1197,7 +1237,7 @@
     
     <!-- HEADER -->
     <div class="header">
-        <img src="logo-insso.png" alt="SuperSpuma">
+        <img src="LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma">
         <div>
             <h1>Gestión de Extintores</h1>
             <small>SuperSpuma · Seguridad Industrial <span class="conexion-dot" id="conexion-dot"></span></small>
@@ -1534,7 +1574,7 @@
     let datosExtintores = {}, datosChecklists = {}, sucursalActiva = 'villeta', html5QrCode = null, editMode = false, currentEditId = null, coordenadasActuales = null;
 
     // ============================================================
-    // PWA - INSTALACIÓN (COMO EN MARCACIÓN)
+    // PWA - INSTALACIÓN
     // ============================================================
     let deferredPrompt = null;
     const installBanner = document.getElementById('installBanner');
