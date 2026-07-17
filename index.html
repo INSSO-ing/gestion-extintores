@@ -47,12 +47,16 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Firebase + librerías externas -->
+    <!-- Librerías externas -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- NUEVAS LIBRERÍAS: PDF y Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
         /* ============================================================
@@ -315,6 +319,7 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 16px;
+            margin-bottom: 20px;
         }
 
         .card-sucursal {
@@ -407,6 +412,43 @@
             padding: 2px 12px;
             border-radius: 20px;
             margin-top: 4px;
+        }
+
+        /* ============================================================
+           DASHBOARD GRÁFICOS
+           ============================================================ */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .dashboard-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dashboard-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .dashboard-card canvas {
+            max-height: 180px;
+            width: 100% !important;
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* ============================================================
@@ -1505,6 +1547,9 @@
             .etiqueta-container {
                 grid-template-columns: 1fr;
             }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (min-width: 768px) {
@@ -1546,10 +1591,22 @@
     ============================================================ -->
     <main class="app-container">
 
-        <!-- VISTA SUCURSALES (INICIO) -->
+        <!-- VISTA SUCURSALES (INICIO) con DASHBOARD -->
         <section id="vista-sucursales" class="vista vista-activa">
             <div class="grid-sucursales" id="grid-sucursales-container">
                 <p class="empty-state">Cargando extintores...</p>
+            </div>
+
+            <!-- DASHBOARD DE GRÁFICOS -->
+            <div class="dashboard-grid" id="dashboard-grid">
+                <div class="dashboard-card">
+                    <h4>📊 Estado de Extintores</h4>
+                    <canvas id="chart-dona"></canvas>
+                </div>
+                <div class="dashboard-card">
+                    <h4>📈 Inspecciones por Mes</h4>
+                    <canvas id="chart-barras"></canvas>
+                </div>
             </div>
         </section>
 
@@ -2292,17 +2349,24 @@
             db.ref('extintores').once('value', snap => {
                 datosExtintores = snap.val() || {};
                 cargarGridSucursales();
+                renderDashboard();
                 const params = new URLSearchParams(window.location.search);
                 if (params.has('id')) verFichaPublica();
             });
-            db.ref('inspecciones').once('value', snap => { datosChecklists = snap.val() || {}; });
+            db.ref('inspecciones').once('value', snap => {
+                datosChecklists = snap.val() || {};
+                renderDashboard();
+            });
             db.ref('extintores').on('value', snap => {
                 datosExtintores = snap.val() || {};
                 actualizarTodo();
+                renderDashboard();
+                verificarVencimientos();
             });
             db.ref('inspecciones').on('value', snap => {
                 datosChecklists = snap.val() || {};
                 actualizarTodo();
+                renderDashboard();
             });
         }
 
@@ -2329,6 +2393,7 @@
                 document.getElementById('vista-panel-sucursal').classList.remove('vista-activa');
                 document.getElementById('vista-historial').classList.remove('vista-activa');
                 document.getElementById('vista-checklist-global').classList.remove('vista-activa');
+                renderDashboard();
             } else if (vista === 'panel-sucursal') {
                 document.getElementById('vista-sucursales').classList.remove('vista-activa');
                 document.getElementById('vista-panel-sucursal').classList.add('vista-activa');
@@ -2418,6 +2483,7 @@
             document.getElementById('vista-sucursales').classList.add('vista-activa');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
             document.querySelector('.bottom-nav .nav-item[data-vista="sucursales"]')?.classList.add('active');
+            renderDashboard();
         }
 
         function cargarHeaderSucursal() {
@@ -2919,7 +2985,7 @@
         function cerrarModalCLDetalle() { document.getElementById('modal-cl-detalle').style.display = 'none'; }
 
         // ============================================================
-        // VISUALIZAR (Se mantiene pero no está en los tabs, solo se usa internamente)
+        // VISUALIZAR (se mantiene para uso interno)
         // ============================================================
         function cargarVisualizar() {
             if (!sucursalActiva) return;
@@ -3274,7 +3340,7 @@
         }
 
         // ============================================================
-        // DETALLE EXTINTOR (MODAL)
+        // DETALLE EXTINTOR (MODAL) con BOTÓN PDF
         // ============================================================
         function verDetalleExtintor(id) {
             const d = datosExtintores[id];
@@ -3300,8 +3366,9 @@
                 ${d.observaciones ? `<p><strong>Observaciones:</strong> ${d.observaciones}</p>` : ''}
                 <div style="text-align:center; margin-top:12px;" id="qr-detalle"></div>
                 ${d.coordenadas ? `<div id="mapa-detalle"></div>` : ''}
-                <div style="margin-top:12px;">
-                    <a href="${window.location.origin + window.location.pathname}?id=${id}" target="_blank" class="btn btn-primary" style="width:100%;text-align:center;text-decoration:none;">🔗 Ver Ficha Pública</a>
+                <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
+                    <a href="${window.location.origin + window.location.pathname}?id=${id}" target="_blank" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">🔗 Ficha Pública</a>
+                    <button class="btn btn-success" style="flex:1;" onclick="generarInformePDF('${id}')">📄 Exportar PDF</button>
                 </div>
             `;
             document.getElementById('modal-detalle').style.display = 'flex';
@@ -3335,6 +3402,209 @@
         function cerrarModalPassword() { document.getElementById('modal-password').style.display = 'none'; }
 
         // ============================================================
+        // GENERAR INFORME PDF
+        // ============================================================
+        function generarInformePDF(id) {
+            const ext = datosExtintores[id];
+            if (!ext) return alert('Extintor no encontrado');
+
+            const historial = Object.values(datosChecklists)
+                .filter(c => c.extintorId === id && c.tipo === 'checklist')
+                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            const gpsText = ext.gps || (ext.coordenadas ? `${ext.coordenadas.lat}, ${ext.coordenadas.lng}` : 'No registrado');
+
+            const contenido = `
+                <div id="pdf-content" style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; background: white;">
+                    <div style="display: flex; align-items: center; border-bottom: 3px solid #dc2626; padding-bottom: 10px;">
+                        <img src="LOGO_NVO_SUPERSPUMA.webp" style="width: 60px; height: 60px; margin-right: 15px;" />
+                        <div>
+                            <h1 style="color: #dc2626; margin: 0;">SuperSpuma</h1>
+                            <p style="margin: 0; color: #475569;">Informe de Inspección de Extintor</p>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0;">
+                        <div><strong>N° Extintor:</strong> ${ext.numero || 'N/A'}</div>
+                        <div><strong>Ubicación:</strong> ${ext.ubicacion || 'N/A'}</div>
+                        <div><strong>Tipo:</strong> ${ext.tipo || 'N/A'} · ${ext.tamano || 'N/A'}</div>
+                        <div><strong>Vencimiento:</strong> ${ext.fechaProxima || 'N/A'}</div>
+                        <div><strong>GPS:</strong> ${gpsText}</div>
+                        <div><strong>Fecha informe:</strong> ${new Date().toLocaleString()}</div>
+                    </div>
+                    <h3>📋 Historial de Inspecciones</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                        <thead><tr style="background: #dc2626; color: white;">
+                            <th style="padding: 8px;">Fecha</th><th>Inspector</th><th>Resultado</th><th>Observaciones</th>
+                        </tr></thead>
+                        <tbody>
+                            ${historial.length > 0 ? historial.map(c => `
+                                <tr style="border-bottom: 1px solid #ddd;">
+                                    <td>${new Date(c.fecha).toLocaleDateString()}</td>
+                                    <td>${c.inspector || 'N/A'}</td>
+                                    <td>${Object.values(c.items||{}).every(v=>v==='OK') ? '✅ OK' : '❌ Con fallas'}</td>
+                                    <td>${c.observaciones || ''}</td>
+                                </tr>
+                            `).join('') : '<tr><td colspan="4">Sin inspecciones registradas</td></tr>'}
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 15px; display: flex; justify-content: space-between;">
+                        <div><strong>Firma digital:</strong> ${new Date().toISOString().slice(0,10)} - SuperSpuma</div>
+                        <div style="color: #94a3b8; font-size: 10px;">Documento generado automáticamente</div>
+                    </div>
+                </div>
+            `;
+
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = contenido;
+            document.body.appendChild(wrapper);
+
+            const element = document.getElementById('pdf-content');
+            html2pdf()
+                .set({ margin: 0.5, filename: `informe_${ext.numero || id}.pdf`, image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true } })
+                .from(element)
+                .save()
+                .then(() => {
+                    document.body.removeChild(wrapper);
+                });
+        }
+
+        // ============================================================
+        // ALERTAS DE VENCIMIENTO (Notificaciones y Pop-up)
+        // ============================================================
+        // Solicitar permiso para notificaciones
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        function verificarVencimientos() {
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const proximos = [];
+
+            Object.entries(datosExtintores).forEach(([id, ext]) => {
+                if (!ext.fechaProxima) return;
+                const vence = new Date(ext.fechaProxima);
+                vence.setHours(0, 0, 0, 0);
+                const diff = Math.ceil((vence - hoy) / (1000 * 60 * 60 * 24));
+                if (diff >= 0 && diff <= 30) {
+                    proximos.push({ ...ext, id, dias: diff });
+                }
+            });
+
+            if (proximos.length === 0) return;
+
+            proximos.sort((a, b) => a.dias - b.dias);
+            const mensaje = proximos.map(p => `🔴 ${p.numero} (${p.ubicacion}) vence en ${p.dias} días`).join('\n');
+            const titulo = `⚠️ ${proximos.length} extintor(es) próximo(s) a vencer`;
+
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(titulo, { body: mensaje, icon: 'LOGO_NVO_SUPERSPUMA.webp' });
+            } else {
+                mostrarPopupAlerta(titulo, mensaje);
+            }
+        }
+
+        function mostrarPopupAlerta(titulo, mensaje) {
+            const modal = document.getElementById('modal-detalle');
+            const contenido = document.getElementById('modal-detalle-contenido');
+            contenido.innerHTML = `
+                <h3>${titulo}</h3>
+                <pre style="white-space: pre-wrap; background: #f8fafc; padding: 12px; border-radius: 8px; font-size:13px;">${mensaje}</pre>
+                <div style="display:flex; gap:8px; margin-top:12px;">
+                    <button class="btn btn-primary" onclick="cerrarModalDetalle()">Entendido</button>
+                    <button class="btn btn-secondary" onclick="cerrarModalDetalle(); navegarA('panel-sucursal')">Ver extintores</button>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        // Verificar al cargar y cada 10 minutos
+        setInterval(verificarVencimientos, 600000);
+
+        // ============================================================
+        // DASHBOARD CON GRÁFICOS (Chart.js)
+        // ============================================================
+        let chartDona = null,
+            chartBarras = null;
+
+        function renderDashboard() {
+            const extintores = Object.values(datosExtintores);
+            const total = extintores.length;
+            const vigentes = extintores.filter(e => calcularDiasRestantes(e.fechaProxima) >= 0).length;
+            const vencidos = total - vigentes;
+            const proximos = extintores.filter(e => estaProximoAVencer(e.fechaProxima)).length;
+
+            // Gráfico de dona
+            const ctxDona = document.getElementById('chart-dona');
+            if (ctxDona) {
+                if (chartDona) chartDona.destroy();
+                chartDona = new Chart(ctxDona, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Vigentes', 'Vencidos', 'Próximos a vencer'],
+                        datasets: [{
+                            data: [vigentes, vencidos, proximos],
+                            backgroundColor: ['#22c55e', '#dc2626', '#f59e0b'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: { size: 10 } } },
+                            tooltip: { callbacks: { label: (ctx) =>
+                                    `${ctx.raw} extintores (${((ctx.raw/total)*100).toFixed(1)}%)` } }
+                        }
+                    }
+                });
+            }
+
+            // Inspecciones por mes (últimos 6 meses)
+            const inspecciones = Object.values(datosChecklists).filter(c => c.tipo === 'checklist');
+            const meses = [];
+            const conteos = [];
+            const hoy = new Date();
+            for (let i = 5; i >= 0; i--) {
+                const mes = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+                const key = mes.toLocaleString('es', { month: 'short', year: 'numeric' });
+                meses.push(key);
+                const count = inspecciones.filter(c => {
+                    const f = new Date(c.fecha);
+                    return f.getMonth() === mes.getMonth() && f.getFullYear() === mes.getFullYear();
+                }).length;
+                conteos.push(count);
+            }
+
+            const ctxBarras = document.getElementById('chart-barras');
+            if (ctxBarras) {
+                if (chartBarras) chartBarras.destroy();
+                chartBarras = new Chart(ctxBarras, {
+                    type: 'bar',
+                    data: {
+                        labels: meses,
+                        datasets: [{
+                            label: 'Inspecciones',
+                            data: conteos,
+                            backgroundColor: '#dc2626',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 9 } } },
+                            x: { ticks: { font: { size: 9 } } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ============================================================
         // SUBIR FOTO (IMGBB)
         // ============================================================
         async function subirFotoImgBB(file, nombre) {
@@ -3364,6 +3634,7 @@
 
         console.log('🔥 Gestión de Extintores - SuperSpuma (Rediseño UI/UX)');
         console.log('📱 Diseño moderno con navegación inferior y cards responsivas');
+        console.log('📄 Reportes PDF, Alertas de vencimiento y Dashboard con gráficos integrados');
         console.log('🔑 Contraseña: 1234');
     </script>
 
