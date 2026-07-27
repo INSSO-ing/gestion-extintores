@@ -1837,7 +1837,7 @@
                 </div>
                 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;">
                     <button class="btn btn-secondary" onclick="exportarCSVHistorial()">📥 Exportar CSV</button>
-                    <button class="btn btn-danger" onclick="pedirPasswordBorrarHistorial()">🗑️ Borrar todo el historial</button>
+                    <button class="btn btn-danger" onclick="pedirPasswordBorrarHistorial()">🗑️ Borrar historial de inspecciones</button>
                 </div>
             </div>
         </section>
@@ -3375,33 +3375,32 @@
         }
 
         // ============================================================
-        // BORRAR TODO EL HISTORIAL (con contraseña)
+        // BORRAR SOLO INSPECCIONES (con contraseña)
         // ============================================================
         function pedirPasswordBorrarHistorial() {
-            if (!confirm('⚠️ ¿Estás seguro de que deseas eliminar TODOS los extintores y checklists? Esta acción no se puede deshacer.')) {
+            if (!confirm('⚠️ ¿Estás seguro de que deseas eliminar TODOS los registros de inspección (checklists)? Los extintores NO se eliminarán.')) {
                 return;
             }
             document.getElementById('input-password').value = '';
             document.getElementById('modal-password').style.display = 'flex';
             document.getElementById('btn-confirmar-eliminar').onclick = function() {
                 if (document.getElementById('input-password').value === PASSWORD_MAESTRA) {
-                    borrarHistorialCompleto();
+                    borrarInspecciones();
                 } else {
                     alert('❌ Contraseña incorrecta');
                 }
             };
         }
 
-        async function borrarHistorialCompleto() {
+        async function borrarInspecciones() {
             try {
-                await db.ref('extintores').remove();
                 await db.ref('inspecciones').remove();
-                alert('✅ Todos los extintores y checklists han sido eliminados.');
+                alert('✅ Todas las inspecciones han sido eliminadas. Los extintores se mantienen.');
                 cerrarModalPassword();
                 // Los datos se actualizarán automáticamente gracias a los listeners de Firebase
             } catch (error) {
-                console.error('Error al borrar historial:', error);
-                alert('❌ Error al borrar el historial. Intentá de nuevo.');
+                console.error('Error al borrar inspecciones:', error);
+                alert('❌ Error al borrar las inspecciones. Intentá de nuevo.');
             }
         }
 
@@ -3687,7 +3686,7 @@
         console.log('📄 Reportes PDF, Alertas de vencimiento (solo notificación) y Dashboard con gráficos');
         console.log('🔑 Contraseña: 1234');
         console.log('✅ CSV actualizado con datos frescos');
-        console.log('✅ Botón "Borrar todo el historial" con contraseña');
+        console.log('✅ Botón "Borrar historial de inspecciones" (solo elimina checklists)');
     </script>
 
 </body>
