@@ -57,15 +57,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
-        /* ============================================================
-           RESET & BASE
-           ============================================================ */
+        /* (estilos iguales a la versión anterior) */
+        /* ... mantén todos los estilos exactamente como antes ... */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         :root {
             --bg: #f8fafc;
             --surface: #ffffff;
@@ -85,7 +83,6 @@
             --header-height: 64px;
             --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
-
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--bg);
@@ -95,7 +92,6 @@
             padding-top: var(--header-height);
             transition: background 0.2s;
         }
-
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -107,10 +103,6 @@
             background: var(--red-600);
             border-radius: 8px;
         }
-
-        /* ============================================================
-           HEADER FIJO
-           ============================================================ */
         .app-header {
             position: fixed;
             top: 0;
@@ -127,13 +119,11 @@
             backdrop-filter: blur(12px);
             background: rgba(255, 255, 255, 0.92);
         }
-
         .app-header .logo {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         .app-header .logo img {
             width: 38px;
             height: 38px;
@@ -142,18 +132,15 @@
             padding: 4px;
             object-fit: contain;
         }
-
         .app-header .logo h1 {
             font-size: 18px;
             font-weight: 700;
             letter-spacing: -0.3px;
             color: var(--text-primary);
         }
-
         .app-header .logo h1 span {
             color: var(--red-600);
         }
-
         .app-header .logo small {
             font-size: 10px;
             font-weight: 500;
@@ -161,13 +148,11 @@
             display: block;
             margin-top: -2px;
         }
-
         .app-header .header-actions {
             margin-left: auto;
             display: flex;
             gap: 6px;
         }
-
         .app-header .header-actions button {
             background: transparent;
             border: none;
@@ -181,15 +166,10 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-
         .app-header .header-actions button:hover {
             background: var(--red-50);
             color: var(--red-600);
         }
-
-        /* ============================================================
-           BOTTOM NAVIGATION
-           ============================================================ */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -207,7 +187,6 @@
             background: rgba(255, 255, 255, 0.94);
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
         }
-
         .bottom-nav .nav-item {
             flex: 1;
             display: flex;
@@ -228,28 +207,23 @@
             height: 100%;
             min-width: 0;
         }
-
         .bottom-nav .nav-item svg {
             width: 24px;
             height: 24px;
             stroke-width: 1.8;
             transition: stroke 0.2s;
         }
-
         .bottom-nav .nav-item.active {
             color: var(--red-600);
         }
-
         .bottom-nav .nav-item.active svg {
             stroke: var(--red-600);
             fill: var(--red-50);
         }
-
         .bottom-nav .nav-item.scan-btn {
             position: relative;
             top: -12px;
         }
-
         .bottom-nav .nav-item.scan-btn .scan-wrapper {
             width: 56px;
             height: 56px;
@@ -261,40 +235,28 @@
             box-shadow: 0 4px 16px rgba(220, 38, 38, 0.35);
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
         .bottom-nav .nav-item.scan-btn .scan-wrapper svg {
             width: 28px;
             height: 28px;
             stroke: white;
             stroke-width: 2;
         }
-
         .bottom-nav .nav-item.scan-btn:active .scan-wrapper {
             transform: scale(0.92);
             box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
         }
-
         .bottom-nav .nav-item.scan-btn span {
             margin-top: 4px;
         }
-
-        /* ============================================================
-           CONTENEDOR PRINCIPAL
-           ============================================================ */
         .app-container {
             max-width: 800px;
             margin: 0 auto;
             padding: 16px 16px 24px;
         }
-
-        /* ============================================================
-           VISTAS
-           ============================================================ */
         .vista {
             display: none;
             animation: fadeUp 0.25s ease-out;
         }
-
         @keyframes fadeUp {
             from {
                 opacity: 0;
@@ -305,21 +267,15 @@
                 transform: translateY(0);
             }
         }
-
         .vista-activa {
             display: block !important;
         }
-
-        /* ============================================================
-           TARJETAS DE SUCURSAL (DASHBOARD)
-           ============================================================ */
         .grid-sucursales {
             display: grid;
             grid-template-columns: 1fr;
             gap: 16px;
             margin-bottom: 20px;
         }
-
         .card-sucursal {
             background: var(--surface);
             border-radius: var(--radius);
@@ -332,18 +288,15 @@
             flex-direction: column;
             gap: 6px;
         }
-
         .card-sucursal:hover {
             box-shadow: var(--shadow-md);
             transform: translateY(-2px);
         }
-
         .card-sucursal .suc-header {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
         .card-sucursal .suc-header .icon {
             width: 44px;
             height: 44px;
@@ -354,13 +307,11 @@
             justify-content: center;
             color: var(--red-600);
         }
-
         .card-sucursal .suc-header h3 {
             font-size: 18px;
             font-weight: 700;
             color: var(--text-primary);
         }
-
         .card-sucursal .direccion {
             font-size: 13px;
             color: var(--text-secondary);
@@ -368,14 +319,12 @@
             align-items: center;
             gap: 6px;
         }
-
         .card-sucursal .stats-mini {
             display: flex;
             gap: 16px;
             margin-top: 8px;
             flex-wrap: wrap;
         }
-
         .card-sucursal .stats-mini .stat-tag {
             background: var(--bg);
             padding: 4px 14px;
@@ -387,12 +336,10 @@
             align-items: center;
             gap: 6px;
         }
-
         .card-sucursal .stats-mini .stat-tag .num {
             color: var(--text-primary);
             font-weight: 700;
         }
-
         .card-sucursal .stats-mini .stat-tag.danger {
             background: #fef2f2;
             color: var(--red-600);
@@ -400,7 +347,6 @@
         .card-sucursal .stats-mini .stat-tag.danger .num {
             color: var(--red-600);
         }
-
         .card-sucursal .badge-principal {
             align-self: flex-start;
             background: var(--red-50);
@@ -411,17 +357,12 @@
             border-radius: 20px;
             margin-top: 4px;
         }
-
-        /* ============================================================
-           DASHBOARD GRÁFICOS
-           ============================================================ */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
             margin-top: 20px;
         }
-
         .dashboard-card {
             background: var(--surface);
             border-radius: var(--radius);
@@ -429,7 +370,6 @@
             border: 1px solid var(--border);
             box-shadow: var(--shadow-sm);
         }
-
         .dashboard-card h4 {
             font-size: 14px;
             font-weight: 700;
@@ -437,21 +377,15 @@
             margin-bottom: 12px;
             text-align: center;
         }
-
         .dashboard-card canvas {
             max-height: 180px;
             width: 100% !important;
         }
-
         @media (max-width: 600px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
         }
-
-        /* ============================================================
-           PANEL DE SUCURSAL
-           ============================================================ */
         .sucursal-header {
             background: var(--surface);
             border-radius: var(--radius);
@@ -460,7 +394,6 @@
             box-shadow: var(--shadow-sm);
             margin-bottom: 20px;
         }
-
         .sucursal-header .header-top {
             display: flex;
             justify-content: space-between;
@@ -468,12 +401,10 @@
             flex-wrap: wrap;
             gap: 12px;
         }
-
         .sucursal-header .header-top h2 {
             font-size: 20px;
             font-weight: 700;
         }
-
         .sucursal-header .header-top .direccion {
             color: var(--text-secondary);
             font-size: 13px;
@@ -481,19 +412,16 @@
             align-items: center;
             gap: 6px;
         }
-
         .sucursal-header .header-actions {
             display: flex;
             gap: 8px;
         }
-
         .sucursal-header .stats {
             display: flex;
             gap: 16px;
             margin-top: 16px;
             flex-wrap: wrap;
         }
-
         .sucursal-header .stats .stat {
             background: var(--bg);
             padding: 8px 16px;
@@ -501,14 +429,12 @@
             text-align: center;
             min-width: 70px;
         }
-
         .sucursal-header .stats .stat .num {
             font-size: 24px;
             font-weight: 800;
             color: var(--text-primary);
             line-height: 1.2;
         }
-
         .sucursal-header .stats .stat .lbl {
             font-size: 10px;
             text-transform: uppercase;
@@ -516,7 +442,6 @@
             color: var(--text-muted);
             font-weight: 600;
         }
-
         .sucursal-header .stats .stat.warning .num {
             color: #f59e0b;
         }
@@ -526,8 +451,6 @@
         .sucursal-header .stats .stat.success .num {
             color: #22c55e;
         }
-
-        /* Tabs del panel */
         .tabs-sucursal {
             display: flex;
             gap: 4px;
@@ -540,7 +463,6 @@
             flex-wrap: nowrap;
             -webkit-overflow-scrolling: touch;
         }
-
         .tabs-sucursal button {
             flex: 0 0 auto;
             padding: 8px 16px;
@@ -555,30 +477,22 @@
             transition: background 0.2s, color 0.2s;
             white-space: nowrap;
         }
-
         .tabs-sucursal button:hover {
             background: var(--red-50);
             color: var(--red-600);
         }
-
         .tabs-sucursal button.activo {
             background: var(--red-600);
             color: white;
             box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
         }
-
         .tab-sucursal {
             display: none;
             animation: fadeUp 0.2s ease-out;
         }
-
         .tab-sucursal.activo {
             display: block;
         }
-
-        /* ============================================================
-           TABLA RESPONSIVA → TARJETAS EN MÓVIL
-           ============================================================ */
         .tabla-container {
             background: var(--surface);
             border-radius: var(--radius);
@@ -587,20 +501,17 @@
             box-shadow: var(--shadow-sm);
             overflow: hidden;
         }
-
         .tabla-container h3 {
             font-size: 18px;
             font-weight: 700;
             margin-bottom: 16px;
             color: var(--text-primary);
         }
-
         .tabla-extintores {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-
         .tabla-extintores .extintor-card {
             background: var(--bg);
             border-radius: var(--radius-sm);
@@ -612,11 +523,9 @@
             cursor: pointer;
             transition: background 0.15s, box-shadow 0.15s;
         }
-
         .tabla-extintores .extintor-card:active {
             background: var(--red-50);
         }
-
         .tabla-extintores .extintor-card .foto-mini {
             width: 48px;
             height: 48px;
@@ -626,18 +535,15 @@
             border: 1px solid var(--border);
             flex-shrink: 0;
         }
-
         .tabla-extintores .extintor-card .info {
             flex: 1;
             min-width: 0;
         }
-
         .tabla-extintores .extintor-card .info .numero {
             font-weight: 700;
             font-size: 15px;
             color: var(--text-primary);
         }
-
         .tabla-extintores .extintor-card .info .ubicacion {
             font-size: 12px;
             color: var(--text-secondary);
@@ -645,7 +551,6 @@
             align-items: center;
             gap: 4px;
         }
-
         .tabla-extintores .extintor-card .info .meta {
             display: flex;
             gap: 10px;
@@ -654,12 +559,10 @@
             font-size: 11px;
             color: var(--text-muted);
         }
-
         .tabla-extintores .extintor-card .estado {
             text-align: right;
             flex-shrink: 0;
         }
-
         .tabla-extintores .extintor-card .estado .badge {
             font-size: 10px;
             font-weight: 700;
@@ -669,7 +572,6 @@
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
-
         .badge.vencido {
             background: #fef2f2;
             color: var(--red-600);
@@ -694,13 +596,11 @@
             background: #fef2f2;
             color: var(--red-600);
         }
-
         .tabla-extintores .extintor-card .acciones {
             display: flex;
             gap: 6px;
             margin-top: 6px;
         }
-
         .tabla-extintores .extintor-card .acciones button {
             background: transparent;
             border: 1px solid var(--border);
@@ -712,12 +612,10 @@
             cursor: pointer;
             transition: background 0.15s;
         }
-
         .tabla-extintores .extintor-card .acciones button:hover {
             background: var(--red-50);
             color: var(--red-600);
         }
-
         .tabla-extintores .extintor-card .qr-mini {
             width: 48px;
             height: 48px;
@@ -729,17 +627,13 @@
             border-radius: 8px;
             border: 1px solid var(--border);
         }
-
         .tabla-extintores .extintor-card .qr-mini canvas {
             max-width: 44px;
             max-height: 44px;
         }
-
-        /* Ocultar tabla tradicional en móvil, mostrar cards */
         .tabla-extintores-table {
             display: none;
         }
-
         @media (min-width: 768px) {
             .tabla-extintores {
                 display: none;
@@ -807,10 +701,6 @@
                 color: var(--red-600);
             }
         }
-
-        /* ============================================================
-           FORMULARIOS
-           ============================================================ */
         .form-card {
             background: var(--surface);
             border-radius: var(--radius);
@@ -818,24 +708,20 @@
             border: 1px solid var(--border);
             box-shadow: var(--shadow-sm);
         }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
             margin-bottom: 16px;
         }
-
         .form-row .full {
             grid-column: 1 / -1;
         }
-
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
-
         .form-group label {
             font-size: 12px;
             font-weight: 600;
@@ -844,7 +730,6 @@
             align-items: center;
             gap: 4px;
         }
-
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -858,7 +743,6 @@
             transition: border-color 0.2s, box-shadow 0.2s;
             width: 100%;
         }
-
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
@@ -866,20 +750,16 @@
             border-color: var(--red-600);
             box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
         }
-
         .form-group textarea {
             resize: vertical;
             min-height: 60px;
         }
-
-        /* Selector de tamaño como píldoras */
         .tamano-pills {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin-top: 4px;
         }
-
         .tamano-pills .pill {
             padding: 6px 16px;
             border-radius: 20px;
@@ -892,22 +772,18 @@
             transition: all 0.15s;
             user-select: none;
         }
-
         .tamano-pills .pill:hover {
             border-color: var(--red-600);
             color: var(--red-600);
         }
-
         .tamano-pills .pill.active {
             background: var(--red-600);
             border-color: var(--red-600);
             color: white;
         }
-
         .form-group select[data-pills] {
             display: none;
         }
-
         .btn {
             display: inline-flex;
             align-items: center;
@@ -923,68 +799,53 @@
             transition: all 0.15s;
             text-decoration: none;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, var(--red-600), var(--red-700));
             color: white;
             box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
         }
-
         .btn-primary:hover {
             box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
             transform: translateY(-1px);
         }
-
         .btn-primary:active {
             transform: scale(0.97);
         }
-
         .btn-secondary {
             background: var(--bg);
             color: var(--text-secondary);
             border: 1px solid var(--border);
         }
-
         .btn-secondary:hover {
             background: var(--red-50);
             color: var(--red-600);
             border-color: var(--red-600);
         }
-
         .btn-success {
             background: #22c55e;
             color: white;
         }
-
         .btn-danger {
             background: var(--red-600);
             color: white;
         }
-
         .btn-outline {
             background: transparent;
             border: 1.5px solid var(--border);
             color: var(--text-secondary);
         }
-
         .btn-outline:hover {
             border-color: var(--red-600);
             color: var(--red-600);
         }
-
         .btn-sm {
             padding: 6px 14px;
             font-size: 12px;
         }
-
         .btn-block {
             width: 100%;
             justify-content: center;
         }
-
-        /* ============================================================
-           CHECKLIST
-           ============================================================ */
         .checklist-item {
             display: flex;
             align-items: center;
@@ -992,22 +853,18 @@
             padding: 10px 0;
             border-bottom: 1px solid var(--border);
         }
-
         .checklist-item:last-child {
             border-bottom: none;
         }
-
         .checklist-item .nombre {
             flex: 1;
             font-weight: 600;
             font-size: 14px;
         }
-
         .checklist-item .opciones {
             display: flex;
             gap: 6px;
         }
-
         .checklist-item .opciones button {
             padding: 4px 14px;
             border-radius: 20px;
@@ -1019,19 +876,16 @@
             cursor: pointer;
             transition: all 0.15s;
         }
-
         .checklist-item .opciones button.sel-ok {
             background: #dcfce7;
             border-color: #22c55e;
             color: #16a34a;
         }
-
         .checklist-item .opciones button.sel-nook {
             background: #fef2f2;
             border-color: var(--red-600);
             color: var(--red-600);
         }
-
         .progress-bar {
             width: 100%;
             height: 6px;
@@ -1040,17 +894,12 @@
             overflow: hidden;
             margin: 12px 0;
         }
-
         .progress-bar .fill {
             height: 100%;
             background: linear-gradient(90deg, var(--red-600), var(--red-700));
             border-radius: 4px;
             transition: width 0.3s;
         }
-
-        /* ============================================================
-           QR / ESCÁNER
-           ============================================================ */
         .qr-container-sucursal {
             background: white;
             padding: 6px;
@@ -1062,13 +911,11 @@
             min-width: 60px;
             min-height: 60px;
         }
-
         .qr-container-sucursal canvas {
             display: block !important;
             max-width: 100% !important;
             height: auto !important;
         }
-
         #qr-reader {
             width: 100%;
             max-width: 400px;
@@ -1076,11 +923,9 @@
             border-radius: var(--radius-sm);
             overflow: hidden;
         }
-
         #qr-reader video {
             border-radius: var(--radius-sm);
         }
-
         .qr-info-container {
             background: var(--bg);
             border-radius: var(--radius-sm);
@@ -1088,7 +933,6 @@
             margin-top: 16px;
             border: 1px solid var(--border);
         }
-
         .qr-info-container .qr-data-row {
             display: flex;
             justify-content: space-between;
@@ -1096,18 +940,15 @@
             font-size: 13px;
             border-bottom: 1px solid var(--border);
         }
-
         .qr-info-container .qr-data-row .label {
             font-weight: 600;
             color: var(--text-secondary);
         }
-
         .qr-info-container .qr-data-row .value {
             text-align: right;
             max-width: 60%;
             word-break: break-all;
         }
-
         .qr-info-container .qr-foto {
             max-width: 100%;
             max-height: 160px;
@@ -1115,16 +956,11 @@
             border-radius: 8px;
             margin-top: 8px;
         }
-
-        /* ============================================================
-           ETIQUETAS
-           ============================================================ */
         .etiqueta-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 16px;
         }
-
         .etiqueta-print {
             background: white;
             border: 1px solid var(--border);
@@ -1134,25 +970,21 @@
             page-break-inside: avoid;
             break-inside: avoid;
         }
-
         .etiqueta-print .header-etiqueta {
             text-align: center;
             border-bottom: 2px solid var(--red-600);
             padding-bottom: 8px;
             margin-bottom: 10px;
         }
-
         .etiqueta-print .header-etiqueta h4 {
             color: var(--red-600);
             font-size: 14px;
             font-weight: 800;
         }
-
         .etiqueta-print .header-etiqueta small {
             font-size: 9px;
             color: var(--text-muted);
         }
-
         .etiqueta-print .foto-extintor {
             width: 100%;
             max-height: 120px;
@@ -1161,7 +993,6 @@
             margin: 6px 0;
             background: var(--bg);
         }
-
         .etiqueta-print .info-row {
             display: flex;
             justify-content: space-between;
@@ -1169,39 +1000,30 @@
             font-size: 11px;
             border-bottom: 1px solid var(--border);
         }
-
         .etiqueta-print .info-row .label {
             color: var(--text-muted);
             font-weight: 600;
         }
-
         .etiqueta-print .info-row .value {
             font-weight: 700;
             color: var(--text-primary);
         }
-
         .etiqueta-print .qr-wrapper {
             display: flex;
             justify-content: center;
             margin: 8px 0;
         }
-
         .etiqueta-print .qr-wrapper canvas {
             display: block !important;
             max-width: 100% !important;
             height: auto !important;
         }
-
         .etiqueta-print .gps-info {
             font-size: 8px;
             color: var(--text-muted);
             text-align: center;
             margin-top: 4px;
         }
-
-        /* ============================================================
-           MODALES
-           ============================================================ */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -1217,7 +1039,6 @@
             padding: 20px;
             animation: fadeIn 0.2s ease-out;
         }
-
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -1228,7 +1049,6 @@
                 transform: scale(1);
             }
         }
-
         .modal {
             background: var(--surface);
             border-radius: var(--radius);
@@ -1240,14 +1060,12 @@
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
         }
-
         .modal h3 {
             font-size: 20px;
             font-weight: 700;
             margin-bottom: 16px;
             color: var(--text-primary);
         }
-
         .modal .modal-detalle-foto {
             width: 100%;
             max-height: 200px;
@@ -1256,27 +1074,20 @@
             border-radius: var(--radius-sm);
             margin-bottom: 12px;
         }
-
         .modal .close-modal {
             margin-top: 16px;
             width: 100%;
         }
-
-        /* ============================================================
-           UTILITY
-           ============================================================ */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
             color: var(--text-muted);
         }
-
         .empty-state .icon {
             font-size: 40px;
             display: block;
             margin-bottom: 12px;
         }
-
         .gps-coordenadas {
             font-size: 12px;
             color: var(--text-secondary);
@@ -1285,7 +1096,6 @@
             border-radius: 8px;
             display: inline-block;
         }
-
         .mapa-mini {
             width: 100%;
             height: 140px;
@@ -1293,7 +1103,6 @@
             border: 1px solid var(--border);
             margin-top: 8px;
         }
-
         .mapa-link {
             font-size: 12px;
             color: var(--red-600);
@@ -1301,7 +1110,6 @@
             display: inline-block;
             margin-top: 4px;
         }
-
         .flex-between {
             display: flex;
             justify-content: space-between;
@@ -1309,7 +1117,6 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-
         .mt-8 {
             margin-top: 8px;
         }
@@ -1325,10 +1132,6 @@
         .gap-12 {
             gap: 12px;
         }
-
-        /* ============================================================
-           DARK MODE (opcional, pero mantenido)
-           ============================================================ */
         .dark-mode {
             --bg: #0f172a;
             --surface: #1e293b;
@@ -1338,17 +1141,14 @@
             --border: #334155;
             --red-50: #1e293b;
         }
-
         .dark-mode .app-header {
             background: rgba(30, 41, 59, 0.92);
             border-bottom-color: var(--border);
         }
-
         .dark-mode .bottom-nav {
             background: rgba(30, 41, 59, 0.94);
             border-top-color: var(--border);
         }
-
         .dark-mode .card-sucursal,
         .dark-mode .sucursal-header,
         .dark-mode .tabla-container,
@@ -1357,12 +1157,10 @@
             background: var(--surface);
             border-color: var(--border);
         }
-
         .dark-mode .tabla-extintores .extintor-card {
             background: var(--surface);
             border-color: var(--border);
         }
-
         .dark-mode .form-group input,
         .dark-mode .form-group select,
         .dark-mode .form-group textarea {
@@ -1370,17 +1168,14 @@
             color: var(--text-primary);
             border-color: var(--border);
         }
-
         .dark-mode .tabs-sucursal {
             background: var(--surface);
             border-color: var(--border);
         }
-
         .dark-mode .tabs-sucursal button:not(.activo):hover {
             background: var(--bg);
             color: var(--red-600);
         }
-
         .dark-mode .badge.vencido {
             background: #1e293b;
             color: #f87171;
@@ -1405,10 +1200,6 @@
             background: #1e293b;
             color: #f87171;
         }
-
-        /* ============================================================
-           INSTALL BANNER (PWA)
-           ============================================================ */
         .install-banner {
             display: none;
             position: fixed;
@@ -1427,31 +1218,25 @@
             backdrop-filter: blur(12px);
             background: rgba(255, 255, 255, 0.95);
         }
-
         .dark-mode .install-banner {
             background: rgba(30, 41, 59, 0.95);
         }
-
         .install-banner.show {
             display: flex;
             flex-wrap: wrap;
         }
-
         .install-banner .install-text {
             flex: 1;
             font-size: 13px;
         }
-
         .install-banner .install-text strong {
             display: block;
             font-size: 15px;
         }
-
         .install-banner .install-buttons {
             display: flex;
             gap: 8px;
         }
-
         .install-banner .btn-install {
             background: var(--red-600);
             color: white;
@@ -1463,11 +1248,9 @@
             cursor: pointer;
             transition: background 0.15s;
         }
-
         .install-banner .btn-install:hover {
             background: var(--red-700);
         }
-
         .install-banner .btn-close-install {
             background: transparent;
             border: 1px solid var(--border);
@@ -1477,7 +1260,6 @@
             cursor: pointer;
             color: var(--text-secondary);
         }
-
         .install-float-btn {
             display: none;
             position: fixed;
@@ -1496,17 +1278,12 @@
             align-items: center;
             gap: 8px;
         }
-
         @media (display-mode: standalone) {
             .install-float-btn,
             .install-banner {
                 display: none !important;
             }
         }
-
-        /* ============================================================
-           RESPONSIVE AJUSTES FINOS
-           ============================================================ */
         @media (max-width: 480px) {
             .app-header .logo h1 {
                 font-size: 16px;
@@ -1549,7 +1326,6 @@
                 grid-template-columns: 1fr;
             }
         }
-
         @media (min-width: 768px) {
             .app-container {
                 padding: 24px 32px 32px;
@@ -1560,7 +1336,6 @@
         }
     </style>
 </head>
-
 <body>
 
     <!-- ============================================================
@@ -3321,20 +3096,41 @@
             }).join('') || '<tr><td colspan="6"><div class="empty-state"><span class="icon">📋</span>No hay extintores registrados</div></td></tr>';
         }
 
-        function exportarCSVHistorial() {
-            let csv = 'Sucursal,N° Extintor,Ubicación,Tipo,Vence,Estado,GPS\n';
-            Object.entries(datosExtintores).forEach(([id, d]) => {
-                const estado = obtenerEstadoVencimiento(d.fechaProxima);
-                const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
-                csv +=
-                    `"${SUCURSALES[d.sucursal]?.nombre||''}","${d.numero||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${estado.texto}","${gpsText}"\n`;
-            });
-            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'historial_extintores.csv';
-            a.click();
-            URL.revokeObjectURL(a.href);
+        // ============================================================
+        // EXPORTAR CSV (ACTUALIZADO CON DATOS FRESCOS)
+        // ============================================================
+        async function exportarCSVHistorial() {
+            const btn = event?.target || document.activeElement;
+            const textoOriginal = btn.textContent;
+            btn.textContent = '⏳ Actualizando...';
+            btn.disabled = true;
+
+            try {
+                // Obtener datos más recientes directamente de Firebase
+                const snapshot = await db.ref('extintores').once('value');
+                const extintores = snapshot.val() || {};
+
+                let csv = 'Sucursal,N° Extintor,Ubicación,Tipo,Vence,Estado,GPS\n';
+                Object.entries(extintores).forEach(([id, d]) => {
+                    const estado = obtenerEstadoVencimiento(d.fechaProxima);
+                    const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
+                    csv +=
+                        `"${SUCURSALES[d.sucursal]?.nombre||''}","${d.numero||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${estado.texto}","${gpsText}"\n`;
+                });
+
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'historial_extintores.csv';
+                a.click();
+                URL.revokeObjectURL(a.href);
+            } catch (error) {
+                console.error('Error al exportar CSV:', error);
+                alert('❌ Error al generar el CSV. Intentá de nuevo.');
+            } finally {
+                btn.textContent = textoOriginal;
+                btn.disabled = false;
+            }
         }
 
         // ============================================================
@@ -3470,9 +3266,8 @@
         }
 
         // ============================================================
-        // ALERTAS DE VENCIMIENTO (Notificaciones y Pop-up)
+        // ALERTAS DE VENCIMIENTO
         // ============================================================
-        // Solicitar permiso para notificaciones
         if ('Notification' in window && Notification.permission === 'default') {
             Notification.requestPermission();
         }
@@ -3519,11 +3314,10 @@
             modal.style.display = 'flex';
         }
 
-        // Verificar al cargar y cada 10 minutos
         setInterval(verificarVencimientos, 600000);
 
         // ============================================================
-        // DASHBOARD CON GRÁFICOS (Chart.js)
+        // DASHBOARD CON GRÁFICOS
         // ============================================================
         let chartDona = null,
             chartBarras = null;
@@ -3535,7 +3329,6 @@
             const vencidos = total - vigentes;
             const proximos = extintores.filter(e => estaProximoAVencer(e.fechaProxima)).length;
 
-            // Gráfico de dona
             const ctxDona = document.getElementById('chart-dona');
             if (ctxDona) {
                 if (chartDona) chartDona.destroy();
@@ -3560,7 +3353,6 @@
                 });
             }
 
-            // Inspecciones por mes (últimos 6 meses)
             const inspecciones = Object.values(datosChecklists).filter(c => c.tipo === 'checklist');
             const meses = [];
             const conteos = [];
@@ -3636,6 +3428,7 @@
         console.log('📱 Diseño moderno con navegación inferior y cards responsivas');
         console.log('📄 Reportes PDF, Alertas de vencimiento y Dashboard con gráficos integrados');
         console.log('🔑 Contraseña: 1234');
+        console.log('✅ CSV actualizado: ahora obtiene datos frescos de Firebase');
     </script>
 
 </body>
