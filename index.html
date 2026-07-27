@@ -53,8 +53,6 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-    <!-- NUEVAS LIBRERÍAS: PDF y Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
@@ -3340,7 +3338,7 @@
         }
 
         // ============================================================
-        // DETALLE EXTINTOR (MODAL) con BOTÓN PDF
+        // DETALLE EXTINTOR (MODAL) con BOTÓN PDF y ELIMINAR
         // ============================================================
         function verDetalleExtintor(id) {
             const d = datosExtintores[id];
@@ -3369,6 +3367,7 @@
                 <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
                     <a href="${window.location.origin + window.location.pathname}?id=${id}" target="_blank" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">🔗 Ficha Pública</a>
                     <button class="btn btn-success" style="flex:1;" onclick="generarInformePDF('${id}')">📄 Exportar PDF</button>
+                    <button class="btn btn-danger" style="flex:1;" onclick="pedirPasswordEliminar('${id}')">🗑️ Eliminar</button>
                 </div>
             `;
             document.getElementById('modal-detalle').style.display = 'flex';
@@ -3392,6 +3391,7 @@
                 if (document.getElementById('input-password').value === PASSWORD_MAESTRA) {
                     db.ref('extintores/' + id).remove();
                     cerrarModalPassword();
+                    cerrarModalDetalle(); // Cierra el detalle al eliminar
                     alert('✅ Extintor eliminado');
                 } else {
                     alert('❌ Contraseña incorrecta');
