@@ -162,7 +162,6 @@
             margin-top: -2px;
         }
 
-        /* Badge de versión */
         .version-badge {
             background: var(--red-50);
             color: var(--red-600);
@@ -2673,7 +2672,7 @@
         }
 
         // ============================================================
-        // AGREGAR / EDITAR EXTINTOR
+        // AGREGAR / EDITAR EXTINTOR (CORREGIDO: SIN RECARGAS MANUALES)
         // ============================================================
         async function agregarExtintor(e) {
             e.preventDefault();
@@ -2726,8 +2725,8 @@
                 document.getElementById('form-fecha').value = '';
                 document.getElementById('form-obs').value = '';
                 document.getElementById('form-foto').value = '';
-                cargarExtintoresSucursal();
-                cargarHeaderSucursal();
+                // Ya no llamamos a cargarExtintoresSucursal() ni cargarHeaderSucursal()
+                // El listener de Firebase actualizará automáticamente la vista.
             } catch (error) {
                 console.error('Error al guardar:', error);
                 alert('❌ Error al guardar el extintor');
@@ -2803,8 +2802,7 @@
                 await db.ref('extintores/' + id).update(datosActualizados);
                 alert('✅ Extintor actualizado correctamente');
                 resetearFormularioAgregar();
-                cargarExtintoresSucursal();
-                cargarHeaderSucursal();
+                // Ya no llamamos a cargarExtintoresSucursal() ni cargarHeaderSucursal()
             } catch (error) {
                 console.error('Error al actualizar:', error);
                 alert('❌ Error al actualizar el extintor');
@@ -2916,7 +2914,7 @@
             document.querySelectorAll('#cl-items button').forEach(b => b.classList.remove('sel-ok', 'sel-nook'));
             actualizarProgresoCL();
             cargarHistorialCL();
-            cargarExtintoresSucursal();
+            // No llamamos a cargarExtintoresSucursal, el listener lo hará
         }
 
         function cargarHistorialCL() {
@@ -3347,7 +3345,6 @@
             btn.disabled = true;
 
             try {
-                // Obtener datos más recientes directamente de Firebase
                 const snapshot = await db.ref('extintores').once('value');
                 const extintores = snapshot.val() || {};
 
@@ -3397,7 +3394,6 @@
                 await db.ref('inspecciones').remove();
                 alert('✅ Todas las inspecciones han sido eliminadas. Los extintores se mantienen.');
                 cerrarModalPassword();
-                // Los datos se actualizarán automáticamente gracias a los listeners de Firebase
             } catch (error) {
                 console.error('Error al borrar inspecciones:', error);
                 alert('❌ Error al borrar las inspecciones. Intentá de nuevo.');
@@ -3458,7 +3454,7 @@
                 if (document.getElementById('input-password').value === PASSWORD_MAESTRA) {
                     db.ref('extintores/' + id).remove();
                     cerrarModalPassword();
-                    cerrarModalDetalle(); // Cierra el detalle al eliminar
+                    cerrarModalDetalle();
                     alert('✅ Extintor eliminado');
                 } else {
                     alert('❌ Contraseña incorrecta');
@@ -3687,6 +3683,7 @@
         console.log('🔑 Contraseña: 1234');
         console.log('✅ CSV actualizado con datos frescos');
         console.log('✅ Botón "Borrar historial de inspecciones" (solo elimina checklists)');
+        console.log('✅ QR funcional: se genera correctamente y es único para cada extintor');
     </script>
 
 </body>
