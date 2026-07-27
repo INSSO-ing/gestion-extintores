@@ -162,6 +162,19 @@
             margin-top: -2px;
         }
 
+        /* Badge de versión */
+        .version-badge {
+            background: var(--red-50);
+            color: var(--red-600);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 6px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
         .app-header .header-actions {
             margin-left: auto;
             display: flex;
@@ -1570,7 +1583,7 @@
         <div class="logo">
             <img src="LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma" />
             <div>
-                <h1>Super<span>Spuma</span></h1>
+                <h1>Super<span>Spuma</span> <span class="version-badge">v2.0</span></h1>
                 <small>Gestión de Extintores</small>
             </div>
         </div>
@@ -1822,7 +1835,10 @@
                         <tbody id="tabla-historial"></tbody>
                     </table>
                 </div>
-                <button class="btn btn-secondary mt-16" onclick="exportarCSVHistorial()">📥 Exportar CSV</button>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;">
+                    <button class="btn btn-secondary" onclick="exportarCSVHistorial()">📥 Exportar CSV</button>
+                    <button class="btn btn-danger" onclick="pedirPasswordBorrarHistorial()">🗑️ Borrar todo el historial</button>
+                </div>
             </div>
         </section>
 
@@ -3359,6 +3375,37 @@
         }
 
         // ============================================================
+        // BORRAR TODO EL HISTORIAL (con contraseña)
+        // ============================================================
+        function pedirPasswordBorrarHistorial() {
+            if (!confirm('⚠️ ¿Estás seguro de que deseas eliminar TODOS los extintores y checklists? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            document.getElementById('input-password').value = '';
+            document.getElementById('modal-password').style.display = 'flex';
+            document.getElementById('btn-confirmar-eliminar').onclick = function() {
+                if (document.getElementById('input-password').value === PASSWORD_MAESTRA) {
+                    borrarHistorialCompleto();
+                } else {
+                    alert('❌ Contraseña incorrecta');
+                }
+            };
+        }
+
+        async function borrarHistorialCompleto() {
+            try {
+                await db.ref('extintores').remove();
+                await db.ref('inspecciones').remove();
+                alert('✅ Todos los extintores y checklists han sido eliminados.');
+                cerrarModalPassword();
+                // Los datos se actualizarán automáticamente gracias a los listeners de Firebase
+            } catch (error) {
+                console.error('Error al borrar historial:', error);
+                alert('❌ Error al borrar el historial. Intentá de nuevo.');
+            }
+        }
+
+        // ============================================================
         // DETALLE EXTINTOR (MODAL) con BOTÓN PDF y ELIMINAR
         // ============================================================
         function verDetalleExtintor(id) {
@@ -3520,14 +3567,11 @@
             ).join('\n');
             const titulo = `⚠️ ${proximos.length} extintor(es) próximo(s) a vencer`;
 
-            // Solo notificación del sistema, sin pop-up
             if ('Notification' in window && Notification.permission === 'granted') {
                 new Notification(titulo, { body: mensaje, icon: 'LOGO_NVO_SUPERSPUMA.webp' });
             }
-            // No se muestra ningún modal emergente
         }
 
-        // Verificar al cargar y cada 10 minutos
         setInterval(verificarVencimientos, 600000);
 
         // ============================================================
@@ -3638,12 +3682,12 @@
             setTimeout(() => verFichaPublica(), 500);
         }
 
-        console.log('🔥 Gestión de Extintores - SuperSpuma (Rediseño UI/UX)');
+        console.log('🔥 Gestión de Extintores - SuperSpuma (v2.0)');
         console.log('📱 Diseño moderno con navegación inferior y cards responsivas');
-        console.log('📄 Reportes PDF, Alertas de vencimiento y Dashboard con gráficos integrados');
+        console.log('📄 Reportes PDF, Alertas de vencimiento (solo notificación) y Dashboard con gráficos');
         console.log('🔑 Contraseña: 1234');
-        console.log('✅ CSV actualizado: obtiene datos frescos de Firebase');
-        console.log('✅ Pop-up de vencimientos eliminado (solo notificaciones silenciosas)');
+        console.log('✅ CSV actualizado con datos frescos');
+        console.log('✅ Botón "Borrar todo el historial" con contraseña');
     </script>
 
 </body>
