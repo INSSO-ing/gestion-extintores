@@ -2046,7 +2046,7 @@
                 }
                 const baseURL = window.location.origin + window.location.pathname;
                 html +=
-                    `<div style="margin-top:12px;"><a href="${baseURL}?id=${id}" target="_blank" class="btn btn-primary" style="width:100%;text-align:center;text-decoration:none;">🔗 Ver Ficha Pública</a></div>`;
+                    `<div style="margin-top:12px;"><a href="${baseURL}?id=${id}" target="_blank" class="btn btn-primary" style="width:100%;text-align:center;text-decoration:none;">🔗 Ver ficha de extintor</a></div>`;
                 container.innerHTML = html;
                 container.style.display = 'block';
                 return;
@@ -2627,15 +2627,15 @@
         }
 
         // Funciones globales para la ficha pública
-        function compartirWhatsAppFicha(extintor, id, estado) {
+        function compartirWhatsAppFicha(numero, ubicacion, tipo, tamano, fecha, estadoTexto, id, gps) {
             const texto = encodeURIComponent(
                 '🧯 *SUPERSPUMA - Ficha del Extintor*%0A%0A' +
-                '🔢 *N° Extintor:* ' + (extintor.numero || 'N/A') + '%0A' +
-                '📍 *Ubicación:* ' + (extintor.ubicacion || 'N/A') + '%0A' +
-                '🏷️ *Tipo:* ' + (extintor.tipo || 'N/A') + ' · ' + (extintor.tamano || 'N/A') + '%0A' +
-                '📅 *Vence:* ' + (extintor.fechaProxima || 'N/A') + ' (' + estado.texto + ')%0A' +
+                '🔢 *N° Extintor:* ' + (numero || 'N/A') + '%0A' +
+                '📍 *Ubicación:* ' + (ubicacion || 'N/A') + '%0A' +
+                '🏷️ *Tipo:* ' + (tipo || 'N/A') + ' · ' + (tamano || 'N/A') + '%0A' +
+                '📅 *Vence:* ' + (fecha || 'N/A') + ' (' + estadoTexto + ')%0A' +
                 '🆔 *ID:* ' + id + '%0A' +
-                (extintor.gps ? '📍 *GPS:* ' + extintor.gps + '%0A' : '') +
+                (gps ? '📍 *GPS:* ' + gps + '%0A' : '') +
                 '🔗 *Ver ficha:* ' + window.location.href
             );
             window.open('https://wa.me/?text=' + texto, '_blank');
@@ -2732,10 +2732,10 @@
                     ${estilos}
                     <div id="contenedor-ficha">${fichaHTML}</div>
                     <div class="botones">
-                        <button class="btn-wsp" onclick="window.compartirWhatsAppFicha(${JSON.stringify(extintor)}, '${id}', ${JSON.stringify(estado)})">📤 WhatsApp</button>
-                        <button class="btn-descargar" onclick="window.descargarFicha()">📥 Descargar</button>
-                        ${extintor.coordenadas ? `<button class="btn-mapa" onclick="window.verMapaFicha(${extintor.coordenadas.lat}, ${extintor.coordenadas.lng})">🗺️ Ver Mapa</button>` : ''}
-                        <button class="btn-volver" onclick="location.href='/'">⬅ Volver</button>
+                        <button class="btn-wsp" onclick="compartirWhatsAppFicha('${extintor.numero || 'N/A'}', '${extintor.ubicacion || 'N/A'}', '${extintor.tipo || 'N/A'}', '${extintor.tamano || 'N/A'}', '${extintor.fechaProxima || 'N/A'}', '${estado.texto}', '${id}', '${extintor.gps || ''}')">📤 WhatsApp</button>
+                        <button class="btn-descargar" onclick="descargarFicha()">📥 Descargar</button>
+                        ${extintor.coordenadas ? `<button class="btn-mapa" onclick="verMapaFicha(${extintor.coordenadas.lat}, ${extintor.coordenadas.lng})">🗺️ Ver Mapa</button>` : ''}
+                        <button class="btn-volver" onclick="window.location.href='/'">⬅ Volver</button>
                     </div>
                     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
                     <script>
@@ -2754,13 +2754,6 @@
                         }, 100);
                     <\/script>
                 `;
-
-            // Asignar funciones globales para que los botones las encuentren
-            window.compartirWhatsAppFicha = function(ext, id, est) {
-                compartirWhatsAppFicha(ext, id, est);
-            };
-            window.descargarFicha = descargarFicha;
-            window.verMapaFicha = verMapaFicha;
         }
 
         // ============================================================
@@ -3377,7 +3370,7 @@
                     <div style="text-align:center; margin-top:12px;" id="qr-detalle"></div>
                     ${d.coordenadas ? `<div id="mapa-detalle"></div>` : ''}
                     <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
-                        <a href="${window.location.origin + window.location.pathname}?id=${id}" target="_blank" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">🔗 Ficha Pública</a>
+                        <a href="${window.location.origin + window.location.pathname}?id=${id}" target="_blank" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">🔗 Ver ficha de extintor</a>
                         <button class="btn btn-success" style="flex:1;" onclick="generarInformePDF('${id}')">📄 Exportar PDF</button>
                         <button class="btn btn-danger" style="flex:1;" onclick="pedirPasswordEliminar('${id}')">🗑️ Eliminar</button>
                     </div>
