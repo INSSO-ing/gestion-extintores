@@ -108,9 +108,6 @@
             border-radius: 8px;
         }
 
-        /* ============================================================
-           HEADER FIJO
-           ============================================================ */
         .app-header {
             position: fixed;
             top: 0;
@@ -199,9 +196,6 @@
             color: var(--red-600);
         }
 
-        /* ============================================================
-           BOTTOM NAVIGATION
-           ============================================================ */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -290,18 +284,12 @@
             margin-top: 4px;
         }
 
-        /* ============================================================
-           CONTENEDOR PRINCIPAL
-           ============================================================ */
         .app-container {
             max-width: 800px;
             margin: 0 auto;
             padding: 16px 16px 24px;
         }
 
-        /* ============================================================
-           VISTAS
-           ============================================================ */
         .vista {
             display: none;
             animation: fadeUp 0.25s ease-out;
@@ -322,9 +310,6 @@
             display: block !important;
         }
 
-        /* ============================================================
-           TARJETAS DE SUCURSAL (DASHBOARD)
-           ============================================================ */
         .grid-sucursales {
             display: grid;
             grid-template-columns: 1fr;
@@ -424,9 +409,6 @@
             margin-top: 4px;
         }
 
-        /* ============================================================
-           DASHBOARD GRÁFICOS
-           ============================================================ */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -461,9 +443,6 @@
             }
         }
 
-        /* ============================================================
-           PANEL DE SUCURSAL
-           ============================================================ */
         .sucursal-header {
             background: var(--surface);
             border-radius: var(--radius);
@@ -539,7 +518,6 @@
             color: #22c55e;
         }
 
-        /* Tabs del panel */
         .tabs-sucursal {
             display: flex;
             gap: 4px;
@@ -588,9 +566,6 @@
             display: block;
         }
 
-        /* ============================================================
-           TABLA RESPONSIVA → TARJETAS EN MÓVIL
-           ============================================================ */
         .tabla-container {
             background: var(--surface);
             border-radius: var(--radius);
@@ -747,7 +722,6 @@
             max-height: 44px;
         }
 
-        /* Ocultar tabla tradicional en móvil, mostrar cards */
         .tabla-extintores-table {
             display: none;
         }
@@ -820,9 +794,6 @@
             }
         }
 
-        /* ============================================================
-           FORMULARIOS
-           ============================================================ */
         .form-card {
             background: var(--surface);
             border-radius: var(--radius);
@@ -884,7 +855,6 @@
             min-height: 60px;
         }
 
-        /* Selector de tamaño como píldoras */
         .tamano-pills {
             display: flex;
             flex-wrap: wrap;
@@ -994,9 +964,6 @@
             justify-content: center;
         }
 
-        /* ============================================================
-           CHECKLIST
-           ============================================================ */
         .checklist-item {
             display: flex;
             align-items: center;
@@ -1060,9 +1027,6 @@
             transition: width 0.3s;
         }
 
-        /* ============================================================
-           QR / ESCÁNER
-           ============================================================ */
         .qr-container-sucursal {
             background: white;
             padding: 6px;
@@ -1128,9 +1092,6 @@
             margin-top: 8px;
         }
 
-        /* ============================================================
-           ETIQUETAS
-           ============================================================ */
         .etiqueta-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1211,9 +1172,6 @@
             margin-top: 4px;
         }
 
-        /* ============================================================
-           MODALES
-           ============================================================ */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -1274,9 +1232,6 @@
             width: 100%;
         }
 
-        /* ============================================================
-           UTILITY
-           ============================================================ */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -1338,9 +1293,6 @@
             gap: 12px;
         }
 
-        /* ============================================================
-           DARK MODE (opcional, pero mantenido)
-           ============================================================ */
         .dark-mode {
             --bg: #0f172a;
             --surface: #1e293b;
@@ -1418,9 +1370,6 @@
             color: #f87171;
         }
 
-        /* ============================================================
-           INSTALL BANNER (PWA)
-           ============================================================ */
         .install-banner {
             display: none;
             position: fixed;
@@ -1516,9 +1465,6 @@
             }
         }
 
-        /* ============================================================
-           RESPONSIVE AJUSTES FINOS
-           ============================================================ */
         @media (max-width: 480px) {
             .app-header .logo h1 {
                 font-size: 16px;
@@ -1575,14 +1521,11 @@
 
 <body>
 
-    <!-- ============================================================
-    HEADER FIJO
-    ============================================================ -->
     <header class="app-header">
         <div class="logo">
             <img src="LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma" />
             <div>
-                <h1>Super<span>Spuma</span> <span class="version-badge">v2.2</span></h1>
+                <h1>Super<span>Spuma</span> <span class="version-badge">v2.3</span></h1>
                 <small>Gestión de Extintores</small>
             </div>
         </div>
@@ -1596,18 +1539,12 @@
         </div>
     </header>
 
-    <!-- ============================================================
-    CONTENEDOR PRINCIPAL
-    ============================================================ -->
     <main class="app-container">
 
-        <!-- VISTA SUCURSALES (INICIO) con DASHBOARD -->
         <section id="vista-sucursales" class="vista vista-activa">
             <div class="grid-sucursales" id="grid-sucursales-container">
                 <p class="empty-state">Cargando extintores...</p>
             </div>
-
-            <!-- DASHBOARD DE GRÁFICOS -->
             <div class="dashboard-grid" id="dashboard-grid">
                 <div class="dashboard-card">
                     <h4>📊 Estado de Extintores</h4>
@@ -1620,10 +1557,8 @@
             </div>
         </section>
 
-        <!-- VISTA PANEL SUCURSAL -->
         <section id="vista-panel-sucursal" class="vista">
             <div class="sucursal-header" id="sucursal-header"></div>
-
             <div class="tabs-sucursal" id="tabs-sucursal">
                 <button class="activo" onclick="mostrarTabSucursal('extintores')">🧯 Extintores</button>
                 <button onclick="mostrarTabSucursal('agregar')">➕ Agregar</button>
@@ -1633,7 +1568,6 @@
                 <button onclick="mostrarTabSucursal('etiquetas')">🏷️ Etiquetas</button>
             </div>
 
-            <!-- TAB EXTINTORES -->
             <div id="tab-extintores" class="tab-sucursal activo">
                 <div class="tabla-container">
                     <div class="flex-between mb-16">
@@ -1642,7 +1576,6 @@
                             <i data-lucide="plus"></i> Agregar
                         </button>
                     </div>
-                    <!-- Tabla versión desktop -->
                     <table class="tabla-extintores-table" id="tabla-extintores-desktop">
                         <thead>
                             <tr>
@@ -1658,12 +1591,10 @@
                         </thead>
                         <tbody id="tabla-extintores-sucursal-desktop"></tbody>
                     </table>
-                    <!-- Versión móvil (cards) -->
                     <div class="tabla-extintores" id="tabla-extintores-sucursal"></div>
                 </div>
             </div>
 
-            <!-- TAB AGREGAR -->
             <div id="tab-agregar" class="tab-sucursal">
                 <div class="form-card">
                     <h3>➕ Agregar Extintor</h3>
@@ -1723,7 +1654,6 @@
                 </div>
             </div>
 
-            <!-- TAB CHECKLIST -->
             <div id="tab-checklist" class="tab-sucursal">
                 <div class="form-card">
                     <h3>✅ Checklist de Inspección</h3>
@@ -1744,29 +1674,23 @@
                                 <input type="file" id="cl-foto" accept="image/*" capture="environment" />
                             </div>
                         </div>
-
                         <div class="progress-bar">
                             <div class="fill" id="cl-progress" style="width:0%;"></div>
                         </div>
-
                         <div id="cl-items"></div>
-
                         <div class="form-row">
                             <div class="form-group full">
                                 <label><i data-lucide="clipboard"></i> Observaciones</label>
                                 <textarea id="cl-obs" rows="2" placeholder="Notas adicionales..."></textarea>
                             </div>
                         </div>
-
                         <div class="gps-coordenadas" id="cl-gps">📍 Obteniendo ubicación...</div>
                         <div id="cl-mapa"></div>
-
                         <button type="submit" class="btn btn-primary btn-block mt-16">✅ Guardar Checklist</button>
                     </form>
                 </div>
             </div>
 
-            <!-- TAB HISTORIAL CL -->
             <div id="tab-historial-cl" class="tab-sucursal">
                 <div class="tabla-container">
                     <h3>📋 Historial de Checklists</h3>
@@ -1787,7 +1711,6 @@
                 </div>
             </div>
 
-            <!-- TAB ESCANEAR -->
             <div id="tab-escanear" class="tab-sucursal">
                 <div class="tabla-container">
                     <h3>📷 Escanear QR</h3>
@@ -1802,7 +1725,6 @@
                 </div>
             </div>
 
-            <!-- TAB ETIQUETAS -->
             <div id="tab-etiquetas" class="tab-sucursal">
                 <div class="tabla-container">
                     <h3>🏷️ Etiquetas para Imprimir</h3>
@@ -1815,7 +1737,6 @@
             </div>
         </section>
 
-        <!-- VISTA HISTORIAL GLOBAL -->
         <section id="vista-historial" class="vista">
             <div class="tabla-container">
                 <h3>📋 Historial de Vencimientos</h3>
@@ -1841,7 +1762,6 @@
             </div>
         </section>
 
-        <!-- VISTA CHECKLIST GLOBAL (accesible solo por lógica, no en nav) -->
         <section id="vista-checklist-global" class="vista">
             <div class="form-card">
                 <h3>✅ Checklist Global</h3>
@@ -1887,9 +1807,6 @@
 
     </main>
 
-    <!-- ============================================================
-    BOTTOM NAVIGATION
-    ============================================================ -->
     <nav class="bottom-nav" id="bottomNav">
         <button class="nav-item active" data-vista="sucursales" onclick="navegarA('sucursales')">
             <i data-lucide="home"></i>
@@ -1915,9 +1832,6 @@
         </button>
     </nav>
 
-    <!-- ============================================================
-    BANNER PWA
-    ============================================================ -->
     <div class="install-banner" id="installBanner">
         <div class="install-text">
             <strong>📱 Instalar Gestión de Extintores</strong>
@@ -1932,9 +1846,6 @@
         <i data-lucide="download"></i> Instalar App
     </button>
 
-    <!-- ============================================================
-    MODALES
-    ============================================================ -->
     <div class="modal-overlay" id="modal-detalle" onclick="cerrarModalDetalle()">
         <div class="modal" onclick="event.stopPropagation()">
             <div id="modal-detalle-contenido"></div>
@@ -1960,9 +1871,6 @@
         </div>
     </div>
 
-    <!-- ============================================================
-    SCRIPTS
-    ============================================================ -->
     <script>
         // ============================================================
         // CONFIGURACIÓN FIREBASE
@@ -2090,7 +1998,7 @@
                 container.style.opacity = '1';
                 const infoDiv = document.createElement('div');
                 infoDiv.style.cssText =
-                'font-size:6px;color:#94a3b8;text-align:center;margin-top:2px;';
+                    'font-size:6px;color:#94a3b8;text-align:center;margin-top:2px;';
                 infoDiv.textContent = extintor.numero || extintorId.slice(0, 8);
                 container.appendChild(infoDiv);
                 return true;
@@ -2320,21 +2228,21 @@
             const proxVencer = ext.filter(e => estaProximoAVencer(e.fechaProxima));
 
             container.innerHTML = `
-                <div class="card-sucursal" onclick="abrirSucursal('${id}')">
-                    <div class="suc-header">
-                        <div class="icon"><i data-lucide="building2"></i></div>
-                        <h3>${s.nombre}</h3>
+                    <div class="card-sucursal" onclick="abrirSucursal('${id}')">
+                        <div class="suc-header">
+                            <div class="icon"><i data-lucide="building2"></i></div>
+                            <h3>${s.nombre}</h3>
+                        </div>
+                        <div class="direccion"><i data-lucide="map-pin" style="width:14px;height:14px;"></i> ${s.direccion}</div>
+                        <div class="stats-mini">
+                            <span class="stat-tag"><i data-lucide="flame" style="width:14px;height:14px;"></i> <span class="num">${ext.length}</span> extintores</span>
+                            ${proxVencer.length > 0 
+                                ? `<span class="stat-tag danger"><i data-lucide="alert-triangle" style="width:14px;height:14px;"></i> <span class="num">${proxVencer.length}</span> próximos a vencer</span>` 
+                                : `<span class="stat-tag" style="background:#dcfce7;color:#16a34a;"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Todos al día</span>`}
+                        </div>
+                        <div class="badge-principal">✅ Sucursal principal</div>
                     </div>
-                    <div class="direccion"><i data-lucide="map-pin" style="width:14px;height:14px;"></i> ${s.direccion}</div>
-                    <div class="stats-mini">
-                        <span class="stat-tag"><i data-lucide="flame" style="width:14px;height:14px;"></i> <span class="num">${ext.length}</span> extintores</span>
-                        ${proxVencer.length > 0 
-                            ? `<span class="stat-tag danger"><i data-lucide="alert-triangle" style="width:14px;height:14px;"></i> <span class="num">${proxVencer.length}</span> próximos a vencer</span>` 
-                            : `<span class="stat-tag" style="background:#dcfce7;color:#16a34a;"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Todos al día</span>`}
-                    </div>
-                    <div class="badge-principal">✅ Sucursal principal</div>
-                </div>
-            `;
+                `;
             lucide.createIcons();
             abrirSucursal('villeta');
         }
@@ -2370,22 +2278,22 @@
             const vencidos = ext.filter(e => calcularDiasRestantes(e.fechaProxima) < 0).length;
 
             document.getElementById('sucursal-header').innerHTML = `
-                <div class="header-top">
-                    <div>
-                        <h2>🏭 ${s.nombre}</h2>
-                        <div class="direccion"><i data-lucide="map-pin" style="width:14px;height:14px;"></i> ${s.direccion}</div>
+                    <div class="header-top">
+                        <div>
+                            <h2>🏭 ${s.nombre}</h2>
+                            <div class="direccion"><i data-lucide="map-pin" style="width:14px;height:14px;"></i> ${s.direccion}</div>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="regenerarQRSucursal()"><i data-lucide="qrcode"></i> QR</button>
+                            <button class="btn btn-secondary btn-sm" onclick="cerrarSucursal()"><i data-lucide="arrow-left"></i> Volver</button>
+                        </div>
                     </div>
-                    <div class="header-actions">
-                        <button class="btn btn-secondary btn-sm" onclick="regenerarQRSucursal()"><i data-lucide="qrcode"></i> QR</button>
-                        <button class="btn btn-secondary btn-sm" onclick="cerrarSucursal()"><i data-lucide="arrow-left"></i> Volver</button>
+                    <div class="stats">
+                        <div class="stat"><div class="num">${ext.length}</div><div class="lbl">Total</div></div>
+                        <div class="stat warning"><div class="num">${proxVencer.length}</div><div class="lbl">Próximos</div></div>
+                        <div class="stat danger"><div class="num">${vencidos}</div><div class="lbl">Vencidos</div></div>
                     </div>
-                </div>
-                <div class="stats">
-                    <div class="stat"><div class="num">${ext.length}</div><div class="lbl">Total</div></div>
-                    <div class="stat warning"><div class="num">${proxVencer.length}</div><div class="lbl">Próximos</div></div>
-                    <div class="stat danger"><div class="num">${vencidos}</div><div class="lbl">Vencidos</div></div>
-                </div>
-            `;
+                `;
             lucide.createIcons();
         }
 
@@ -2432,7 +2340,6 @@
                 return diasA - diasB;
             });
 
-            // Desktop table
             const tbodyDesktop = document.getElementById('tabla-extintores-sucursal-desktop');
             if (tbodyDesktop) {
                 tbodyDesktop.innerHTML = items.map(([id, d]) => {
@@ -2443,24 +2350,23 @@
                         estado.clase === 'critico' ? '#ea580c' :
                         estado.clase === 'alerta' ? '#a16207' : '#16a34a';
                     return `<tr>
-                        <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '📷'}</td>
-                        <td><strong>${d.numero || 'N/A'}</strong></td>
-                        <td>${d.ubicacion||'N/A'}</td>
-                        <td>${d.tipo||'N/A'}</td>
-                        <td style="color:${color};font-weight:700;">${d.fechaProxima||'N/A'} <span style="font-size:9px;">${estado.texto}</span></td>
-                        <td>${cl ? '<span class="badge ok">✅</span>' : '<span class="badge falla">❌</span>'}</td>
-                        <td><div id="qr-desk-${id}" class="qr-container-sucursal" style="min-width:50px;min-height:50px;"><span style="color:#94a3b8;font-size:9px;">⏳</span></div></td>
-                        <td>
-                            <div class="acciones">
-                                <button onclick="event.stopPropagation();editarExtintor('${id}')">✏️</button>
-                                <button onclick="event.stopPropagation();pedirPasswordEliminar('${id}')">🗑️</button>
-                            </div>
-                        </td>
-                    </tr>`;
+                            <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '📷'}</td>
+                            <td><strong>${d.numero || 'N/A'}</strong></td>
+                            <td>${d.ubicacion||'N/A'}</td>
+                            <td>${d.tipo||'N/A'}</td>
+                            <td style="color:${color};font-weight:700;">${d.fechaProxima||'N/A'} <span style="font-size:9px;">${estado.texto}</span></td>
+                            <td>${cl ? '<span class="badge ok">✅</span>' : '<span class="badge falla">❌</span>'}</td>
+                            <td><div id="qr-desk-${id}" class="qr-container-sucursal" style="min-width:50px;min-height:50px;"><span style="color:#94a3b8;font-size:9px;">⏳</span></div></td>
+                            <td>
+                                <div class="acciones">
+                                    <button onclick="event.stopPropagation();editarExtintor('${id}')">✏️</button>
+                                    <button onclick="event.stopPropagation();pedirPasswordEliminar('${id}')">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>`;
                 }).join('') || '<tr><td colspan="8"><div class="empty-state"><span class="icon">🧯</span>No hay extintores</div></td></tr>';
             }
 
-            // Mobile cards
             const container = document.getElementById('tabla-extintores-sucursal');
             if (container) {
                 container.innerHTML = items.map(([id, d]) => {
@@ -2474,27 +2380,26 @@
                         estado.clase === 'critico' ? 'critico' :
                         estado.clase === 'alerta' ? 'alerta' : 'normal';
                     return `<div class="extintor-card" onclick="verDetalleExtintor('${id}')">
-                        <div>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '📷'}</div>
-                        <div class="info">
-                            <div class="numero">${d.numero || 'N/A'}</div>
-                            <div class="ubicacion"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${d.ubicacion||'N/A'}</div>
-                            <div class="meta">
-                                <span>${d.tipo||'N/A'} · ${d.tamano||'N/A'}</span>
-                                <span style="color:${color};">${d.fechaProxima||'N/A'} ${estado.texto}</span>
+                            <div>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '📷'}</div>
+                            <div class="info">
+                                <div class="numero">${d.numero || 'N/A'}</div>
+                                <div class="ubicacion"><i data-lucide="map-pin" style="width:12px;height:12px;"></i> ${d.ubicacion||'N/A'}</div>
+                                <div class="meta">
+                                    <span>${d.tipo||'N/A'} · ${d.tamano||'N/A'}</span>
+                                    <span style="color:${color};">${d.fechaProxima||'N/A'} ${estado.texto}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="estado">
-                            <span class="badge ${badgeClass}">${estado.label}</span>
-                            <div style="margin-top:4px;">${cl ? '✅' : '❌'}</div>
-                        </div>
-                        <div id="qr-mob-${id}" class="qr-mini" style="width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:white;border-radius:8px;border:1px solid var(--border);">
-                            <span style="color:#94a3b8;font-size:9px;">⏳</span>
-                        </div>
-                    </div>`;
+                            <div class="estado">
+                                <span class="badge ${badgeClass}">${estado.label}</span>
+                                <div style="margin-top:4px;">${cl ? '✅' : '❌'}</div>
+                            </div>
+                            <div id="qr-mob-${id}" class="qr-mini" style="width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:white;border-radius:8px;border:1px solid var(--border);">
+                                <span style="color:#94a3b8;font-size:9px;">⏳</span>
+                            </div>
+                        </div>`;
                 }).join('') || '<div class="empty-state"><span class="icon">🧯</span>No hay extintores</div>';
             }
 
-            // Generar QR para ambos contenedores
             setTimeout(() => {
                 items.forEach(([id], index) => {
                     setTimeout(() => {
@@ -2581,7 +2486,7 @@
 
             try {
                 const ref = db.ref('extintores').push();
-                const id = ref.key; // ID generado por Firebase
+                const id = ref.key;
                 await ref.set(nuevoExtintor);
                 alert('✅ Extintor agregado correctamente');
                 document.getElementById('form-numero').value = '';
@@ -2590,16 +2495,11 @@
                 document.getElementById('form-obs').value = '';
                 document.getElementById('form-foto').value = '';
 
-                // Actualizar datos locales inmediatamente para tener el nuevo extintor
                 datosExtintores[id] = nuevoExtintor;
-                // Generar QR manualmente para este extintor en los contenedores correspondientes
-                // Esperamos a que los contenedores existan (puede que la vista aún no los tenga)
                 setTimeout(() => {
                     generarQRParaExtintor(id, `qr-desk-${id}`, true);
                     generarQRParaExtintor(id, `qr-mob-${id}`, true);
                 }, 100);
-
-                // El listener de Firebase eventualmente sincronizará, pero ya tenemos el QR funcional
             } catch (error) {
                 console.error('Error al guardar:', error);
                 alert('❌ Error al guardar el extintor');
@@ -2705,29 +2605,65 @@
             const id = params.get('id');
             if (!id) return;
 
-            // Primero intentar con datos locales
             let extintor = datosExtintores[id];
             if (extintor) {
                 mostrarFicha(id, extintor);
             } else {
-                // Si no está local, consultar Firebase
                 db.ref('extintores/' + id).once('value').then(snap => {
                     const data = snap.val();
                     if (data) {
                         mostrarFicha(id, data);
                     } else {
                         document.body.innerHTML = `
-                            <div style="text-align:center;padding:40px 20px;font-family:'Inter',sans-serif;">
-                                <h2 style="color:#dc2626;">❌ Extintor no encontrado</h2>
-                                <p>El código QR no corresponde a ningún extintor registrado.</p>
-                                <button onclick="location.href='/'">Volver al inicio</button>
-                            </div>
-                        `;
+                                <div style="text-align:center;padding:40px 20px;font-family:'Inter',sans-serif;">
+                                    <h2 style="color:#dc2626;">❌ Extintor no encontrado</h2>
+                                    <p>El código QR no corresponde a ningún extintor registrado.</p>
+                                    <button onclick="location.href='/'">Volver al inicio</button>
+                                </div>
+                            `;
                     }
                 });
             }
         }
 
+        // Funciones globales para la ficha pública
+        function compartirWhatsAppFicha(extintor, id, estado) {
+            const texto = encodeURIComponent(
+                '🧯 *SUPERSPUMA - Ficha del Extintor*%0A%0A' +
+                '🔢 *N° Extintor:* ' + (extintor.numero || 'N/A') + '%0A' +
+                '📍 *Ubicación:* ' + (extintor.ubicacion || 'N/A') + '%0A' +
+                '🏷️ *Tipo:* ' + (extintor.tipo || 'N/A') + ' · ' + (extintor.tamano || 'N/A') + '%0A' +
+                '📅 *Vence:* ' + (extintor.fechaProxima || 'N/A') + ' (' + estado.texto + ')%0A' +
+                '🆔 *ID:* ' + id + '%0A' +
+                (extintor.gps ? '📍 *GPS:* ' + extintor.gps + '%0A' : '') +
+                '🔗 *Ver ficha:* ' + window.location.href
+            );
+            window.open('https://wa.me/?text=' + texto, '_blank');
+        }
+
+        function descargarFicha() {
+            const elemento = document.getElementById('ficha-para-descargar');
+            if (!elemento) return;
+            html2canvas(elemento, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#f8fafc',
+                allowTaint: true,
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                const id = new URLSearchParams(window.location.search).get('id') || 'extintor';
+                link.download = 'ficha_extintor_' + id.slice(0, 8) + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(() => alert('Error al generar la imagen. Usá impresión de pantalla.'));
+        }
+
+        function verMapaFicha(lat, lng) {
+            window.open('https://www.google.com/maps?q=' + lat + ',' + lng, '_blank');
+        }
+
+        // Función que construye la ficha y asigna los eventos globales
         function mostrarFicha(id, extintor) {
             const estado = obtenerEstadoVencimiento(extintor.fechaProxima);
             const colorEstado = {
@@ -2738,117 +2674,93 @@
             } [estado.clase] || '#16a34a';
 
             const fichaHTML = `
-                <div id="ficha-para-descargar">
-                    <div class="logo" style="text-align:center;margin-bottom:20px;">
-                        <img src="LOGO_NVO_SUPERSPUMA.webp" style="width:60px;height:60px;border-radius:12px;background:#dc2626;padding:8px;" />
-                        <h1 style="color:#dc2626;font-size:20px;margin-top:4px;">🧯 SUPERSPUMA</h1>
-                        <small style="color:#94a3b8;font-size:11px;">Ficha Técnica del Extintor</small>
+                    <div id="ficha-para-descargar">
+                        <div class="logo" style="text-align:center;margin-bottom:20px;">
+                            <img src="LOGO_NVO_SUPERSPUMA.webp" style="width:60px;height:60px;border-radius:12px;background:#dc2626;padding:8px;" />
+                            <h1 style="color:#dc2626;font-size:20px;margin-top:4px;">🧯 SUPERSPUMA</h1>
+                            <small style="color:#94a3b8;font-size:11px;">Ficha Técnica del Extintor</small>
+                        </div>
+                        ${extintor.fotoURL ? `<img src="${extintor.fotoURL}" style="width:100%;max-height:200px;object-fit:contain;border-radius:12px;background:#f1f5f9;margin:12px 0;" />` : ''}
+                        <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
+                            <span style="color:#475569;font-weight:600;">🔢 N° Extintor</span>
+                            <span style="font-weight:700;">${extintor.numero || 'N/A'}</span>
+                        </div>
+                        <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
+                            <span style="color:#475569;font-weight:600;">ID</span>
+                            <span style="font-weight:700;">${id}</span>
+                        </div>
+                        <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
+                            <span style="color:#475569;font-weight:600;">📍 Ubicación</span>
+                            <span style="font-weight:700;">${extintor.ubicacion || 'N/A'}</span>
+                        </div>
+                        <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
+                            <span style="color:#475569;font-weight:600;">🏷️ Tipo</span>
+                            <span style="font-weight:700;">${extintor.tipo || 'N/A'} · ${extintor.tamano || 'N/A'}</span>
+                        </div>
+                        <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
+                            <span style="color:#475569;font-weight:600;">📅 Vence</span>
+                            <span style="font-weight:700;">${extintor.fechaProxima || 'N/A'} <span style="font-size:12px;color:${colorEstado};">(${estado.texto})</span></span>
+                        </div>
+                        ${extintor.gps ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📍 GPS</span><span style="font-weight:700;">${extintor.gps}</span></div>` : ''}
+                        ${extintor.coordenadas ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📌 Coordenadas</span><span style="font-weight:700;">${extintor.coordenadas.lat}, ${extintor.coordenadas.lng}</span></div>` : ''}
+                        ${extintor.observaciones ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📝 Observaciones</span><span style="font-weight:700;">${extintor.observaciones}</span></div>` : ''}
+                        <div class="qr-mini" id="qr-mini-ficha" style="text-align:center;margin:12px 0;background:#f1f5f9;padding:12px;border-radius:12px;"></div>
+                        <div class="footer" style="text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;border-top:1px solid #e2e8f0;padding-top:12px;">
+                            Ficha generada el ${new Date().toLocaleDateString('es-ES')} · SuperSpuma Seguridad Industrial
+                        </div>
                     </div>
-                    ${extintor.fotoURL ? `<img src="${extintor.fotoURL}" style="width:100%;max-height:200px;object-fit:contain;border-radius:12px;background:#f1f5f9;margin:12px 0;" />` : ''}
-                    <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
-                        <span style="color:#475569;font-weight:600;">🔢 N° Extintor</span>
-                        <span style="font-weight:700;">${extintor.numero || 'N/A'}</span>
-                    </div>
-                    <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
-                        <span style="color:#475569;font-weight:600;">ID</span>
-                        <span style="font-weight:700;">${id}</span>
-                    </div>
-                    <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
-                        <span style="color:#475569;font-weight:600;">📍 Ubicación</span>
-                        <span style="font-weight:700;">${extintor.ubicacion || 'N/A'}</span>
-                    </div>
-                    <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
-                        <span style="color:#475569;font-weight:600;">🏷️ Tipo</span>
-                        <span style="font-weight:700;">${extintor.tipo || 'N/A'} · ${extintor.tamano || 'N/A'}</span>
-                    </div>
-                    <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
-                        <span style="color:#475569;font-weight:600;">📅 Vence</span>
-                        <span style="font-weight:700;">${extintor.fechaProxima || 'N/A'} <span style="font-size:12px;color:${colorEstado};">(${estado.texto})</span></span>
-                    </div>
-                    ${extintor.gps ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📍 GPS</span><span style="font-weight:700;">${extintor.gps}</span></div>` : ''}
-                    ${extintor.coordenadas ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📌 Coordenadas</span><span style="font-weight:700;">${extintor.coordenadas.lat}, ${extintor.coordenadas.lng}</span></div>` : ''}
-                    ${extintor.observaciones ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📝 Observaciones</span><span style="font-weight:700;">${extintor.observaciones}</span></div>` : ''}
-                    <div class="qr-mini" id="qr-mini-ficha" style="text-align:center;margin:12px 0;background:#f1f5f9;padding:12px;border-radius:12px;"></div>
-                    <div class="footer" style="text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;border-top:1px solid #e2e8f0;padding-top:12px;">
-                        Ficha generada el ${new Date().toLocaleDateString('es-ES')} · SuperSpuma Seguridad Industrial
-                    </div>
-                </div>
-            `;
+                `;
 
             const estilos = `
-                <style>
-                    * { margin:0; padding:0; box-sizing:border-box; }
-                    body { font-family:'Inter',sans-serif; background:#f8fafc; padding:20px; min-height:100vh; display:flex; justify-content:center; align-items:center; flex-direction:column; }
-                    #contenedor-ficha { background:white; max-width:500px; width:100%; border-radius:20px; padding:30px; box-shadow:0 8px 24px rgba(0,0,0,0.06); border-left:6px solid #dc2626; }
-                    .botones { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; max-width:500px; width:100%; }
-                    .botones button { flex:1; padding:12px; border:none; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer; transition:transform 0.15s; min-width:80px; }
-                    .botones button:hover { transform:scale(1.02); }
-                    .btn-wsp { background:#25D366; color:white; }
-                    .btn-descargar { background:#7B1FA2; color:white; }
-                    .btn-volver { background:#dc2626; color:white; }
-                    .btn-mapa { background:#1565C0; color:white; }
-                    @media print { .botones { display:none; } #contenedor-ficha { box-shadow:none; border:1px solid #e2e8f0; } body { background:white; padding:0; } }
-                    @media (max-width:480px) { #contenedor-ficha { padding:16px; } .campo { font-size:12px; } .botones button { font-size:11px; padding:10px; min-width:60px; } }
-                </style>
-            `;
+                    <style>
+                        * { margin:0; padding:0; box-sizing:border-box; }
+                        body { font-family:'Inter',sans-serif; background:#f8fafc; padding:20px; min-height:100vh; display:flex; justify-content:center; align-items:center; flex-direction:column; }
+                        #contenedor-ficha { background:white; max-width:500px; width:100%; border-radius:20px; padding:30px; box-shadow:0 8px 24px rgba(0,0,0,0.06); border-left:6px solid #dc2626; }
+                        .botones { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; max-width:500px; width:100%; }
+                        .botones button { flex:1; padding:12px; border:none; border-radius:10px; font-weight:700; font-size:13px; cursor:pointer; transition:transform 0.15s; min-width:80px; }
+                        .botones button:hover { transform:scale(1.02); }
+                        .btn-wsp { background:#25D366; color:white; }
+                        .btn-descargar { background:#7B1FA2; color:white; }
+                        .btn-volver { background:#dc2626; color:white; }
+                        .btn-mapa { background:#1565C0; color:white; }
+                        @media print { .botones { display:none; } #contenedor-ficha { box-shadow:none; border:1px solid #e2e8f0; } body { background:white; padding:0; } }
+                        @media (max-width:480px) { #contenedor-ficha { padding:16px; } .campo { font-size:12px; } .botones button { font-size:11px; padding:10px; min-width:60px; } }
+                    </style>
+                `;
 
             document.body.innerHTML = `
-                ${estilos}
-                <div id="contenedor-ficha">${fichaHTML}</div>
-                <div class="botones">
-                    <button class="btn-wsp" onclick="compartirWhatsAppFicha()">📤 WhatsApp</button>
-                    <button class="btn-descargar" onclick="descargarFicha()">📥 Descargar</button>
-                    ${extintor.coordenadas ? `<button class="btn-mapa" onclick="verMapaFicha(${extintor.coordenadas.lat}, ${extintor.coordenadas.lng})">🗺️ Ver Mapa</button>` : ''}
-                    <button class="btn-volver" onclick="location.href='/'">⬅ Volver</button>
-                </div>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
-                <script>
-                    setTimeout(() => {
-                        const container = document.getElementById('qr-mini-ficha');
-                        if (container && typeof QRCode !== 'undefined') {
-                            new QRCode(container, {
-                                text: '${id}',
-                                width: 80,
-                                height: 80,
-                                colorDark: "#dc2626",
-                                colorLight: "#ffffff",
-                                correctLevel: QRCode.CorrectLevel.H
-                            });
-                        }
-                    }, 100);
-                    function compartirWhatsAppFicha() {
-                        const texto = encodeURIComponent(
-                            '🧯 *SUPERSPUMA - Ficha del Extintor*%0A%0A' +
-                            '🔢 *N° Extintor:* ${extintor.numero || 'N/A'}%0A' +
-                            '📍 *Ubicación:* ${extintor.ubicacion || 'N/A'}%0A' +
-                            '🏷️ *Tipo:* ${extintor.tipo || 'N/A'} · ${extintor.tamano || 'N/A'}%0A' +
-                            '📅 *Vence:* ${extintor.fechaProxima || 'N/A'} (${estado.texto})%0A' +
-                            '🆔 *ID:* ${id}%0A' +
-                            (extintor.gps ? '📍 *GPS:* ${extintor.gps}%0A' : '') +
-                            '🔗 *Ver ficha:* ${window.location.href}'
-                        );
-                        window.open('https://wa.me/?text=' + texto, '_blank');
-                    }
-                    function descargarFicha() {
-                        const elemento = document.getElementById('ficha-para-descargar');
-                        html2canvas(elemento, {
-                            scale: 2,
-                            useCORS: true,
-                            backgroundColor: '#f8fafc',
-                            allowTaint: true,
-                            logging: false
-                        }).then(canvas => {
-                            const link = document.createElement('a');
-                            link.download = 'ficha_extintor_${id.slice(0,8)}.png';
-                            link.href = canvas.toDataURL('image/png');
-                            link.click();
-                        }).catch(() => alert('Error al generar la imagen. Usá impresión de pantalla.'));
-                    }
-                    function verMapaFicha(lat, lng) {
-                        window.open('https://www.google.com/maps?q=' + lat + ',' + lng, '_blank');
-                    }
-                <\/script>
-            `;
+                    ${estilos}
+                    <div id="contenedor-ficha">${fichaHTML}</div>
+                    <div class="botones">
+                        <button class="btn-wsp" onclick="window.compartirWhatsAppFicha(${JSON.stringify(extintor)}, '${id}', ${JSON.stringify(estado)})">📤 WhatsApp</button>
+                        <button class="btn-descargar" onclick="window.descargarFicha()">📥 Descargar</button>
+                        ${extintor.coordenadas ? `<button class="btn-mapa" onclick="window.verMapaFicha(${extintor.coordenadas.lat}, ${extintor.coordenadas.lng})">🗺️ Ver Mapa</button>` : ''}
+                        <button class="btn-volver" onclick="location.href='/'">⬅ Volver</button>
+                    </div>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+                    <script>
+                        setTimeout(() => {
+                            const container = document.getElementById('qr-mini-ficha');
+                            if (container && typeof QRCode !== 'undefined') {
+                                new QRCode(container, {
+                                    text: '${id}',
+                                    width: 80,
+                                    height: 80,
+                                    colorDark: "#dc2626",
+                                    colorLight: "#ffffff",
+                                    correctLevel: QRCode.CorrectLevel.H
+                                });
+                            }
+                        }, 100);
+                    <\/script>
+                `;
+
+            // Asignar funciones globales para que los botones las encuentren
+            window.compartirWhatsAppFicha = function(ext, id, est) {
+                compartirWhatsAppFicha(ext, id, est);
+            };
+            window.descargarFicha = descargarFicha;
+            window.verMapaFicha = verMapaFicha;
         }
 
         // ============================================================
@@ -2873,12 +2785,12 @@
             if (!el) return;
             el.innerHTML = CHECKLIST_ITEMS.map(i =>
                 `<div class="checklist-item">
-                    <span class="nombre">${i}</span>
-                    <div class="opciones">
-                        <button type="button" onclick="marcarCL(this,'ok')">✅ OK</button>
-                        <button type="button" onclick="marcarCL(this,'nook')">❌ NO OK</button>
-                    </div>
-                </div>`
+                        <span class="nombre">${i}</span>
+                        <div class="opciones">
+                            <button type="button" onclick="marcarCL(this,'ok')">✅ OK</button>
+                            <button type="button" onclick="marcarCL(this,'nook')">❌ NO OK</button>
+                        </div>
+                    </div>`
             ).join('');
             actualizarProgresoCL();
         }
@@ -2955,12 +2867,12 @@
                 const ext = datosExtintores[c.extintorId];
                 const ok = Object.values(c.items || {}).every(v => v === 'OK');
                 return `<tr>
-                    <td>${new Date(c.fecha).toLocaleDateString()}</td>
-                    <td>${ext?.numero || ext?.ubicacion || c.extintorId.slice(0,8)}</td>
-                    <td>${c.inspector||'N/A'}</td>
-                    <td><span class="badge ${ok?'ok':'falla'}">${ok?'✅ OK':'❌ Fallas'}</span></td>
-                    <td><button class="btn btn-secondary btn-sm" onclick="verDetalleCL('${c.fecha}','${c.extintorId}')">🔍 Ver</button></td>
-                </tr>`;
+                        <td>${new Date(c.fecha).toLocaleDateString()}</td>
+                        <td>${ext?.numero || ext?.ubicacion || c.extintorId.slice(0,8)}</td>
+                        <td>${c.inspector||'N/A'}</td>
+                        <td><span class="badge ${ok?'ok':'falla'}">${ok?'✅ OK':'❌ Fallas'}</span></td>
+                        <td><button class="btn btn-secondary btn-sm" onclick="verDetalleCL('${c.fecha}','${c.extintorId}')">🔍 Ver</button></td>
+                    </tr>`;
             }).join('') || '<tr><td colspan="5"><div class="empty-state"><span class="icon">📋</span>Sin checklists</div></td></tr>';
         }
 
@@ -2972,14 +2884,14 @@
             const ok = Object.values(cl.items || {}).every(v => v === 'OK');
 
             let h = `<h3>📋 Detalle de Checklist</h3>
-                <table style="width:100%;margin:12px 0;">
-                    <tr><td><strong>Fecha:</strong></td><td>${new Date(cl.fecha).toLocaleString()}</td></tr>
-                    <tr><td><strong>Extintor:</strong></td><td>${ext?.numero || ext?.ubicacion || cl.extintorId}</td></tr>
-                    <tr><td><strong>Inspector:</strong></td><td>${cl.inspector}</td></tr>
-                    <tr><td><strong>Resultado:</strong></td><td><span class="badge ${ok?'ok':'falla'}">${ok?'✅ Todo OK':'❌ Con fallas'}</span></td></tr>
-                </table>
-                <h4>🔍 Items</h4>
-                <table>`;
+                    <table style="width:100%;margin:12px 0;">
+                        <tr><td><strong>Fecha:</strong></td><td>${new Date(cl.fecha).toLocaleString()}</td></tr>
+                        <tr><td><strong>Extintor:</strong></td><td>${ext?.numero || ext?.ubicacion || cl.extintorId}</td></tr>
+                        <tr><td><strong>Inspector:</strong></td><td>${cl.inspector}</td></tr>
+                        <tr><td><strong>Resultado:</strong></td><td><span class="badge ${ok?'ok':'falla'}">${ok?'✅ Todo OK':'❌ Con fallas'}</span></td></tr>
+                    </table>
+                    <h4>🔍 Items</h4>
+                    <table>`;
             Object.entries(cl.items || {}).forEach(([k, v]) => {
                 h += `<tr><td>${k}</td><td><span class="badge ${v==='OK'?'ok':'falla'}">${v}</span></td></tr>`;
             });
@@ -3043,12 +2955,12 @@
                 .slice(0, 5);
 
             let html = `<div class="stats" style="margin-bottom:16px;">
-                <div class="stat"><div class="num">${total}</div><div class="lbl">Total</div></div>
-                <div class="stat warning"><div class="num">${proxVencer}</div><div class="lbl">Próximos</div></div>
-                <div class="stat danger"><div class="num">${vencidos}</div><div class="lbl">Vencidos</div></div>
-                <div class="stat success"><div class="num">${conCL}</div><div class="lbl">Con CL</div></div>
-                <div class="stat danger"><div class="num">${sinCL}</div><div class="lbl">Sin CL</div></div>
-            </div>`;
+                    <div class="stat"><div class="num">${total}</div><div class="lbl">Total</div></div>
+                    <div class="stat warning"><div class="num">${proxVencer}</div><div class="lbl">Próximos</div></div>
+                    <div class="stat danger"><div class="num">${vencidos}</div><div class="lbl">Vencidos</div></div>
+                    <div class="stat success"><div class="num">${conCL}</div><div class="lbl">Con CL</div></div>
+                    <div class="stat danger"><div class="num">${sinCL}</div><div class="lbl">Sin CL</div></div>
+                </div>`;
 
             html += `<h4>📊 Estado</h4><div style="margin-bottom:16px;">`;
             if (total > 0) {
@@ -3095,7 +3007,6 @@
                             mostrarInfoQR(id);
                             verDetalleExtintor(id);
                         } else {
-                            // Si no está local, consultamos Firebase
                             db.ref('extintores/' + id).once('value').then(snap => {
                                 if (snap.exists()) {
                                     mostrarInfoQR(id);
@@ -3153,20 +3064,20 @@
                 } [estado.clase] || '#16a34a';
                 const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
                 return `<div class="etiqueta-print" id="etiqueta-${id}">
-                    <div class="header-etiqueta">
-                        <h4>🧯 SUPERSPUMA</h4>
-                        <small>Gestión de Extintores</small>
-                    </div>
-                    ${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-extintor">` : ''}
-                    <div class="info-row"><span class="label">🔢 N° Extintor:</span><span class="value">${d.numero || 'N/A'}</span></div>
-                    <div class="info-row"><span class="label">Ubicación:</span><span class="value">${d.ubicacion||'N/A'}</span></div>
-                    <div class="info-row"><span class="label">Tipo:</span><span class="value">${d.tipo||'N/A'}</span></div>
-                    <div class="info-row"><span class="label">Tamaño:</span><span class="value">${d.tamano||'N/A'}</span></div>
-                    <div class="info-row"><span class="label">Vence:</span><span class="value">${d.fechaProxima||'N/A'} <span style="color:${color};">${estado.texto}</span></span></div>
-                    ${gpsText ? `<div class="gps-info">📍 ${gpsText}</div>` : ''}
-                    <div class="qr-wrapper" id="qr-et-${id}"></div>
-                    <div style="text-align:center;font-size:7px;color:#94a3b8;margin-top:4px;">ID: ${id.slice(0,8)}</div>
-                </div>`;
+                        <div class="header-etiqueta">
+                            <h4>🧯 SUPERSPUMA</h4>
+                            <small>Gestión de Extintores</small>
+                        </div>
+                        ${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-extintor">` : ''}
+                        <div class="info-row"><span class="label">🔢 N° Extintor:</span><span class="value">${d.numero || 'N/A'}</span></div>
+                        <div class="info-row"><span class="label">Ubicación:</span><span class="value">${d.ubicacion||'N/A'}</span></div>
+                        <div class="info-row"><span class="label">Tipo:</span><span class="value">${d.tipo||'N/A'}</span></div>
+                        <div class="info-row"><span class="label">Tamaño:</span><span class="value">${d.tamano||'N/A'}</span></div>
+                        <div class="info-row"><span class="label">Vence:</span><span class="value">${d.fechaProxima||'N/A'} <span style="color:${color};">${estado.texto}</span></span></div>
+                        ${gpsText ? `<div class="gps-info">📍 ${gpsText}</div>` : ''}
+                        <div class="qr-wrapper" id="qr-et-${id}"></div>
+                        <div style="text-align:center;font-size:7px;color:#94a3b8;margin-top:4px;">ID: ${id.slice(0,8)}</div>
+                    </div>`;
             }).join('');
 
             items.forEach(([id]) => {
@@ -3240,12 +3151,12 @@
             if (!el) return;
             el.innerHTML = CHECKLIST_ITEMS.map(i =>
                 `<div class="checklist-item">
-                    <span class="nombre">${i}</span>
-                    <div class="opciones">
-                        <button type="button" onclick="marcarCLG(this,'ok')">✅ OK</button>
-                        <button type="button" onclick="marcarCLG(this,'nook')">❌ NO OK</button>
-                    </div>
-                </div>`
+                        <span class="nombre">${i}</span>
+                        <div class="opciones">
+                            <button type="button" onclick="marcarCLG(this,'ok')">✅ OK</button>
+                            <button type="button" onclick="marcarCLG(this,'nook')">❌ NO OK</button>
+                        </div>
+                    </div>`
             ).join('');
             actualizarProgresoCLG();
         }
@@ -3348,13 +3259,13 @@
                     estado.clase === 'critico' ? '#ea580c' :
                     estado.clase === 'alerta' ? '#a16207' : '#16a34a';
                 return `<tr>
-                    <td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal||'N/A'}</td>
-                    <td><strong>${d.numero || 'N/A'}</strong></td>
-                    <td>${d.ubicacion||'N/A'}</td>
-                    <td>${d.tipo||'N/A'}</td>
-                    <td style="color:${color};font-weight:700;">${d.fechaProxima||'N/A'} <span style="font-size:9px;">${estado.texto}</span></td>
-                    <td style="font-size:9px;">${gpsText}</td>
-                </tr>`;
+                        <td>${SUCURSALES[d.sucursal]?.nombre||d.sucursal||'N/A'}</td>
+                        <td><strong>${d.numero || 'N/A'}</strong></td>
+                        <td>${d.ubicacion||'N/A'}</td>
+                        <td>${d.tipo||'N/A'}</td>
+                        <td style="color:${color};font-weight:700;">${d.fechaProxima||'N/A'} <span style="font-size:9px;">${estado.texto}</span></td>
+                        <td style="font-size:9px;">${gpsText}</td>
+                    </tr>`;
             }).join('') || '<tr><td colspan="6"><div class="empty-state"><span class="icon">📋</span>No hay extintores registrados</div></td></tr>';
         }
 
@@ -3429,11 +3340,10 @@
         function verDetalleExtintor(id) {
             const d = datosExtintores[id];
             if (!d) {
-                // Si no está local, intentar obtener de Firebase
                 db.ref('extintores/' + id).once('value').then(snap => {
                     if (snap.exists()) {
                         const data = snap.val();
-                        datosExtintores[id] = data; // actualizar local
+                        datosExtintores[id] = data;
                         mostrarDetalle(id, data);
                     } else {
                         alert('Extintor no encontrado');
@@ -3454,24 +3364,24 @@
             } [estado.clase] || '#16a34a';
 
             document.getElementById('modal-detalle-contenido').innerHTML = `
-                <h3>🧯 Ficha del Extintor</h3>
-                ${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto">` : '<p style="color:#94a3b8;">📷 Sin foto</p>'}
-                <p><strong>🔢 N° Extintor:</strong> ${d.numero || 'N/A'}</p>
-                <p><strong>ID:</strong> ${id}</p>
-                <p><strong>Ubicación:</strong> ${d.ubicacion||'N/A'}</p>
-                <p><strong>Tipo:</strong> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p>
-                <p><strong>Vence:</strong> ${d.fechaProxima||'N/A'} <span style="color:${colorEstado};font-weight:700;">(${estado.texto})</span></p>
-                ${d.gps ? `<p><strong>📍 GPS:</strong> ${d.gps}</p>` : ''}
-                ${d.coordenadas ? `<p><strong>📍 Coordenadas:</strong> ${d.coordenadas.lat}, ${d.coordenadas.lng}</p>` : ''}
-                ${d.observaciones ? `<p><strong>Observaciones:</strong> ${d.observaciones}</p>` : ''}
-                <div style="text-align:center; margin-top:12px;" id="qr-detalle"></div>
-                ${d.coordenadas ? `<div id="mapa-detalle"></div>` : ''}
-                <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
-                    <a href="${window.location.origin + window.location.pathname}?id=${id}" target="_blank" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">🔗 Ficha Pública</a>
-                    <button class="btn btn-success" style="flex:1;" onclick="generarInformePDF('${id}')">📄 Exportar PDF</button>
-                    <button class="btn btn-danger" style="flex:1;" onclick="pedirPasswordEliminar('${id}')">🗑️ Eliminar</button>
-                </div>
-            `;
+                    <h3>🧯 Ficha del Extintor</h3>
+                    ${d.fotoURL ? `<img src="${d.fotoURL}" class="modal-detalle-foto">` : '<p style="color:#94a3b8;">📷 Sin foto</p>'}
+                    <p><strong>🔢 N° Extintor:</strong> ${d.numero || 'N/A'}</p>
+                    <p><strong>ID:</strong> ${id}</p>
+                    <p><strong>Ubicación:</strong> ${d.ubicacion||'N/A'}</p>
+                    <p><strong>Tipo:</strong> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p>
+                    <p><strong>Vence:</strong> ${d.fechaProxima||'N/A'} <span style="color:${colorEstado};font-weight:700;">(${estado.texto})</span></p>
+                    ${d.gps ? `<p><strong>📍 GPS:</strong> ${d.gps}</p>` : ''}
+                    ${d.coordenadas ? `<p><strong>📍 Coordenadas:</strong> ${d.coordenadas.lat}, ${d.coordenadas.lng}</p>` : ''}
+                    ${d.observaciones ? `<p><strong>Observaciones:</strong> ${d.observaciones}</p>` : ''}
+                    <div style="text-align:center; margin-top:12px;" id="qr-detalle"></div>
+                    ${d.coordenadas ? `<div id="mapa-detalle"></div>` : ''}
+                    <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
+                        <a href="${window.location.origin + window.location.pathname}?id=${id}" target="_blank" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">🔗 Ficha Pública</a>
+                        <button class="btn btn-success" style="flex:1;" onclick="generarInformePDF('${id}')">📄 Exportar PDF</button>
+                        <button class="btn btn-danger" style="flex:1;" onclick="pedirPasswordEliminar('${id}')">🗑️ Eliminar</button>
+                    </div>
+                `;
             document.getElementById('modal-detalle').style.display = 'flex';
             setTimeout(() => {
                 generarQRDetalle(id);
@@ -3504,11 +3414,14 @@
         function cerrarModalPassword() { document.getElementById('modal-password').style.display = 'none'; }
 
         // ============================================================
-        // GENERAR INFORME PDF
+        // GENERAR INFORME PDF (CORREGIDO)
         // ============================================================
         function generarInformePDF(id) {
             const ext = datosExtintores[id];
-            if (!ext) return alert('Extintor no encontrado');
+            if (!ext) {
+                alert('Extintor no encontrado');
+                return;
+            }
 
             const historial = Object.values(datosChecklists)
                 .filter(c => c.extintorId === id && c.tipo === 'checklist')
@@ -3517,44 +3430,45 @@
             const gpsText = ext.gps || (ext.coordenadas ? `${ext.coordenadas.lat}, ${ext.coordenadas.lng}` : 'No registrado');
 
             const contenido = `
-                <div id="pdf-content" style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; background: white;">
-                    <div style="display: flex; align-items: center; border-bottom: 3px solid #dc2626; padding-bottom: 10px;">
-                        <img src="LOGO_NVO_SUPERSPUMA.webp" style="width: 60px; height: 60px; margin-right: 15px;" />
-                        <div>
-                            <h1 style="color: #dc2626; margin: 0;">SuperSpuma</h1>
-                            <p style="margin: 0; color: #475569;">Informe de Inspección de Extintor</p>
+                    <div id="pdf-content" style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; background: white;">
+                        <div style="display: flex; align-items: center; border-bottom: 3px solid #dc2626; padding-bottom: 10px;">
+                            <img src="LOGO_NVO_SUPERSPUMA.webp" style="width: 60px; height: 60px; margin-right: 15px;" />
+                            <div>
+                                <h1 style="color: #dc2626; margin: 0;">SuperSpuma</h1>
+                                <p style="margin: 0; color: #475569;">Informe de Inspección de Extintor</p>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0;">
+                            <div><strong>N° Extintor:</strong> ${ext.numero || 'N/A'}</div>
+                            <div><strong>Ubicación:</strong> ${ext.ubicacion || 'N/A'}</div>
+                            <div><strong>Tipo:</strong> ${ext.tipo || 'N/A'} · ${ext.tamano || 'N/A'}</div>
+                            <div><strong>Vencimiento:</strong> ${ext.fechaProxima || 'N/A'}</div>
+                            <div><strong>GPS:</strong> ${gpsText}</div>
+                            <div><strong>Fecha informe:</strong> ${new Date().toLocaleString()}</div>
+                        </div>
+                        ${ext.fotoURL ? `<img src="${ext.fotoURL}" style="width:100%;max-height:200px;object-fit:contain;border-radius:8px;margin:10px 0;" />` : ''}
+                        <h3>📋 Historial de Inspecciones</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <thead><tr style="background: #dc2626; color: white;">
+                                <th style="padding: 8px;">Fecha</th><th>Inspector</th><th>Resultado</th><th>Observaciones</th>
+                            </tr></thead>
+                            <tbody>
+                                ${historial.length > 0 ? historial.map(c => `
+                                    <tr style="border-bottom: 1px solid #ddd;">
+                                        <td>${new Date(c.fecha).toLocaleDateString()}</td>
+                                        <td>${c.inspector || 'N/A'}</td>
+                                        <td>${Object.values(c.items||{}).every(v=>v==='OK') ? '✅ OK' : '❌ Con fallas'}</td>
+                                        <td>${c.observaciones || ''}</td>
+                                    </tr>
+                                `).join('') : '<tr><td colspan="4">Sin inspecciones registradas</td></tr>'}
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 15px; display: flex; justify-content: space-between;">
+                            <div><strong>Firma digital:</strong> ${new Date().toISOString().slice(0,10)} - SuperSpuma</div>
+                            <div style="color: #94a3b8; font-size: 10px;">Documento generado automáticamente</div>
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0;">
-                        <div><strong>N° Extintor:</strong> ${ext.numero || 'N/A'}</div>
-                        <div><strong>Ubicación:</strong> ${ext.ubicacion || 'N/A'}</div>
-                        <div><strong>Tipo:</strong> ${ext.tipo || 'N/A'} · ${ext.tamano || 'N/A'}</div>
-                        <div><strong>Vencimiento:</strong> ${ext.fechaProxima || 'N/A'}</div>
-                        <div><strong>GPS:</strong> ${gpsText}</div>
-                        <div><strong>Fecha informe:</strong> ${new Date().toLocaleString()}</div>
-                    </div>
-                    <h3>📋 Historial de Inspecciones</h3>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                        <thead><tr style="background: #dc2626; color: white;">
-                            <th style="padding: 8px;">Fecha</th><th>Inspector</th><th>Resultado</th><th>Observaciones</th>
-                        </tr></thead>
-                        <tbody>
-                            ${historial.length > 0 ? historial.map(c => `
-                                <tr style="border-bottom: 1px solid #ddd;">
-                                    <td>${new Date(c.fecha).toLocaleDateString()}</td>
-                                    <td>${c.inspector || 'N/A'}</td>
-                                    <td>${Object.values(c.items||{}).every(v=>v==='OK') ? '✅ OK' : '❌ Con fallas'}</td>
-                                    <td>${c.observaciones || ''}</td>
-                                </tr>
-                            `).join('') : '<tr><td colspan="4">Sin inspecciones registradas</td></tr>'}
-                        </tbody>
-                    </table>
-                    <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 15px; display: flex; justify-content: space-between;">
-                        <div><strong>Firma digital:</strong> ${new Date().toISOString().slice(0,10)} - SuperSpuma</div>
-                        <div style="color: #94a3b8; font-size: 10px;">Documento generado automáticamente</div>
-                    </div>
-                </div>
-            `;
+                `;
 
             const wrapper = document.createElement('div');
             wrapper.innerHTML = contenido;
@@ -3562,11 +3476,20 @@
 
             const element = document.getElementById('pdf-content');
             html2pdf()
-                .set({ margin: 0.5, filename: `informe_${ext.numero || id}.pdf`, image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true } })
+                .set({
+                    margin: 0.5,
+                    filename: `informe_${ext.numero || id}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false }
+                })
                 .from(element)
                 .save()
                 .then(() => {
+                    document.body.removeChild(wrapper);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Error al generar el PDF. Intentá de nuevo.');
                     document.body.removeChild(wrapper);
                 });
         }
@@ -3639,7 +3562,7 @@
                         plugins: {
                             legend: { position: 'bottom', labels: { font: { size: 10 } } },
                             tooltip: { callbacks: { label: (ctx) =>
-                                    `${ctx.raw} extintores (${((ctx.raw/total)*100).toFixed(1)}%)` } }
+                                        `${ctx.raw} extintores (${((ctx.raw/total)*100).toFixed(1)}%)` } }
                         }
                     }
                 });
@@ -3711,20 +3634,16 @@
         cargarDatos();
         lucide.createIcons();
 
-        // Escuchar el parámetro 'id' en la URL para la ficha pública
         const params = new URLSearchParams(window.location.search);
         if (params.has('id')) {
-            // Esperamos a que los datos se carguen
             setTimeout(() => verFichaPublica(), 500);
         }
 
-        console.log('🔥 Gestión de Extintores - SuperSpuma (v2.2)');
+        console.log('🔥 Gestión de Extintores - SuperSpuma (v2.3)');
         console.log('📱 Diseño moderno con navegación inferior y cards responsivas');
-        console.log('📄 Reportes PDF, Alertas de vencimiento (solo notificación) y Dashboard con gráficos');
+        console.log('📄 Reportes PDF mejorados con todos los datos');
+        console.log('✅ Botones de ficha pública funcionando correctamente');
         console.log('🔑 Contraseña: 1234');
-        console.log('✅ CSV actualizado con datos frescos');
-        console.log('✅ Botón "Borrar historial de inspecciones" (solo elimina checklists)');
-        console.log('✅ QR funcional: generación inmediata y consulta a Firebase si no está local');
     </script>
 
 </body>
