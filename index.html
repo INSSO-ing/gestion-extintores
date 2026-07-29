@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>SuperSpuma · Gestión de Extintores</title>
+    <title>Gestión Michael · Extintores</title>
 
     <!-- PWA Manifest embebido -->
     <script>
         (function() {
             const manifest = {
-                "name": "SuperSpuma · Gestión de Extintores",
-                "short_name": "GestionExt",
-                "description": "Sistema de gestión de extintores SuperSpuma",
+                "name": "Gestión Michael · Extintores",
+                "short_name": "GestionMichael",
+                "description": "Sistema de gestión de extintores",
                 "start_url": "index.html",
                 "display": "standalone",
                 "background_color": "#f8fafc",
@@ -34,10 +34,10 @@
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="GestionExt" />
+    <meta name="apple-mobile-web-app-title" content="GestionMichael" />
     <meta name="theme-color" content="#dc2626" />
-    <link rel="icon" type="image/webp" href="LOGO_NVO_SUPERSPUMA.webp" />
-    <link rel="apple-touch-icon" href="LOGO_NVO_SUPERSPUMA.webp" />
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧯</text></svg>" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧯</text></svg>" />
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -131,13 +131,16 @@
             gap: 10px;
         }
 
-        .app-header .logo img {
+        .app-header .logo .icono-header {
             width: 38px;
             height: 38px;
             border-radius: 10px;
             background: var(--red-600);
-            padding: 4px;
-            object-fit: contain;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
         }
 
         .app-header .logo h1 {
@@ -1523,9 +1526,9 @@
 
     <header class="app-header">
         <div class="logo">
-            <img src="LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma" />
+            <div class="icono-header">🧯</div>
             <div>
-                <h1>Super<span>Spuma</span> <span class="version-badge">v2.3</span></h1>
+                <h1>Gestión <span>Michael</span> <span class="version-badge">v2.5</span></h1>
                 <small>Gestión de Extintores</small>
             </div>
         </div>
@@ -1749,6 +1752,7 @@
                                 <th>Ubicación</th>
                                 <th>Tipo</th>
                                 <th>Vence</th>
+                                <th>Estado</th>
                                 <th>GPS</th>
                             </tr>
                         </thead>
@@ -1919,9 +1923,9 @@
         function obtenerEstadoVencimiento(fecha) {
             const dias = calcularDiasRestantes(fecha);
             if (dias < 0) return { texto: 'VENCIDO', clase: 'vencido', prioridad: 'critico', label: 'VENCIDO' };
-            if (dias <= 7) return { texto: '⚠️ 7 días', clase: 'critico', prioridad: 'critico', label: 'CRÍTICO' };
-            if (dias <= 15) return { texto: '⚠️ 15 días', clase: 'alerta', prioridad: 'alta', label: 'ALTA' };
-            if (dias <= 30) return { texto: 'Vence en 30 días', clase: 'alerta', prioridad: 'media', label: 'MEDIA' };
+            if (dias <= 7) return { texto: '7 días', clase: 'critico', prioridad: 'critico', label: 'CRÍTICO' };
+            if (dias <= 15) return { texto: '15 días', clase: 'alerta', prioridad: 'alta', label: 'ALTA' };
+            if (dias <= 30) return { texto: '30 días', clase: 'alerta', prioridad: 'media', label: 'MEDIA' };
             return { texto: 'OK', clase: 'normal', prioridad: 'normal', label: 'Normal' };
         }
 
@@ -2629,7 +2633,7 @@
         // Funciones globales para la ficha pública
         function compartirWhatsAppFicha(numero, ubicacion, tipo, tamano, fecha, estadoTexto, id, gps) {
             const texto = encodeURIComponent(
-                '🧯 *SUPERSPUMA - Ficha del Extintor*%0A%0A' +
+                '🧯 *GESTIÓN MICHAEL - Ficha del Extintor*%0A%0A' +
                 '🔢 *N° Extintor:* ' + (numero || 'N/A') + '%0A' +
                 '📍 *Ubicación:* ' + (ubicacion || 'N/A') + '%0A' +
                 '🏷️ *Tipo:* ' + (tipo || 'N/A') + ' · ' + (tamano || 'N/A') + '%0A' +
@@ -2676,8 +2680,8 @@
             const fichaHTML = `
                     <div id="ficha-para-descargar">
                         <div class="logo" style="text-align:center;margin-bottom:20px;">
-                            <img src="LOGO_NVO_SUPERSPUMA.webp" style="width:60px;height:60px;border-radius:12px;background:#dc2626;padding:8px;" />
-                            <h1 style="color:#dc2626;font-size:20px;margin-top:4px;">🧯 SUPERSPUMA</h1>
+                            <div style="display:inline-block;width:60px;height:60px;border-radius:12px;background:#dc2626;display:flex;align-items:center;justify-content:center;font-size:30px;color:white;margin:0 auto;">🧯</div>
+                            <h1 style="color:#dc2626;font-size:20px;margin-top:4px;">🧯 GESTIÓN MICHAEL</h1>
                             <small style="color:#94a3b8;font-size:11px;">Ficha Técnica del Extintor</small>
                         </div>
                         ${extintor.fotoURL ? `<img src="${extintor.fotoURL}" style="width:100%;max-height:200px;object-fit:contain;border-radius:12px;background:#f1f5f9;margin:12px 0;" />` : ''}
@@ -2706,7 +2710,7 @@
                         ${extintor.observaciones ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📝 Observaciones</span><span style="font-weight:700;">${extintor.observaciones}</span></div>` : ''}
                         <div class="qr-mini" id="qr-mini-ficha" style="text-align:center;margin:12px 0;background:#f1f5f9;padding:12px;border-radius:12px;"></div>
                         <div class="footer" style="text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;border-top:1px solid #e2e8f0;padding-top:12px;">
-                            Ficha generada el ${new Date().toLocaleDateString('es-ES')} · SuperSpuma Seguridad Industrial
+                            Ficha generada el ${new Date().toLocaleDateString('es-ES')} · Gestión Michael
                         </div>
                     </div>
                 `;
@@ -2910,7 +2914,7 @@
             const suc = SUCURSALES[cl.sucursal]?.nombre || cl.sucursal;
             const ok = Object.values(cl.items || {}).every(v => v === 'OK');
 
-            let texto = `🧯 *CHECKLIST SUPERSPUMA*%0A%0A`;
+            let texto = `🧯 *CHECKLIST GESTIÓN MICHAEL*%0A%0A`;
             texto += `📅 *Fecha:* ${new Date(cl.fecha).toLocaleString()}%0A`;
             texto += `🏢 *Sucursal:* ${suc}%0A`;
             texto += `📍 *Extintor:* ${ext?.numero || ext?.ubicacion || 'N/A'} (${ext?.tipo||''} ${ext?.tamano||''})%0A`;
@@ -3058,7 +3062,7 @@
                 const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
                 return `<div class="etiqueta-print" id="etiqueta-${id}">
                         <div class="header-etiqueta">
-                            <h4>🧯 SUPERSPUMA</h4>
+                            <h4>🧯 GESTIÓN MICHAEL</h4>
                             <small>Gestión de Extintores</small>
                         </div>
                         ${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-extintor">` : ''}
@@ -3108,7 +3112,7 @@
                 backgroundColor: '#f8fafc'
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'etiquetas_superspuma.png';
+                link.download = 'etiquetas_michael.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             }).catch(err => {
@@ -3247,7 +3251,7 @@
 
             tbody.innerHTML = items.map(([id, d]) => {
                 const estado = obtenerEstadoVencimiento(d.fechaProxima);
-                const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
+                const gpsText = limpiarGPS(d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : ''));
                 const color = estado.clase === 'vencido' ? '#dc2626' :
                     estado.clase === 'critico' ? '#ea580c' :
                     estado.clase === 'alerta' ? '#a16207' : '#16a34a';
@@ -3256,14 +3260,15 @@
                         <td><strong>${d.numero || 'N/A'}</strong></td>
                         <td>${d.ubicacion||'N/A'}</td>
                         <td>${d.tipo||'N/A'}</td>
-                        <td style="color:${color};font-weight:700;">${d.fechaProxima||'N/A'} <span style="font-size:9px;">${estado.texto}</span></td>
+                        <td style="color:${color};font-weight:700;">${d.fechaProxima||'N/A'}</td>
+                        <td><span style="color:${color};font-weight:600;">${estado.texto}</span></td>
                         <td style="font-size:9px;">${gpsText}</td>
                     </tr>`;
-            }).join('') || '<tr><td colspan="6"><div class="empty-state"><span class="icon">📋</span>No hay extintores registrados</div></td></tr>';
+            }).join('') || '<tr><td colspan="7"><div class="empty-state"><span class="icon">📋</span>No hay extintores registrados</div></td></tr>';
         }
 
         // ============================================================
-        // EXPORTAR CSV (ACTUALIZADO CON DATOS FRESCOS)
+        // EXPORTAR CSV (MEJORADO v2.5)
         // ============================================================
         async function exportarCSVHistorial() {
             const btn = event?.target || document.activeElement;
@@ -3275,15 +3280,32 @@
                 const snapshot = await db.ref('extintores').once('value');
                 const extintores = snapshot.val() || {};
 
-                let csv = 'Sucursal,N° Extintor,Ubicación,Tipo,Vence,Estado,GPS\n';
+                const sep = ';';
+                let csv = '\uFEFF';
+                csv += 'Sucursal' + sep + 'N° Extintor' + sep + 'Ubicación' + sep + 'Tipo' + sep + 'Vence' + sep + 'Estado' +
+                    sep + 'GPS\n';
+
                 Object.entries(extintores).forEach(([id, d]) => {
                     const estado = obtenerEstadoVencimiento(d.fechaProxima);
-                    const gpsText = d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` : '');
-                    csv +=
-                        `"${SUCURSALES[d.sucursal]?.nombre||''}","${d.numero||''}","${d.ubicacion||''}","${d.tipo||''}","${d.fechaProxima||''}","${estado.texto}","${gpsText}"\n`;
+                    let fechaFormateada = '';
+                    if (d.fechaProxima) {
+                        const partes = d.fechaProxima.split('-');
+                        fechaFormateada = partes[2] + '/' + partes[1] + '/' + partes[0];
+                    }
+                    const gpsText = limpiarGPS(d.gps || (d.coordenadas ? `${d.coordenadas.lat}, ${d.coordenadas.lng}` :
+                    ''));
+                    const sucursal = SUCURSALES[d.sucursal]?.nombre || d.sucursal || '';
+
+                    csv += `"${sucursal}"` + sep;
+                    csv += `"${d.numero || ''}"` + sep;
+                    csv += `"${d.ubicacion || ''}"` + sep;
+                    csv += `"${d.tipo || ''}"` + sep;
+                    csv += `"${fechaFormateada}"` + sep;
+                    csv += `"${estado.texto}"` + sep;
+                    csv += `"${gpsText}"\n`;
                 });
 
-                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv' });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
                 a.download = 'historial_extintores.csv';
@@ -3296,6 +3318,12 @@
                 btn.textContent = textoOriginal;
                 btn.disabled = false;
             }
+        }
+
+        function limpiarGPS(gps) {
+            if (!gps) return '';
+            let limpio = gps.replace(/^📍\s*/g, '').replace(/^GPS:\s*/g, '').trim();
+            return limpio;
         }
 
         // ============================================================
@@ -3407,7 +3435,7 @@
         function cerrarModalPassword() { document.getElementById('modal-password').style.display = 'none'; }
 
         // ============================================================
-        // GENERAR INFORME PDF (CORREGIDO)
+        // GENERAR INFORME PDF
         // ============================================================
         function generarInformePDF(id) {
             const ext = datosExtintores[id];
@@ -3425,9 +3453,9 @@
             const contenido = `
                     <div id="pdf-content" style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; background: white;">
                         <div style="display: flex; align-items: center; border-bottom: 3px solid #dc2626; padding-bottom: 10px;">
-                            <img src="LOGO_NVO_SUPERSPUMA.webp" style="width: 60px; height: 60px; margin-right: 15px;" />
+                            <div style="width:60px;height:60px;border-radius:12px;background:#dc2626;display:flex;align-items:center;justify-content:center;font-size:30px;color:white;margin-right:15px;">🧯</div>
                             <div>
-                                <h1 style="color: #dc2626; margin: 0;">SuperSpuma</h1>
+                                <h1 style="color: #dc2626; margin: 0;">Gestión Michael</h1>
                                 <p style="margin: 0; color: #475569;">Informe de Inspección de Extintor</p>
                             </div>
                         </div>
@@ -3457,7 +3485,7 @@
                             </tbody>
                         </table>
                         <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 15px; display: flex; justify-content: space-between;">
-                            <div><strong>Firma digital:</strong> ${new Date().toISOString().slice(0,10)} - SuperSpuma</div>
+                            <div><strong>Firma digital:</strong> ${new Date().toISOString().slice(0,10)} - Gestión Michael</div>
                             <div style="color: #94a3b8; font-size: 10px;">Documento generado automáticamente</div>
                         </div>
                     </div>
@@ -3518,7 +3546,7 @@
             const titulo = `⚠️ ${proximos.length} extintor(es) próximo(s) a vencer`;
 
             if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification(titulo, { body: mensaje, icon: 'LOGO_NVO_SUPERSPUMA.webp' });
+                new Notification(titulo, { body: mensaje, icon: '🧯' });
             }
         }
 
@@ -3632,11 +3660,10 @@
             setTimeout(() => verFichaPublica(), 500);
         }
 
-        console.log('🔥 Gestión de Extintores - SuperSpuma (v2.3)');
-        console.log('📱 Diseño moderno con navegación inferior y cards responsivas');
-        console.log('📄 Reportes PDF mejorados con todos los datos');
-        console.log('✅ Botones de ficha pública funcionando correctamente');
+        console.log('🔥 Gestión Michael - v2.5');
+        console.log('📱 Gestión de Extintores');
         console.log('🔑 Contraseña: 1234');
+        console.log('📊 CSV mejorado con formato limpio');
     </script>
 
 </body>
