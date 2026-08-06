@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>SuperSpuma · Gestión de Extintores v2.5</title>
+    <title>SuperSpuma · Gestión de Extintores</title>
 
     <!-- PWA Manifest embebido -->
     <script>
@@ -681,10 +681,6 @@
             background: #fef2f2;
             color: var(--red-600);
         }
-        .badge.na {
-            background: #f1f5f9;
-            color: #64748b;
-        }
 
         .tabla-extintores .extintor-card .acciones {
             display: flex;
@@ -1013,12 +1009,6 @@
             background: #fef2f2;
             border-color: var(--red-600);
             color: var(--red-600);
-        }
-
-        .checklist-item .opciones button.sel-na {
-            background: #f1f5f9;
-            border-color: #94a3b8;
-            color: #64748b;
         }
 
         .progress-bar {
@@ -1379,10 +1369,6 @@
             background: #1e293b;
             color: #f87171;
         }
-        .dark-mode .badge.na {
-            background: #1e293b;
-            color: #94a3b8;
-        }
 
         .install-banner {
             display: none;
@@ -1539,7 +1525,7 @@
         <div class="logo">
             <img src="LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma" />
             <div>
-                <h1>Super<span>Spuma</span> <span class="version-badge">v2.5</span></h1>
+                <h1>Super<span>Spuma</span> <span class="version-badge">v2.4</span></h1>
                 <small>Gestión de Extintores</small>
             </div>
         </div>
@@ -1629,35 +1615,24 @@
                                     <option value="CO2">CO2</option>
                                     <option value="Espuma Mecánica">Espuma Mecánica</option>
                                     <option value="Eco">Eco</option>
-                                    <option value="K">K (Aceite/Cocina)</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label><i data-lucide="weight"></i> Tamaño *</label>
                                 <select id="form-tamano" data-pills required>
                                     <option value="2.5 kg">2.5 kg</option>
-                                    <option value="3.5 kg">3.5 kg</option>
-                                    <option value="4 kg">4 kg</option>
                                     <option value="5 kg">5 kg</option>
-                                    <option value="6 kg">6 kg</option>
                                     <option value="10 kg">10 kg</option>
                                     <option value="15 kg">15 kg</option>
                                     <option value="20 kg">20 kg</option>
                                     <option value="25 kg">25 kg</option>
-                                    <option value="60 kg">60 kg</option>
+                                    <option value="50 kg">50 kg</option>
                                 </select>
                                 <div class="tamano-pills" id="tamano-pills"></div>
                             </div>
                             <div class="form-group">
                                 <label><i data-lucide="calendar"></i> Vencimiento *</label>
                                 <input type="date" id="form-fecha" required />
-                            </div>
-                            <div class="form-group">
-                                <label><i data-lucide="file-text"></i> ¿Tiene cartel?</label>
-                                <select id="form-cartel">
-                                    <option value="Si">Sí</option>
-                                    <option value="No">No</option>
-                                </select>
                             </div>
                             <div class="form-group full">
                                 <label><i data-lucide="camera"></i> Foto (opcional)</label>
@@ -1703,15 +1678,6 @@
                             <div class="fill" id="cl-progress" style="width:0%;"></div>
                         </div>
                         <div id="cl-items"></div>
-                        <!-- Verificación BIE -->
-                        <div class="form-group full" style="margin-top:16px;">
-                            <label><i data-lucide="fire-extinguisher"></i> Verificación BIE</label>
-                            <select id="cl-bie">
-                                <option value="OK">OK</option>
-                                <option value="NO OK">NO OK</option>
-                                <option value="N/A">N/A</option>
-                            </select>
-                        </div>
                         <div class="form-row">
                             <div class="form-group full">
                                 <label><i data-lucide="clipboard"></i> Observaciones</label>
@@ -1736,7 +1702,6 @@
                                     <th>Extintor</th>
                                     <th>Inspector</th>
                                     <th>Resultado</th>
-                                    <th>BIE</th>
                                     <th>Acción</th>
                                 </tr>
                             </thead>
@@ -1828,15 +1793,6 @@
                         <div class="fill" id="clg-progress" style="width:0%;"></div>
                     </div>
                     <div id="clg-items"></div>
-                    <!-- Verificación BIE Global -->
-                    <div class="form-group full" style="margin-top:16px;">
-                        <label><i data-lucide="fire-extinguisher"></i> Verificación BIE</label>
-                        <select id="clg-bie">
-                            <option value="OK">OK</option>
-                            <option value="NO OK">NO OK</option>
-                            <option value="N/A">N/A</option>
-                        </select>
-                    </div>
                     <div class="form-row">
                         <div class="form-group full">
                             <label>Observaciones</label>
@@ -1940,8 +1896,7 @@
         const SUCURSALES = {
             'villeta': { nombre: 'Villeta (Planta Industrial)', direccion: 'Ruta Ypané-Villeta' }
         };
-        // Items base del checklist (Manómetro se manejará dinámicamente)
-        const CHECKLIST_ITEMS_BASE = ['Manguera', 'Precinto', 'Boquilla', 'Etiqueta', 'Gatillo', 'Pintura', 'Soporte'];
+        const CHECKLIST_ITEMS = ['Manómetro', 'Manguera', 'Precinto', 'Boquilla', 'Etiqueta', 'Gatillo', 'Pintura', 'Soporte'];
         let datosExtintores = {},
             datosChecklists = {},
             sucursalActiva = 'villeta',
@@ -1974,15 +1929,6 @@
         function estaProximoAVencer(fecha) {
             const dias = calcularDiasRestantes(fecha);
             return dias >= 0 && dias <= 30;
-        }
-
-        // Obtener items de checklist según tipo (CO2 no tiene manómetro)
-        function getChecklistItems(tipo) {
-            const items = [...CHECKLIST_ITEMS_BASE];
-            if (tipo !== 'CO2') {
-                items.unshift('Manómetro');
-            }
-            return items;
         }
 
         // ============================================================
@@ -2087,8 +2033,6 @@
                     `<div class="qr-data-row"><span class="label">🏷️ Tipo:</span><span class="value">${ext.tipo||'N/A'} · ${ext.tamano||'N/A'}</span></div>`;
                 html +=
                     `<div class="qr-data-row"><span class="label">📅 Vence:</span><span class="value">${ext.fechaProxima||'N/A'} <span style="font-size:11px;color:${estado.clase === 'vencido' ? '#dc2626' : estado.clase === 'critico' ? '#ea580c' : estado.clase === 'alerta' ? '#a16207' : '#16a34a'};">(${estado.texto})</span></span></div>`;
-                html +=
-                    `<div class="qr-data-row"><span class="label">🏷️ Cartel:</span><span class="value">${ext.cartel || 'No especificado'}</span></div>`;
                 if (ext.gps) html +=
                     `<div class="qr-data-row"><span class="label">📍 GPS:</span><span class="value">${ext.gps}</span></div>`;
                 if (ext.observaciones) html +=
@@ -2445,7 +2389,6 @@
                                     <span>${d.tipo||'N/A'} · ${d.tamano||'N/A'}</span>
                                     <span style="color:${color};">${d.fechaProxima||'N/A'} ${estado.texto}</span>
                                 </div>
-                                <div style="font-size:10px;color:var(--text-muted);">Cartel: ${d.cartel||'No especificado'}</div>
                             </div>
                             <div class="estado">
                                 <span class="badge ${badgeClass}">${estado.label}</span>
@@ -2498,7 +2441,7 @@
         }
 
         // ============================================================
-        // AGREGAR EXTINTOR (con campo cartel y nuevo tamaño)
+        // AGREGAR EXTINTOR (CORREGIDO: QR GENERADO INMEDIATAMENTE)
         // ============================================================
         async function agregarExtintor(e) {
             e.preventDefault();
@@ -2507,7 +2450,6 @@
             const tipo = document.getElementById('form-tipo').value;
             const tamano = document.getElementById('form-tamano').value;
             const fechaProxima = document.getElementById('form-fecha').value;
-            const cartel = document.getElementById('form-cartel').value;
             const obs = document.getElementById('form-obs').value.trim();
             const fotoFile = document.getElementById('form-foto').files[0];
 
@@ -2531,12 +2473,11 @@
 
             const nuevoExtintor = {
                 sucursal: sucursalActiva,
-                numero,
+                numero: numero,
                 ubicacion,
                 tipo,
                 tamano,
                 fechaProxima,
-                cartel,
                 observaciones: obs,
                 fotoURL,
                 gps: gpsText.includes('Obteniendo') ? '' : gpsText,
@@ -2554,7 +2495,6 @@
                 document.getElementById('form-fecha').value = '';
                 document.getElementById('form-obs').value = '';
                 document.getElementById('form-foto').value = '';
-                document.getElementById('form-cartel').value = 'Si';
 
                 datosExtintores[id] = nuevoExtintor;
                 setTimeout(() => {
@@ -2575,7 +2515,6 @@
             document.getElementById('form-tipo').value = d.tipo || 'PQS';
             document.getElementById('form-tamano').value = d.tamano || '5 kg';
             document.getElementById('form-fecha').value = d.fechaProxima || '';
-            document.getElementById('form-cartel').value = d.cartel || 'Si';
             document.getElementById('form-obs').value = d.observaciones || '';
             editMode = true;
             currentEditId = id;
@@ -2598,7 +2537,6 @@
             const tipo = document.getElementById('form-tipo').value;
             const tamano = document.getElementById('form-tamano').value;
             const fechaProxima = document.getElementById('form-fecha').value;
-            const cartel = document.getElementById('form-cartel').value;
             const obs = document.getElementById('form-obs').value.trim();
             const fotoFile = document.getElementById('form-foto').files[0];
 
@@ -2622,12 +2560,11 @@
 
             const datosActualizados = {
                 sucursal: sucursalActiva,
-                numero,
+                numero: numero,
                 ubicacion,
                 tipo,
                 tamano,
                 fechaProxima,
-                cartel,
                 observaciones: obs,
                 fotoURL,
                 gps: gpsText.includes('Obteniendo') ? datosExtintores[id]?.gps || '' : gpsText,
@@ -2651,7 +2588,6 @@
             document.getElementById('form-fecha').value = '';
             document.getElementById('form-obs').value = '';
             document.getElementById('form-foto').value = '';
-            document.getElementById('form-cartel').value = 'Si';
             editMode = false;
             currentEditId = null;
             const btn = document.querySelector('#tab-agregar form button[type="submit"]');
@@ -2692,14 +2628,13 @@
         }
 
         // Funciones globales para la ficha pública
-        function compartirWhatsAppFicha(numero, ubicacion, tipo, tamano, fecha, estadoTexto, id, gps, cartel) {
+        function compartirWhatsAppFicha(numero, ubicacion, tipo, tamano, fecha, estadoTexto, id, gps) {
             const texto = encodeURIComponent(
                 '🧯 *SUPERSPUMA - Ficha del Extintor*%0A%0A' +
                 '🔢 *N° Extintor:* ' + (numero || 'N/A') + '%0A' +
                 '📍 *Ubicación:* ' + (ubicacion || 'N/A') + '%0A' +
                 '🏷️ *Tipo:* ' + (tipo || 'N/A') + ' · ' + (tamano || 'N/A') + '%0A' +
                 '📅 *Vence:* ' + (fecha || 'N/A') + ' (' + estadoTexto + ')%0A' +
-                '🏷️ *Cartel:* ' + (cartel || 'No especificado') + '%0A' +
                 '🆔 *ID:* ' + id + '%0A' +
                 (gps ? '📍 *GPS:* ' + gps + '%0A' : '') +
                 '🔗 *Ver ficha:* ' + window.location.href
@@ -2729,6 +2664,7 @@
             window.open('https://www.google.com/maps?q=' + lat + ',' + lng, '_blank');
         }
 
+        // Función que construye la ficha y asigna los eventos globales
         function mostrarFicha(id, extintor) {
             const estado = obtenerEstadoVencimiento(extintor.fechaProxima);
             const colorEstado = {
@@ -2766,10 +2702,6 @@
                             <span style="color:#475569;font-weight:600;">📅 Vence</span>
                             <span style="font-weight:700;">${extintor.fechaProxima || 'N/A'} <span style="font-size:12px;color:${colorEstado};">(${estado.texto})</span></span>
                         </div>
-                        <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
-                            <span style="color:#475569;font-weight:600;">🏷️ Cartel</span>
-                            <span style="font-weight:700;">${extintor.cartel || 'No especificado'}</span>
-                        </div>
                         ${extintor.gps ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📍 GPS</span><span style="font-weight:700;">${extintor.gps}</span></div>` : ''}
                         ${extintor.coordenadas ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📌 Coordenadas</span><span style="font-weight:700;">${extintor.coordenadas.lat}, ${extintor.coordenadas.lng}</span></div>` : ''}
                         ${extintor.observaciones ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📝 Observaciones</span><span style="font-weight:700;">${extintor.observaciones}</span></div>` : ''}
@@ -2801,7 +2733,7 @@
                     ${estilos}
                     <div id="contenedor-ficha">${fichaHTML}</div>
                     <div class="botones">
-                        <button class="btn-wsp" onclick="compartirWhatsAppFicha('${extintor.numero || 'N/A'}', '${extintor.ubicacion || 'N/A'}', '${extintor.tipo || 'N/A'}', '${extintor.tamano || 'N/A'}', '${extintor.fechaProxima || 'N/A'}', '${estado.texto}', '${id}', '${extintor.gps || ''}', '${extintor.cartel || ''}')">📤 WhatsApp</button>
+                        <button class="btn-wsp" onclick="compartirWhatsAppFicha('${extintor.numero || 'N/A'}', '${extintor.ubicacion || 'N/A'}', '${extintor.tipo || 'N/A'}', '${extintor.tamano || 'N/A'}', '${extintor.fechaProxima || 'N/A'}', '${estado.texto}', '${id}', '${extintor.gps || ''}')">📤 WhatsApp</button>
                         <button class="btn-descargar" onclick="descargarFicha()">📥 Descargar</button>
                         ${extintor.coordenadas ? `<button class="btn-mapa" onclick="verMapaFicha(${extintor.coordenadas.lat}, ${extintor.coordenadas.lng})">🗺️ Ver Mapa</button>` : ''}
                         <button class="btn-volver" onclick="window.location.href='/'">⬅ Volver</button>
@@ -2835,32 +2767,22 @@
             sel.innerHTML = '<option value="">Seleccionar...</option>';
             Object.entries(datosExtintores).forEach(([id, d]) => {
                 if (d.sucursal === sucursalActiva) {
-                    sel.innerHTML += `<option value="${id}" data-tipo="${d.tipo}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
+                    sel.innerHTML += `<option value="${id}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
                 }
             });
         }
 
-        function cargarDatosExtintorCL() {
-            const sel = document.getElementById('cl-extintor');
-            const selected = sel.options[sel.selectedIndex];
-            if (selected && selected.dataset.tipo) {
-                generarItemsCL(selected.dataset.tipo);
-            } else {
-                generarItemsCL();
-            }
-        }
+        function cargarDatosExtintorCL() {}
 
-        function generarItemsCL(tipo) {
+        function generarItemsCL() {
             const el = document.getElementById('cl-items');
             if (!el) return;
-            const items = getChecklistItems(tipo);
-            el.innerHTML = items.map(i =>
+            el.innerHTML = CHECKLIST_ITEMS.map(i =>
                 `<div class="checklist-item">
                         <span class="nombre">${i}</span>
                         <div class="opciones">
                             <button type="button" onclick="marcarCL(this,'ok')">✅ OK</button>
                             <button type="button" onclick="marcarCL(this,'nook')">❌ NO OK</button>
-                            ${i === 'Manómetro' ? `<button type="button" onclick="marcarCL(this,'na')" class="sel-na">N/A</button>` : ''}
                         </div>
                     </div>`
             ).join('');
@@ -2869,17 +2791,16 @@
 
         function marcarCL(btn, tipo) {
             const p = btn.parentElement;
-            p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok', 'sel-nook', 'sel-na'));
-            btn.classList.add(tipo === 'ok' ? 'sel-ok' : tipo === 'nook' ? 'sel-nook' : 'sel-na');
+            p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok', 'sel-nook'));
+            btn.classList.add(tipo === 'ok' ? 'sel-ok' : 'sel-nook');
             actualizarProgresoCL();
         }
 
         function actualizarProgresoCL() {
-            const items = document.querySelectorAll('#cl-items .checklist-item');
-            const total = items.length;
-            const marcados = document.querySelectorAll('#cl-items .sel-ok, #cl-items .sel-nook, #cl-items .sel-na').length;
+            const t = CHECKLIST_ITEMS.length;
+            const m = document.querySelectorAll('#cl-items .sel-ok, #cl-items .sel-nook').length;
             const el = document.getElementById('cl-progress');
-            if (el) el.style.width = total > 0 ? ((marcados / total) * 100) + '%' : '0%';
+            if (el) el.style.width = ((m / t) * 100) + '%';
         }
 
         async function guardarChecklist(e) {
@@ -2888,17 +2809,11 @@
             const inspector = document.getElementById('cl-inspector').value.trim();
             if (!extintorId || !inspector) return alert('Completá todos los campos');
 
-            const ext = datosExtintores[extintorId];
             const items = {};
-            const itemsList = getChecklistItems(ext?.tipo);
             document.querySelectorAll('#cl-items .checklist-item').forEach((item, i) => {
-                const sel = item.querySelector('.sel-ok, .sel-nook, .sel-na');
-                const nombre = itemsList[i] || 'Item ' + (i+1);
-                items[nombre] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : sel.classList.contains('sel-nook') ? 'NO OK' : 'N/A') : 'No verificado';
+                const sel = item.querySelector('.sel-ok,.sel-nook');
+                items[CHECKLIST_ITEMS[i]] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : 'NO OK') : 'No verificado';
             });
-
-            // BIE
-            const bie = document.getElementById('cl-bie').value;
 
             let fotoURL = '';
             const fi = document.getElementById('cl-foto');
@@ -2917,7 +2832,6 @@
                 tipo: 'checklist',
                 inspector,
                 items,
-                bie,
                 observaciones: document.getElementById('cl-obs').value.trim(),
                 fotoURL,
                 gps: gpsText.includes('Obteniendo') ? '' : gpsText,
@@ -2929,8 +2843,7 @@
             document.getElementById('cl-obs').value = '';
             document.getElementById('cl-foto').value = '';
             document.getElementById('cl-inspector').value = '';
-            document.querySelectorAll('#cl-items button').forEach(b => b.classList.remove('sel-ok', 'sel-nook', 'sel-na'));
-            document.getElementById('cl-bie').value = 'OK';
+            document.querySelectorAll('#cl-items button').forEach(b => b.classList.remove('sel-ok', 'sel-nook'));
             actualizarProgresoCL();
             cargarHistorialCL();
         }
@@ -2947,16 +2860,14 @@
             tbody.innerHTML = items.map(c => {
                 const ext = datosExtintores[c.extintorId];
                 const ok = Object.values(c.items || {}).every(v => v === 'OK');
-                const bieStatus = c.bie || 'N/A';
                 return `<tr>
                         <td>${new Date(c.fecha).toLocaleDateString()}</td>
                         <td>${ext?.numero || ext?.ubicacion || c.extintorId.slice(0,8)}</td>
                         <td>${c.inspector||'N/A'}</td>
                         <td><span class="badge ${ok?'ok':'falla'}">${ok?'✅ OK':'❌ Fallas'}</span></td>
-                        <td><span class="badge ${bieStatus==='OK'?'ok':bieStatus==='N/A'?'na':'falla'}">${bieStatus}</span></td>
                         <td><button class="btn btn-secondary btn-sm" onclick="verDetalleCL('${c.fecha}','${c.extintorId}')">🔍 Ver</button></td>
                     </tr>`;
-            }).join('') || '<tr><td colspan="6"><div class="empty-state"><span class="icon">📋</span>Sin checklists</div></td></tr>';
+            }).join('') || '<tr><td colspan="5"><div class="empty-state"><span class="icon">📋</span>Sin checklists</div></td></tr>';
         }
 
         function verDetalleCL(fecha, extintorId) {
@@ -2972,13 +2883,11 @@
                         <tr><td><strong>Extintor:</strong></td><td>${ext?.numero || ext?.ubicacion || cl.extintorId}</td></tr>
                         <tr><td><strong>Inspector:</strong></td><td>${cl.inspector}</td></tr>
                         <tr><td><strong>Resultado:</strong></td><td><span class="badge ${ok?'ok':'falla'}">${ok?'✅ Todo OK':'❌ Con fallas'}</span></td></tr>
-                        <tr><td><strong>BIE:</strong></td><td><span class="badge ${cl.bie==='OK'?'ok':cl.bie==='N/A'?'na':'falla'}">${cl.bie||'N/A'}</span></td></tr>
                     </table>
                     <h4>🔍 Items</h4>
                     <table>`;
             Object.entries(cl.items || {}).forEach(([k, v]) => {
-                const cls = v === 'OK' ? 'ok' : v === 'N/A' ? 'na' : 'falla';
-                h += `<tr><td>${k}</td><td><span class="badge ${cls}">${v}</span></td></tr>`;
+                h += `<tr><td>${k}</td><td><span class="badge ${v==='OK'?'ok':'falla'}">${v}</span></td></tr>`;
             });
             h += `</table>`;
             if (cl.fotoURL) h += `<img src="${cl.fotoURL}" class="modal-detalle-foto">`;
@@ -3007,11 +2916,9 @@
             texto += `🏢 *Sucursal:* ${suc}%0A`;
             texto += `📍 *Extintor:* ${ext?.numero || ext?.ubicacion || 'N/A'} (${ext?.tipo||''} ${ext?.tamano||''})%0A`;
             texto += `👤 *Inspector:* ${cl.inspector}%0A`;
-            texto += `📊 *Resultado:* ${ok ? '✅ TODO OK' : '❌ CON FALLAS'}%0A`;
-            texto += `🧯 *BIE:* ${cl.bie || 'N/A'}%0A%0A🔍 *Items:*%0A`;
+            texto += `📊 *Resultado:* ${ok ? '✅ TODO OK' : '❌ CON FALLAS'}%0A%0A🔍 *Items:*%0A`;
             Object.entries(cl.items || {}).forEach(([k, v]) => {
-                const emoji = v === 'OK' ? '✅' : v === 'N/A' ? '⚪' : '❌';
-                texto += `${emoji} ${k}: ${v}%0A`;
+                texto += `${v === 'OK' ? '✅' : '❌'} ${k}: ${v}%0A`;
             });
             if (cl.observaciones) texto += `%0A📝 *Obs:* ${cl.observaciones}%0A`;
             if (cl.gps) texto += `%0A📍 ${cl.gps.replace('📍 ','')}%0A`;
@@ -3065,7 +2972,7 @@
             html += `</div>`;
 
             html += `<h4>⚠️ Próximos a vencer (15 días)</h4><div>${urgentes.length > 0 ? urgentes.map(e => `<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;">🔴 ${e.numero || 'N/A'} - ${e.ubicacion||'N/A'} - ${e.tipo||''} - Vence: ${e.fechaProxima||'N/A'}</div>`).join('') : '<p style="color:#22c55e;">✅ No hay extintores próximos a vencer</p>'}</div>`;
-            html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.numero || ex?.ubicacion || c.extintorId.slice(0,8)} - ${c.inspector} - <span style="color:${o?'#22c55e':'#dc2626'};">${o?'✅ OK':'❌ Fallas'}</span> - BIE: ${c.bie||'N/A'}</div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
+            html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.numero || ex?.ubicacion || c.extintorId.slice(0,8)} - ${c.inspector} - <span style="color:${o?'#22c55e':'#dc2626'};">${o?'✅ OK':'❌ Fallas'}</span></div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
 
             const container = document.getElementById('visualizar-contenido');
             if (container) container.innerHTML = html;
@@ -3161,7 +3068,6 @@
                         <div class="info-row"><span class="label">Tipo:</span><span class="value">${d.tipo||'N/A'}</span></div>
                         <div class="info-row"><span class="label">Tamaño:</span><span class="value">${d.tamano||'N/A'}</span></div>
                         <div class="info-row"><span class="label">Vence:</span><span class="value">${d.fechaProxima||'N/A'} <span style="color:${color};">${estado.texto}</span></span></div>
-                        <div class="info-row"><span class="label">Cartel:</span><span class="value">${d.cartel||'No especificado'}</span></div>
                         ${gpsText ? `<div class="gps-info">📍 ${gpsText}</div>` : ''}
                         <div class="qr-wrapper" id="qr-et-${id}"></div>
                         <div style="text-align:center;font-size:7px;color:#94a3b8;margin-top:4px;">ID: ${id.slice(0,8)}</div>
@@ -3230,24 +3136,19 @@
             sel.innerHTML = '<option value="">Seleccionar...</option>';
             if (!s) return;
             Object.entries(datosExtintores).forEach(([id, d]) => {
-                if (d.sucursal === s) sel.innerHTML += `<option value="${id}" data-tipo="${d.tipo}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
+                if (d.sucursal === s) sel.innerHTML += `<option value="${id}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
             });
         }
 
         function generarItemsCLG() {
             const el = document.getElementById('clg-items');
             if (!el) return;
-            const sel = document.getElementById('clg-extintor');
-            const selected = sel.options[sel.selectedIndex];
-            const tipo = selected ? selected.dataset.tipo : null;
-            const items = getChecklistItems(tipo);
-            el.innerHTML = items.map(i =>
+            el.innerHTML = CHECKLIST_ITEMS.map(i =>
                 `<div class="checklist-item">
                         <span class="nombre">${i}</span>
                         <div class="opciones">
                             <button type="button" onclick="marcarCLG(this,'ok')">✅ OK</button>
                             <button type="button" onclick="marcarCLG(this,'nook')">❌ NO OK</button>
-                            ${i === 'Manómetro' ? `<button type="button" onclick="marcarCLG(this,'na')" class="sel-na">N/A</button>` : ''}
                         </div>
                     </div>`
             ).join('');
@@ -3256,17 +3157,16 @@
 
         function marcarCLG(btn, tipo) {
             const p = btn.parentElement;
-            p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok', 'sel-nook', 'sel-na'));
-            btn.classList.add(tipo === 'ok' ? 'sel-ok' : tipo === 'nook' ? 'sel-nook' : 'sel-na');
+            p.querySelectorAll('button').forEach(b => b.classList.remove('sel-ok', 'sel-nook'));
+            btn.classList.add(tipo === 'ok' ? 'sel-ok' : 'sel-nook');
             actualizarProgresoCLG();
         }
 
         function actualizarProgresoCLG() {
-            const items = document.querySelectorAll('#clg-items .checklist-item');
-            const total = items.length;
-            const marcados = document.querySelectorAll('#clg-items .sel-ok, #clg-items .sel-nook, #clg-items .sel-na').length;
+            const t = CHECKLIST_ITEMS.length;
+            const m = document.querySelectorAll('#clg-items .sel-ok, #clg-items .sel-nook').length;
             const el = document.getElementById('clg-progress');
-            if (el) el.style.width = total > 0 ? ((marcados / total) * 100) + '%' : '0%';
+            if (el) el.style.width = ((m / t) * 100) + '%';
         }
 
         function obtenerGPS(gpsId, mapaId) {
@@ -3300,16 +3200,11 @@
             const suc = document.getElementById('clg-sucursal').value;
             if (!extintorId || !inspector || !suc) return alert('Completá todos los campos');
 
-            const ext = datosExtintores[extintorId];
             const items = {};
-            const itemsList = getChecklistItems(ext?.tipo);
             document.querySelectorAll('#clg-items .checklist-item').forEach((item, i) => {
-                const sel = item.querySelector('.sel-ok, .sel-nook, .sel-na');
-                const nombre = itemsList[i] || 'Item ' + (i+1);
-                items[nombre] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : sel.classList.contains('sel-nook') ? 'NO OK' : 'N/A') : 'No verificado';
+                const sel = item.querySelector('.sel-ok,.sel-nook');
+                items[CHECKLIST_ITEMS[i]] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : 'NO OK') : 'No verificado';
             });
-
-            const bie = document.getElementById('clg-bie').value;
 
             let fotoURL = '';
             const fi = document.getElementById('clg-foto');
@@ -3328,7 +3223,6 @@
                 tipo: 'checklist',
                 inspector,
                 items,
-                bie,
                 observaciones: document.getElementById('clg-obs').value.trim(),
                 fotoURL,
                 gps: gpsText.includes('Obteniendo') ? '' : gpsText,
@@ -3340,8 +3234,7 @@
             document.getElementById('clg-obs').value = '';
             document.getElementById('clg-foto').value = '';
             document.getElementById('clg-inspector').value = '';
-            document.querySelectorAll('#clg-items button').forEach(b => b.classList.remove('sel-ok', 'sel-nook', 'sel-na'));
-            document.getElementById('clg-bie').value = 'OK';
+            document.querySelectorAll('#clg-items button').forEach(b => b.classList.remove('sel-ok', 'sel-nook'));
             actualizarProgresoCLG();
         }
 
@@ -3372,7 +3265,7 @@
         }
 
         // ============================================================
-        // EXPORTAR CSV (MEJORADO v2.5)
+        // EXPORTAR CSV (MEJORADO v2.4)
         // ============================================================
         async function exportarCSVHistorial() {
             const btn = event?.target || document.activeElement;
@@ -3384,13 +3277,15 @@
                 const snapshot = await db.ref('extintores').once('value');
                 const extintores = snapshot.val() || {};
 
+                // Usamos punto y coma como separador para mejor compatibilidad con Excel
                 const sep = ';';
-                let csv = '\uFEFF';
-                csv += 'Sucursal' + sep + 'N° Extintor' + sep + 'Ubicación' + sep + 'Tipo' + sep + 'Tamaño' + sep + 'Vence' +
-                    sep + 'Estado' + sep + 'Cartel' + sep + 'GPS\n';
+                let csv = '\uFEFF'; // BOM para UTF-8
+                csv += 'Sucursal' + sep + 'N° Extintor' + sep + 'Ubicación' + sep + 'Tipo' + sep + 'Vence' + sep + 'Estado' +
+                    sep + 'GPS\n';
 
                 Object.entries(extintores).forEach(([id, d]) => {
                     const estado = obtenerEstadoVencimiento(d.fechaProxima);
+                    // Formatear fecha a dd/MM/yyyy
                     let fechaFormateada = '';
                     if (d.fechaProxima) {
                         const partes = d.fechaProxima.split('-');
@@ -3404,10 +3299,8 @@
                     csv += `"${d.numero || ''}"` + sep;
                     csv += `"${d.ubicacion || ''}"` + sep;
                     csv += `"${d.tipo || ''}"` + sep;
-                    csv += `"${d.tamano || ''}"` + sep;
                     csv += `"${fechaFormateada}"` + sep;
                     csv += `"${estado.texto}"` + sep;
-                    csv += `"${d.cartel || 'No especificado'}"` + sep;
                     csv += `"${gpsText}"\n`;
                 });
 
@@ -3426,8 +3319,10 @@
             }
         }
 
+        // Función auxiliar para limpiar GPS
         function limpiarGPS(gps) {
             if (!gps) return '';
+            // Eliminar prefijos comunes: "📍 ", "GPS:", etc.
             let limpio = gps.replace(/^📍\s*/g, '').replace(/^GPS:\s*/g, '').trim();
             return limpio;
         }
@@ -3462,7 +3357,7 @@
         }
 
         // ============================================================
-        // DETALLE EXTINTOR (MODAL)
+        // DETALLE EXTINTOR (MODAL) con BOTÓN PDF y ELIMINAR
         // ============================================================
         function verDetalleExtintor(id) {
             const d = datosExtintores[id];
@@ -3498,7 +3393,6 @@
                     <p><strong>Ubicación:</strong> ${d.ubicacion||'N/A'}</p>
                     <p><strong>Tipo:</strong> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p>
                     <p><strong>Vence:</strong> ${d.fechaProxima||'N/A'} <span style="color:${colorEstado};font-weight:700;">(${estado.texto})</span></p>
-                    <p><strong>Cartel:</strong> ${d.cartel||'No especificado'}</p>
                     ${d.gps ? `<p><strong>📍 GPS:</strong> ${d.gps}</p>` : ''}
                     ${d.coordenadas ? `<p><strong>📍 Coordenadas:</strong> ${d.coordenadas.lat}, ${d.coordenadas.lng}</p>` : ''}
                     ${d.observaciones ? `<p><strong>Observaciones:</strong> ${d.observaciones}</p>` : ''}
@@ -3571,7 +3465,6 @@
                             <div><strong>Ubicación:</strong> ${ext.ubicacion || 'N/A'}</div>
                             <div><strong>Tipo:</strong> ${ext.tipo || 'N/A'} · ${ext.tamano || 'N/A'}</div>
                             <div><strong>Vencimiento:</strong> ${ext.fechaProxima || 'N/A'}</div>
-                            <div><strong>Cartel:</strong> ${ext.cartel || 'No especificado'}</div>
                             <div><strong>GPS:</strong> ${gpsText}</div>
                             <div><strong>Fecha informe:</strong> ${new Date().toLocaleString()}</div>
                         </div>
@@ -3579,18 +3472,17 @@
                         <h3>📋 Historial de Inspecciones</h3>
                         <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
                             <thead><tr style="background: #dc2626; color: white;">
-                                <th style="padding: 8px;">Fecha</th><th>Inspector</th><th>Resultado</th><th>BIE</th><th>Observaciones</th>
+                                <th style="padding: 8px;">Fecha</th><th>Inspector</th><th>Resultado</th><th>Observaciones</th>
                             </tr></thead>
                             <tbody>
                                 ${historial.length > 0 ? historial.map(c => `
                                     <tr style="border-bottom: 1px solid #ddd;">
                                         <td>${new Date(c.fecha).toLocaleDateString()}</td>
                                         <td>${c.inspector || 'N/A'}</td>
-                                        <td>${Object.values(c.items||{}).every(v=>v==='OK' || v==='N/A') ? '✅ OK' : '❌ Con fallas'}</td>
-                                        <td>${c.bie || 'N/A'}</td>
+                                        <td>${Object.values(c.items||{}).every(v=>v==='OK') ? '✅ OK' : '❌ Con fallas'}</td>
                                         <td>${c.observaciones || ''}</td>
                                     </tr>
-                                `).join('') : '<tr><td colspan="5">Sin inspecciones registradas</td></tr>'}
+                                `).join('') : '<tr><td colspan="4">Sin inspecciones registradas</td></tr>'}
                             </tbody>
                         </table>
                         <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 15px; display: flex; justify-content: space-between;">
@@ -3769,16 +3661,12 @@
             setTimeout(() => verFichaPublica(), 500);
         }
 
-        console.log('🔥 Gestión de Extintores - SuperSpuma (v2.5)');
+        console.log('🔥 Gestión de Extintores - SuperSpuma (v2.4)');
         console.log('📱 Diseño moderno con navegación inferior y cards responsivas');
         console.log('📄 Reportes PDF mejorados con todos los datos');
         console.log('✅ Botones de ficha pública funcionando correctamente');
         console.log('📊 CSV mejorado: formato limpio y ordenado');
         console.log('🔑 Contraseña: 1234');
-        console.log('➕ Nuevos tamaños: 3.5kg, 4kg, 6kg y 60kg (reemplazo de 50kg)');
-        console.log('🏷️ Campo "Cartel" agregado');
-        console.log('🧯 Tipo K agregado');
-        console.log('✅ Checklist: Manómetro N/A para CO2, verificación BIE');
     </script>
 
 </body>
