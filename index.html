@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <!-- 🔥 Meta tags anti-caché -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>SuperSpuma · Gestión de Extintores v2.6</title>
+    <title>SuperSpuma · Gestión de Extintores v2.5</title>
 
     <!-- PWA Manifest embebido -->
     <script>
@@ -16,7 +12,7 @@
                 "name": "SuperSpuma · Gestión de Extintores",
                 "short_name": "GestionExt",
                 "description": "Sistema de gestión de extintores SuperSpuma",
-                "start_url": "index.html?v=2.6",
+                "start_url": "index.html",
                 "display": "standalone",
                 "background_color": "#f8fafc",
                 "theme_color": "#dc2626",
@@ -62,7 +58,7 @@
 
     <style>
         /* ============================================================
-           RESET & BASE (igual que antes, sin cambios)
+           RESET & BASE
            ============================================================ */
         * {
             margin: 0;
@@ -1539,12 +1535,11 @@
 
 <body>
 
-    <!-- App Header -->
     <header class="app-header">
         <div class="logo">
             <img src="LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma" />
             <div>
-                <h1>Super<span>Spuma</span> <span class="version-badge">v2.6</span></h1>
+                <h1>Super<span>Spuma</span> <span class="version-badge">v2.5</span></h1>
                 <small>Gestión de Extintores</small>
             </div>
         </div>
@@ -1558,9 +1553,8 @@
         </div>
     </header>
 
-    <!-- Contenido principal (igual que en v2.5, sin cambios) -->
     <main class="app-container">
-        <!-- Vista de Sucursales -->
+
         <section id="vista-sucursales" class="vista vista-activa">
             <div class="grid-sucursales" id="grid-sucursales-container">
                 <p class="empty-state">Cargando extintores...</p>
@@ -1577,7 +1571,6 @@
             </div>
         </section>
 
-        <!-- Vista de Panel de Sucursal (con todas las pestañas) -->
         <section id="vista-panel-sucursal" class="vista">
             <div class="sucursal-header" id="sucursal-header"></div>
             <div class="tabs-sucursal" id="tabs-sucursal">
@@ -1589,7 +1582,6 @@
                 <button onclick="mostrarTabSucursal('etiquetas')">🏷️ Etiquetas</button>
             </div>
 
-            <!-- Tab Extintores -->
             <div id="tab-extintores" class="tab-sucursal activo">
                 <div class="tabla-container">
                     <div class="flex-between mb-16">
@@ -1617,7 +1609,6 @@
                 </div>
             </div>
 
-            <!-- Tab Agregar -->
             <div id="tab-agregar" class="tab-sucursal">
                 <div class="form-card">
                     <h3>➕ Agregar Extintor</h3>
@@ -1688,7 +1679,6 @@
                 </div>
             </div>
 
-            <!-- Tab Checklist -->
             <div id="tab-checklist" class="tab-sucursal">
                 <div class="form-card">
                     <h3>✅ Checklist de Inspección</h3>
@@ -1735,7 +1725,6 @@
                 </div>
             </div>
 
-            <!-- Tab Historial CL -->
             <div id="tab-historial-cl" class="tab-sucursal">
                 <div class="tabla-container">
                     <h3>📋 Historial de Checklists</h3>
@@ -1757,7 +1746,6 @@
                 </div>
             </div>
 
-            <!-- Tab Escanear -->
             <div id="tab-escanear" class="tab-sucursal">
                 <div class="tabla-container">
                     <h3>📷 Escanear QR</h3>
@@ -1772,7 +1760,6 @@
                 </div>
             </div>
 
-            <!-- Tab Etiquetas -->
             <div id="tab-etiquetas" class="tab-sucursal">
                 <div class="tabla-container">
                     <h3>🏷️ Etiquetas para Imprimir</h3>
@@ -1785,7 +1772,6 @@
             </div>
         </section>
 
-        <!-- Vista Historial Global -->
         <section id="vista-historial" class="vista">
             <div class="tabla-container">
                 <h3>📋 Historial de Vencimientos</h3>
@@ -1812,7 +1798,6 @@
             </div>
         </section>
 
-        <!-- Vista Checklist Global -->
         <section id="vista-checklist-global" class="vista">
             <div class="form-card">
                 <h3>✅ Checklist Global</h3>
@@ -1864,9 +1849,9 @@
                 </form>
             </div>
         </section>
+
     </main>
 
-    <!-- Navegación inferior -->
     <nav class="bottom-nav" id="bottomNav">
         <button class="nav-item active" data-vista="sucursales" onclick="navegarA('sucursales')">
             <i data-lucide="home"></i>
@@ -1892,7 +1877,6 @@
         </button>
     </nav>
 
-    <!-- Banner de instalación PWA -->
     <div class="install-banner" id="installBanner">
         <div class="install-text">
             <strong>📱 Instalar Gestión de Extintores</strong>
@@ -1907,7 +1891,6 @@
         <i data-lucide="download"></i> Instalar App
     </button>
 
-    <!-- Modales -->
     <div class="modal-overlay" id="modal-detalle" onclick="cerrarModalDetalle()">
         <div class="modal" onclick="event.stopPropagation()">
             <div id="modal-detalle-contenido"></div>
@@ -1933,7 +1916,6 @@
         </div>
     </div>
 
-    <!-- ========== JAVASCRIPT (todo el código funcional) ========== -->
     <script>
         // ============================================================
         // CONFIGURACIÓN FIREBASE
@@ -1953,11 +1935,12 @@
         const PASSWORD_MAESTRA = '1234';
 
         // ============================================================
-        // DATOS GLOBALES
+        // DATOS
         // ============================================================
         const SUCURSALES = {
             'villeta': { nombre: 'Villeta (Planta Industrial)', direccion: 'Ruta Ypané-Villeta' }
         };
+        // Items base del checklist (Manómetro se manejará dinámicamente)
         const CHECKLIST_ITEMS_BASE = ['Manguera', 'Precinto', 'Boquilla', 'Etiqueta', 'Gatillo', 'Pintura', 'Soporte'];
         let datosExtintores = {},
             datosChecklists = {},
@@ -1993,17 +1976,13 @@
             return dias >= 0 && dias <= 30;
         }
 
+        // Obtener items de checklist según tipo (CO2 no tiene manómetro)
         function getChecklistItems(tipo) {
             const items = [...CHECKLIST_ITEMS_BASE];
             if (tipo !== 'CO2') {
                 items.unshift('Manómetro');
             }
             return items;
-        }
-
-        function limpiarGPS(gps) {
-            if (!gps) return '';
-            return gps.replace(/^📍\s*/g, '').replace(/^GPS:\s*/g, '').trim();
         }
 
         // ============================================================
@@ -2967,7 +2946,7 @@
             if (!tbody) return;
             tbody.innerHTML = items.map(c => {
                 const ext = datosExtintores[c.extintorId];
-                const ok = Object.values(c.items || {}).every(v => v === 'OK' || v === 'N/A');
+                const ok = Object.values(c.items || {}).every(v => v === 'OK');
                 const bieStatus = c.bie || 'N/A';
                 return `<tr>
                         <td>${new Date(c.fecha).toLocaleDateString()}</td>
@@ -2985,7 +2964,7 @@
                 .filter(c => c.tipo === 'checklist' && c.fecha === fecha && c.extintorId === extintorId)[0];
             if (!cl) return;
             const ext = datosExtintores[cl.extintorId];
-            const ok = Object.values(cl.items || {}).every(v => v === 'OK' || v === 'N/A');
+            const ok = Object.values(cl.items || {}).every(v => v === 'OK');
 
             let h = `<h3>📋 Detalle de Checklist</h3>
                     <table style="width:100%;margin:12px 0;">
@@ -3021,7 +3000,7 @@
             if (!cl) return;
             const ext = datosExtintores[cl.extintorId];
             const suc = SUCURSALES[cl.sucursal]?.nombre || cl.sucursal;
-            const ok = Object.values(cl.items || {}).every(v => v === 'OK' || v === 'N/A');
+            const ok = Object.values(cl.items || {}).every(v => v === 'OK');
 
             let texto = `🧯 *CHECKLIST SUPERSPUMA*%0A%0A`;
             texto += `📅 *Fecha:* ${new Date(cl.fecha).toLocaleString()}%0A`;
@@ -3086,7 +3065,7 @@
             html += `</div>`;
 
             html += `<h4>⚠️ Próximos a vencer (15 días)</h4><div>${urgentes.length > 0 ? urgentes.map(e => `<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;">🔴 ${e.numero || 'N/A'} - ${e.ubicacion||'N/A'} - ${e.tipo||''} - Vence: ${e.fechaProxima||'N/A'}</div>`).join('') : '<p style="color:#22c55e;">✅ No hay extintores próximos a vencer</p>'}</div>`;
-            html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK' || v === 'N/A'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.numero || ex?.ubicacion || c.extintorId.slice(0,8)} - ${c.inspector} - <span style="color:${o?'#22c55e':'#dc2626'};">${o?'✅ OK':'❌ Fallas'}</span> - BIE: ${c.bie||'N/A'}</div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
+            html += `<h4>📋 Últimos Checklists</h4><div>${ultimosCL.length > 0 ? ultimosCL.map(c => { const ex = datosExtintores[c.extintorId]; const o = Object.values(c.items||{}).every(v => v === 'OK'); return `<div style="padding:4px 0;font-size:11px;">${new Date(c.fecha).toLocaleDateString()} - ${ex?.numero || ex?.ubicacion || c.extintorId.slice(0,8)} - ${c.inspector} - <span style="color:${o?'#22c55e':'#dc2626'};">${o?'✅ OK':'❌ Fallas'}</span> - BIE: ${c.bie||'N/A'}</div>`; }).join('') : '<p>Sin checklists</p>'}</div>`;
 
             const container = document.getElementById('visualizar-contenido');
             if (container) container.innerHTML = html;
@@ -3447,6 +3426,12 @@
             }
         }
 
+        function limpiarGPS(gps) {
+            if (!gps) return '';
+            let limpio = gps.replace(/^📍\s*/g, '').replace(/^GPS:\s*/g, '').trim();
+            return limpio;
+        }
+
         // ============================================================
         // BORRAR SOLO INSPECCIONES (con contraseña)
         // ============================================================
@@ -3475,8 +3460,6 @@
                 alert('❌ Error al borrar las inspecciones. Intentá de nuevo.');
             }
         }
-
-        function cerrarModalPassword() { document.getElementById('modal-password').style.display = 'none'; }
 
         // ============================================================
         // DETALLE EXTINTOR (MODAL)
@@ -3555,6 +3538,8 @@
                 }
             };
         }
+
+        function cerrarModalPassword() { document.getElementById('modal-password').style.display = 'none'; }
 
         // ============================================================
         // GENERAR INFORME PDF (CORREGIDO)
@@ -3640,7 +3625,7 @@
         }
 
         // ============================================================
-        // ALERTAS DE VENCIMIENTO
+        // ALERTAS DE VENCIMIENTO (SIN POP-UP)
         // ============================================================
         if ('Notification' in window && Notification.permission === 'default') {
             Notification.requestPermission();
@@ -3784,7 +3769,7 @@
             setTimeout(() => verFichaPublica(), 500);
         }
 
-        console.log('🔥 Gestión de Extintores - SuperSpuma (v2.6)');
+        console.log('🔥 Gestión de Extintores - SuperSpuma (v2.5)');
         console.log('📱 Diseño moderno con navegación inferior y cards responsivas');
         console.log('📄 Reportes PDF mejorados con todos los datos');
         console.log('✅ Botones de ficha pública funcionando correctamente');
@@ -3794,7 +3779,7 @@
         console.log('🏷️ Campo "Cartel" agregado');
         console.log('🧯 Tipo K agregado');
         console.log('✅ Checklist: Manómetro N/A para CO2, verificación BIE');
-        console.log('🔄 Versión 2.6: meta tags anti-caché para forzar actualización');
     </script>
+
 </body>
 </html>
