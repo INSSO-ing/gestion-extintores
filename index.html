@@ -58,7 +58,7 @@
 
     <style>
         /* ============================================================
-           RESET & BASE
+           RESET & BASE (igual que en index 34)
            ============================================================ */
         * {
             margin: 0;
@@ -1479,6 +1479,9 @@
             }
         }
 
+        /* ============================================================
+           MEJORAS PARA MÓVILES (botones visibles)
+           ============================================================ */
         @media (max-width: 480px) {
             .app-header .logo h1 {
                 font-size: 16px;
@@ -1520,6 +1523,28 @@
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
+            /* Botones en modal */
+            .modal .btn {
+                font-size: 12px;
+                padding: 10px 12px;
+                min-width: 60px;
+                flex: 1 1 40%;
+            }
+            .modal .flex-wrap {
+                gap: 6px;
+            }
+            /* Botones de acción en tabla móvil */
+            .tabla-extintores .extintor-card .acciones button {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+            /* Tabla de escritorio en móvil: ocultar */
+            .tabla-extintores-table {
+                display: none;
+            }
+            .tabla-extintores {
+                display: flex;
+            }
         }
 
         @media (min-width: 768px) {
@@ -1532,7 +1557,6 @@
         }
     </style>
 </head>
-
 <body>
 
     <header class="app-header">
@@ -1918,7 +1942,7 @@
 
     <script>
         // ============================================================
-        // CONFIGURACIÓN FIREBASE
+        // CONFIGURACIÓN FIREBASE (igual que antes)
         // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyArNANQ-R-RsiMJz8w401pLkwmNhxXW9UY",
@@ -1935,12 +1959,11 @@
         const PASSWORD_MAESTRA = '1234';
 
         // ============================================================
-        // DATOS
+        // DATOS (igual que antes)
         // ============================================================
         const SUCURSALES = {
             'villeta': { nombre: 'Villeta (Planta Industrial)', direccion: 'Ruta Ypané-Villeta' }
         };
-        // Items base del checklist (Manómetro se manejará dinámicamente)
         const CHECKLIST_ITEMS_BASE = ['Manguera', 'Precinto', 'Boquilla', 'Etiqueta', 'Gatillo', 'Pintura', 'Soporte'];
         let datosExtintores = {},
             datosChecklists = {},
@@ -1951,7 +1974,7 @@
             coordenadasActuales = null;
 
         // ============================================================
-        // FUNCIONES AUXILIARES
+        // FUNCIONES AUXILIARES (iguales)
         // ============================================================
         function calcularDiasRestantes(fecha) {
             if (!fecha) return Infinity;
@@ -1976,7 +1999,6 @@
             return dias >= 0 && dias <= 30;
         }
 
-        // Obtener items de checklist según tipo (CO2 no tiene manómetro)
         function getChecklistItems(tipo) {
             const items = [...CHECKLIST_ITEMS_BASE];
             if (tipo !== 'CO2') {
@@ -1986,7 +2008,25 @@
         }
 
         // ============================================================
-        // PWA INSTALACIÓN
+        // SUBIR FOTO A IMGBB SIN COMPRESIÓN (tal como funciona en index 35)
+        // ============================================================
+        async function subirFotoImgBB(file, nombre) {
+            const fd = new FormData();
+            fd.append('image', file, nombre || file.name);
+            try {
+                const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: fd });
+                const d = await r.json();
+                if (d.success) return d.data.url;
+                // Si falla, lanzamos el error con el mensaje de ImgBB
+                throw new Error(d.error?.message || 'Error desconocido al subir a ImgBB');
+            } catch (error) {
+                console.error('Error en subirFotoImgBB:', error);
+                throw error; // Re-lanzamos para que el llamador lo maneje
+            }
+        }
+
+        // ============================================================
+        // PWA INSTALACIÓN (igual)
         // ============================================================
         let deferredPrompt = null;
         const installBanner = document.getElementById('installBanner');
@@ -2029,7 +2069,7 @@
         });
 
         // ============================================================
-        // QR / FICHA PÚBLICA
+        // QR / FICHA PÚBLICA (igual que antes)
         // ============================================================
         function generarQRParaExtintor(extintorId, containerId, mostrarLoading = true) {
             const container = document.getElementById(containerId);
@@ -2169,7 +2209,7 @@
         }
 
         // ============================================================
-        // FUNCIONES PRINCIPALES
+        // FUNCIONES PRINCIPALES (iguales)
         // ============================================================
         db.ref('.info/connected').on('value', snap => {
             document.getElementById('conexion-dot')?.style.setProperty('background', snap.val() ? '#22c55e' : '#dc2626');
@@ -2223,7 +2263,7 @@
         }
 
         // ============================================================
-        // NAVEGACIÓN INFERIOR
+        // NAVEGACIÓN INFERIOR (igual)
         // ============================================================
         function navegarA(vista) {
             detenerEscaner();
@@ -2275,7 +2315,7 @@
         }
 
         // ============================================================
-        // VISTAS
+        // VISTAS (iguales)
         // ============================================================
         function cargarGridSucursales() {
             const container = document.getElementById('grid-sucursales-container');
@@ -2386,7 +2426,7 @@
         }
 
         // ============================================================
-        // EXTINTORES (TABLA + CARDS)
+        // EXTINTORES (TABLA + CARDS) (igual)
         // ============================================================
         function cargarExtintoresSucursal() {
             if (!sucursalActiva) return;
@@ -2470,7 +2510,7 @@
         }
 
         // ============================================================
-        // PILLS PARA TAMAÑO
+        // PILLS PARA TAMAÑO (igual)
         // ============================================================
         function initTamanoPills() {
             const select = document.getElementById('form-tamano');
@@ -2498,7 +2538,7 @@
         }
 
         // ============================================================
-        // AGREGAR EXTINTOR (con campo cartel y nuevo tamaño)
+        // AGREGAR EXTINTOR (con mejor manejo de errores en foto)
         // ============================================================
         async function agregarExtintor(e) {
             e.preventDefault();
@@ -2521,8 +2561,10 @@
                 try {
                     fotoURL = await subirFotoImgBB(fotoFile, `extintor_${Date.now()}`);
                 } catch (error) {
+                    // Mostramos el error específico pero continuamos
                     console.error('Error al subir foto:', error);
-                    alert('⚠️ Error al subir la foto, continuando sin ella');
+                    alert('⚠️ Error al subir la foto: ' + error.message + '\nEl extintor se guardará sin foto.');
+                    // No se detiene el flujo
                 }
             }
 
@@ -2549,6 +2591,7 @@
                 const id = ref.key;
                 await ref.set(nuevoExtintor);
                 alert('✅ Extintor agregado correctamente');
+                // Resetear campos
                 document.getElementById('form-numero').value = '';
                 document.getElementById('form-ubicacion').value = '';
                 document.getElementById('form-fecha').value = '';
@@ -2570,6 +2613,7 @@
         function editarExtintor(id) {
             const d = datosExtintores[id];
             if (!d) return;
+            // Cargar datos en el formulario
             document.getElementById('form-numero').value = d.numero || '';
             document.getElementById('form-ubicacion').value = d.ubicacion || '';
             document.getElementById('form-tipo').value = d.tipo || 'PQS';
@@ -2613,7 +2657,7 @@
                     fotoURL = await subirFotoImgBB(fotoFile, `extintor_${Date.now()}`);
                 } catch (error) {
                     console.error('Error al subir foto:', error);
-                    alert('⚠️ Error al subir la foto, manteniendo la anterior');
+                    alert('⚠️ Error al subir la foto: ' + error.message + '\nManteniendo la anterior.');
                 }
             }
 
@@ -2663,7 +2707,7 @@
         }
 
         // ============================================================
-        // FICHA PÚBLICA (CONSULTA DIRECTA A FIREBASE SI NO ESTÁ LOCAL)
+        // FICHA PÚBLICA (CONSULTA DIRECTA A FIREBASE)
         // ============================================================
         function verFichaPublica() {
             const params = new URLSearchParams(window.location.search);
@@ -2826,7 +2870,7 @@
         }
 
         // ============================================================
-        // CHECKLIST
+        // CHECKLIST (igual que antes, solo se ajusta manejo de fotos)
         // ============================================================
         function cargarSelectExtintoresCL() {
             if (!sucursalActiva) return;
@@ -2897,7 +2941,6 @@
                 items[nombre] = sel ? (sel.classList.contains('sel-ok') ? 'OK' : sel.classList.contains('sel-nook') ? 'NO OK' : 'N/A') : 'No verificado';
             });
 
-            // BIE
             const bie = document.getElementById('cl-bie').value;
 
             let fotoURL = '';
@@ -2905,7 +2948,10 @@
             if (fi.files[0]) {
                 try {
                     fotoURL = await subirFotoImgBB(fi.files[0], `cl_${extintorId}_${Date.now()}`);
-                } catch (err) { console.error(err); }
+                } catch (err) {
+                    console.error('Error al subir foto en checklist:', err);
+                    alert('⚠️ Error al subir la foto: ' + err.message + '\nEl checklist se guardará sin foto.');
+                }
             }
 
             const gpsText = document.getElementById('cl-gps').textContent;
@@ -3072,7 +3118,7 @@
         }
 
         // ============================================================
-        // ESCANER QR
+        // ESCANER QR (igual)
         // ============================================================
         function iniciarEscaner() {
             detenerEscaner();
@@ -3127,7 +3173,7 @@
         }
 
         // ============================================================
-        // ETIQUETAS
+        // ETIQUETAS (igual)
         // ============================================================
         function generarEtiquetas() {
             if (!sucursalActiva) return;
@@ -3213,7 +3259,7 @@
         }
 
         // ============================================================
-        // CHECKLIST GLOBAL
+        // CHECKLIST GLOBAL (igual)
         // ============================================================
         function cargarSelectCLG() {
             const sel = document.getElementById('clg-sucursal');
@@ -3316,7 +3362,10 @@
             if (fi.files[0]) {
                 try {
                     fotoURL = await subirFotoImgBB(fi.files[0], `clg_${extintorId}_${Date.now()}`);
-                } catch (err) { console.error(err); }
+                } catch (err) {
+                    console.error('Error al subir foto en checklist global:', err);
+                    alert('⚠️ Error al subir la foto: ' + err.message + '\nEl checklist se guardará sin foto.');
+                }
             }
 
             const gpsText = document.getElementById('clg-gps').textContent;
@@ -3346,7 +3395,7 @@
         }
 
         // ============================================================
-        // HISTORIAL GLOBAL
+        // HISTORIAL GLOBAL (igual)
         // ============================================================
         function cargarHistorial() {
             const tbody = document.getElementById('tabla-historial');
@@ -3372,7 +3421,7 @@
         }
 
         // ============================================================
-        // EXPORTAR CSV (MEJORADO v2.5)
+        // EXPORTAR CSV (MEJORADO v2.5) (igual)
         // ============================================================
         async function exportarCSVHistorial() {
             const btn = event?.target || document.activeElement;
@@ -3433,7 +3482,7 @@
         }
 
         // ============================================================
-        // BORRAR SOLO INSPECCIONES (con contraseña)
+        // BORRAR SOLO INSPECCIONES (con contraseña) (igual)
         // ============================================================
         function pedirPasswordBorrarHistorial() {
             if (!confirm('⚠️ ¿Estás seguro de que deseas eliminar TODOS los registros de inspección (checklists)? Los extintores NO se eliminarán.')) {
@@ -3462,7 +3511,7 @@
         }
 
         // ============================================================
-        // DETALLE EXTINTOR (MODAL)
+        // DETALLE EXTINTOR (MODAL) CON BOTÓN DE EDITAR
         // ============================================================
         function verDetalleExtintor(id) {
             const d = datosExtintores[id];
@@ -3507,6 +3556,7 @@
                     <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
                         <a href="${window.location.origin + window.location.pathname}?id=${id}" target="_blank" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">🔗 Ver ficha de extintor</a>
                         <button class="btn btn-success" style="flex:1;" onclick="generarInformePDF('${id}')">📄 Exportar PDF</button>
+                        <button class="btn btn-primary" style="flex:1;" onclick="pedirPasswordYEditar('${id}')">✏️ Editar</button>
                         <button class="btn btn-danger" style="flex:1;" onclick="pedirPasswordEliminar('${id}')">🗑️ Eliminar</button>
                     </div>
                 `;
@@ -3519,10 +3569,21 @@
             }, 200);
         }
 
+        // Función para pedir contraseña y editar
+        function pedirPasswordYEditar(id) {
+            const password = prompt('🔒 Ingresa la contraseña maestra para editar:');
+            if (password === PASSWORD_MAESTRA) {
+                editarExtintor(id);
+                cerrarModalDetalle();
+            } else if (password !== null) {
+                alert('❌ Contraseña incorrecta');
+            }
+        }
+
         function cerrarModalDetalle() { document.getElementById('modal-detalle').style.display = 'none'; }
 
         // ============================================================
-        // ELIMINAR (PASSWORD)
+        // ELIMINAR (PASSWORD) (igual)
         // ============================================================
         function pedirPasswordEliminar(id) {
             document.getElementById('input-password').value = '';
@@ -3542,7 +3603,7 @@
         function cerrarModalPassword() { document.getElementById('modal-password').style.display = 'none'; }
 
         // ============================================================
-        // GENERAR INFORME PDF (CORREGIDO)
+        // GENERAR INFORME PDF (CORREGIDO) (igual)
         // ============================================================
         function generarInformePDF(id) {
             const ext = datosExtintores[id];
@@ -3625,7 +3686,7 @@
         }
 
         // ============================================================
-        // ALERTAS DE VENCIMIENTO (SIN POP-UP)
+        // ALERTAS DE VENCIMIENTO (SIN POP-UP) (igual)
         // ============================================================
         if ('Notification' in window && Notification.permission === 'default') {
             Notification.requestPermission();
@@ -3662,7 +3723,7 @@
         setInterval(verificarVencimientos, 600000);
 
         // ============================================================
-        // DASHBOARD CON GRÁFICOS
+        // DASHBOARD CON GRÁFICOS (igual)
         // ============================================================
         let chartDona = null,
             chartBarras = null;
@@ -3742,23 +3803,6 @@
         }
 
         // ============================================================
-        // SUBIR FOTO (IMGBB)
-        // ============================================================
-        async function subirFotoImgBB(file, nombre) {
-            const fd = new FormData();
-            fd.append('image', file, nombre || file.name);
-            try {
-                const r = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: fd });
-                const d = await r.json();
-                if (d.success) return d.data.url;
-                throw new Error('Error al subir a ImgBB');
-            } catch (error) {
-                console.error('Error en subirFotoImgBB:', error);
-                throw error;
-            }
-        }
-
-        // ============================================================
         // INICIALIZACIÓN
         // ============================================================
         cargarDatos();
@@ -3779,6 +3823,9 @@
         console.log('🏷️ Campo "Cartel" agregado');
         console.log('🧯 Tipo K agregado');
         console.log('✅ Checklist: Manómetro N/A para CO2, verificación BIE');
+        console.log('📸 Subida de fotos SIN compresión (calidad original)');
+        console.log('✏️ Botón de editar en modal con contraseña');
+        console.log('📱 Botones de acción visibles en móviles');
     </script>
 
 </body>
