@@ -1958,7 +1958,7 @@
         const PASSWORD_MAESTRA = '1234';
 
         // ============================================================
-        // CONFIGURACIÓN DE CLOUDINARY (Nuevo método de subida)
+        // CONFIGURACIÓN DE CLOUDINARY (Subida de fotos optimizada)
         // ============================================================
         const CLOUD_NAME = "ahzhrnm0";
         const UPLOAD_PRESET = "preset_extintores";
@@ -2032,6 +2032,31 @@
             const items = [...CHECKLIST_ITEMS_BASE];
             if (tipo !== 'CO2') {
                 items.unshift('Manómetro');
+            }
+            return items;
+        }
+
+        // ============================================================
+        // FUNCIÓN DE ORDENAMIENTO GLOBAL POR NÚMERO DE EXTINTOR
+        // ============================================================
+        function ordenarPorNumero(items) {
+            // Si items es un array de objetos con estructura [id, data]
+            // soporta tanto arrays como objetos estándar.
+            if (Array.isArray(items) && items.length > 0 && Array.isArray(items[0])) {
+                // Es un array de pares [id, data]
+                items.sort((a, b) => {
+                    const numA = parseInt((a[1].numero || '').match(/\d+/)?.[0] || '0');
+                    const numB = parseInt((b[1].numero || '').match(/\d+/)?.[0] || '0');
+                    return numA - numB;
+                });
+            } else if (Array.isArray(items)) {
+                // Es un array de objetos
+                items.sort((a, b) => {
+                    // Intenta obtener el número de 'numero' o del extintor referenciado
+                    const numA = parseInt((a.numero || (datosExtintores[a.extintorId]?.numero) || '').match(/\d+/)?.[0] || '0');
+                    const numB = parseInt((b.numero || (datosExtintores[b.extintorId]?.numero) || '').match(/\d+/)?.[0] || '0');
+                    return numA - numB;
+                });
             }
             return items;
         }
@@ -2174,6 +2199,7 @@
         function generarQRParaSucursal(sucursalId) {
             if (!sucursalId) return;
             const extintores = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalId);
+            ordenarPorNumero(extintores); // ORDENADO
             extintores.forEach(([id], index) => {
                 setTimeout(() => {
                     generarQRParaExtintor(id, `qr-desk-${id}`, true);
@@ -2437,16 +2463,13 @@
         }
 
         // ============================================================
-        // EXTINTORES (TABLA + CARDS)
+        // EXTINTORES (TABLA + CARDS) - ORDENADOS
         // ============================================================
         function cargarExtintoresSucursal() {
             if (!sucursalActiva) return;
             let items = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalActiva);
-            items.sort((a, b) => {
-                const diasA = calcularDiasRestantes(a[1].fechaProxima);
-                const diasB = calcularDiasRestantes(b[1].fechaProxima);
-                return diasA - diasB;
-            });
+            // ORDENAMIENTO NUMÉRICO ESTRICTO
+            ordenarPorNumero(items);
 
             const tbodyDesktop = document.getElementById('tabla-extintores-sucursal-desktop');
             if (tbodyDesktop) {
@@ -2876,17 +2899,17 @@
         }
 
         // ============================================================
-        // CHECKLIST (CON CLOUDINARY)
+        // CHECKLIST (CON CLOUDINARY) - ORDENADO
         // ============================================================
         function cargarSelectExtintoresCL() {
             if (!sucursalActiva) return;
             const sel = document.getElementById('cl-extintor');
             if (!sel) return;
             sel.innerHTML = '<option value="">Seleccionar...</option>';
-            Object.entries(datosExtintores).forEach(([id, d]) => {
-                if (d.sucursal === sucursalActiva) {
-                    sel.innerHTML += `<option value="${id}" data-tipo="${d.tipo}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
-                }
+            let entries = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalActiva);
+            ordenarPorNumero(entries); // ORDENADO
+            entries.forEach(([id, d]) => {
+                sel.innerHTML += `<option value="${id}" data-tipo="${d.tipo}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
             });
         }
 
@@ -2987,16 +3010,20 @@
             cargarHistorialCL();
         }
 
+        // ============================================================
+        // HISTORIAL DE CHECKLIST - ORDENADO
+        // ============================================================
         function cargarHistorialCL() {
             if (!sucursalActiva) return;
-            const items = Object.values(datosChecklists)
-                .filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva)
-                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
-                .slice(0, 50);
+            let items = Object.values(datosChecklists)
+                .filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva);
+            
+            // ORDENAMIENTO POR NÚMERO DE EXTINTOR
+            ordenarPorNumero(items);
 
             const tbody = document.getElementById('tabla-historial-cl');
             if (!tbody) return;
-            tbody.innerHTML = items.map(c => {
+            tbody.innerHTML = items.slice(0, 50).map(c => {
                 const ext = datosExtintores[c.extintorId];
                 const ok = Object.values(c.items || {}).every(v => v === 'OK');
                 const bieStatus = c.bie || 'N/A';
@@ -3179,11 +3206,13 @@
         }
 
         // ============================================================
-        // ETIQUETAS
+        // ETIQUETAS - ORDENADAS
         // ============================================================
         function generarEtiquetas() {
             if (!sucursalActiva) return;
-            const items = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalActiva);
+            let items = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalActiva);
+            ordenarPorNumero(items); // ORDENADO
+
             const container = document.getElementById('etiquetas-container');
             if (!container) return;
 
@@ -3265,7 +3294,7 @@
         }
 
         // ============================================================
-        // CHECKLIST GLOBAL (CON CLOUDINARY)
+        // CHECKLIST GLOBAL (CON CLOUDINARY) - ORDENADO
         // ============================================================
         function cargarSelectCLG() {
             const sel = document.getElementById('clg-sucursal');
@@ -3281,8 +3310,10 @@
             if (!sel) return;
             sel.innerHTML = '<option value="">Seleccionar...</option>';
             if (!s) return;
-            Object.entries(datosExtintores).forEach(([id, d]) => {
-                if (d.sucursal === s) sel.innerHTML += `<option value="${id}" data-tipo="${d.tipo}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
+            let entries = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === s);
+            ordenarPorNumero(entries); // ORDENADO
+            entries.forEach(([id, d]) => {
+                sel.innerHTML += `<option value="${id}" data-tipo="${d.tipo}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
             });
         }
 
@@ -3401,12 +3432,13 @@
         }
 
         // ============================================================
-        // HISTORIAL GLOBAL
+        // HISTORIAL GLOBAL - ORDENADO (IMAGEN SOLICITADA)
         // ============================================================
         function cargarHistorial() {
             const tbody = document.getElementById('tabla-historial');
-            const items = Object.entries(datosExtintores)
-                .sort((a, b) => new Date(a[1].fechaProxima || '9999') - new Date(b[1].fechaProxima || '9999'));
+            let items = Object.entries(datosExtintores);
+            // ELIMINAMOS EL ORDEN POR FECHA Y LO CAMBIAMOS POR NÚMERO DE EXTINTOR
+            ordenarPorNumero(items);
 
             tbody.innerHTML = items.map(([id, d]) => {
                 const estado = obtenerEstadoVencimiento(d.fechaProxima);
@@ -3820,12 +3852,13 @@
 
         console.log('🔥 Gestión de Extintores - SuperSpuma (v2.6)');
         console.log('📱 Diseño moderno con navegación inferior y cards responsivas');
-        console.log('☁️ Integración de fotos mediante Cloudinary (sin errores CORS)');
+        console.log('☁️ Integración de fotos mediante Cloudinary');
+        console.log('🔢 Listas de extintores ordenadas numéricamente');
         console.log('📄 Reportes PDF mejorados con todos los datos');
         console.log('✅ Botones de ficha pública funcionando correctamente');
         console.log('📊 CSV mejorado: formato limpio y ordenado');
         console.log('🔑 Contraseña: 1234');
-        console.log('➕ Nuevos tamaños: 3.5kg, 4kg, 6kg y 60kg (reemplazo de 50kg)');
+        console.log('➕ Nuevos tamaños: 3.5kg, 4kg, 6kg y 60kg');
         console.log('🏷️ Campo "Cartel" agregado');
         console.log('🧯 Tipo K agregado');
         console.log('✅ Checklist: Manómetro N/A para CO2, verificación BIE');
