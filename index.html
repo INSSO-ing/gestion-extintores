@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>SuperSpuma · Gestión de Extintores v2.5</title>
+    <title>SuperSpuma · Gestión de Extintores v2.6</title>
 
     <!-- PWA Manifest embebido -->
     <script>
@@ -1563,7 +1563,7 @@
         <div class="logo">
             <img src="LOGO_NVO_SUPERSPUMA.webp" alt="SuperSpuma" />
             <div>
-                <h1>Super<span>Spuma</span> <span class="version-badge">v2.5</span></h1>
+                <h1>Super<span>Spuma</span> <span class="version-badge">v2.6</span></h1>
                 <small>Gestión de Extintores</small>
             </div>
         </div>
@@ -1958,57 +1958,32 @@
         const PASSWORD_MAESTRA = '1234';
 
         // ============================================================
-        // CONFIGURACIÓN DE SIRV (API REST)
+        // CONFIGURACIÓN DE CLOUDINARY (Nuevo método de subida)
         // ============================================================
-        const SIRV_API_CLIENT_ID = 'OeKLmiV4md3zrAYTKXAFHTNDBDw';
-        const SIRV_API_CLIENT_SECRET = 'S1jAqvL5YE7g6Y54GC0f6VPcnO+SnHytcOTkl0zySo8gDP/fExCpM8si39WPFUbwYqmdVqSJxqsx+Hd2W+9KJA==';
-        const BUCKET_SIRV = 'mantenimientobolpar'; // El "Balde" de tu S3
+        const CLOUD_NAME = "ahzhrnm0";
+        const UPLOAD_PRESET = "preset_extintores";
 
-        async function obtenerTokenSirv() {
-            const response = await fetch('https://api.sirv.com/v2/token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    clientId: SIRV_API_CLIENT_ID, 
-                    clientSecret: SIRV_API_CLIENT_SECRET 
-                })
-            });
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Error al obtener el token de Sirv.');
-            }
-            const data = await response.json();
-            return data.token;
-        }
+        async function subirFotoCloudinary(file) {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", UPLOAD_PRESET);
 
-        async function subirFotoSirvApi(file, nombreArchivo) {
             try {
-                const token = await obtenerTokenSirv();
-                // Genera un nombre único y lo guarda en la carpeta 'app-extintores'
-                const nombreFinal = `app-extintores/${Date.now()}_${nombreArchivo || file.name}`;
-                const urlSubida = `https://api.sirv.com/v2/files/upload?filename=${encodeURIComponent(nombreFinal)}`;
-
-                const response = await fetch(urlSubida, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': file.type
-                    },
-                    body: file
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+                    method: "POST",
+                    body: formData
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Error desconocido al subir a Sirv');
+                const data = await response.json();
+
+                if (data.secure_url) {
+                    return data.secure_url; // URL HTTPS de la foto subida
+                } else {
+                    throw new Error(data.error?.message || "Error desconocido en Cloudinary");
                 }
-
-                // Devuelve la URL pública de la imagen
-                const urlPublica = `https://s3.sirv.com/${BUCKET_SIRV}/${nombreFinal}`;
-                return urlPublica;
-
             } catch (error) {
-                console.error('Error en subirFotoSirvApi:', error);
-                throw error; // Relanzamos para que el llamador lo maneje
+                console.error("Error al conectar con Cloudinary:", error);
+                throw error;
             }
         }
 
@@ -2574,7 +2549,7 @@
         }
 
         // ============================================================
-        // AGREGAR / ACTUALIZAR EXTINTOR (CON SIRV)
+        // AGREGAR / ACTUALIZAR EXTINTOR (CON CLOUDINARY)
         // ============================================================
         async function agregarExtintor(e) {
             e.preventDefault();
@@ -2595,7 +2570,7 @@
             let fotoURL = '';
             if (fotoFile) {
                 try {
-                    fotoURL = await subirFotoSirvApi(fotoFile, `extintor_${Date.now()}`);
+                    fotoURL = await subirFotoCloudinary(fotoFile);
                 } catch (error) {
                     console.error('Error al subir foto:', error);
                     alert('⚠️ Error al subir la foto: ' + error.message + '\nEl extintor se guardará sin foto.');
@@ -2686,7 +2661,7 @@
             let fotoURL = datosExtintores[id]?.fotoURL || '';
             if (fotoFile) {
                 try {
-                    fotoURL = await subirFotoSirvApi(fotoFile, `extintor_${Date.now()}`);
+                    fotoURL = await subirFotoCloudinary(fotoFile);
                 } catch (error) {
                     console.error('Error al subir foto:', error);
                     alert('⚠️ Error al subir la foto: ' + error.message + '\nManteniendo la anterior.');
@@ -2901,7 +2876,7 @@
         }
 
         // ============================================================
-        // CHECKLIST (CON SIRV)
+        // CHECKLIST (CON CLOUDINARY)
         // ============================================================
         function cargarSelectExtintoresCL() {
             if (!sucursalActiva) return;
@@ -2978,7 +2953,7 @@
             const fi = document.getElementById('cl-foto');
             if (fi.files[0]) {
                 try {
-                    fotoURL = await subirFotoSirvApi(fi.files[0], `cl_${extintorId}_${Date.now()}`);
+                    fotoURL = await subirFotoCloudinary(fi.files[0]);
                 } catch (err) {
                     console.error('Error al subir foto en checklist:', err);
                     alert('⚠️ Error al subir la foto: ' + err.message + '\nEl checklist se guardará sin foto.');
@@ -3290,7 +3265,7 @@
         }
 
         // ============================================================
-        // CHECKLIST GLOBAL (CON SIRV)
+        // CHECKLIST GLOBAL (CON CLOUDINARY)
         // ============================================================
         function cargarSelectCLG() {
             const sel = document.getElementById('clg-sucursal');
@@ -3392,7 +3367,7 @@
             const fi = document.getElementById('clg-foto');
             if (fi.files[0]) {
                 try {
-                    fotoURL = await subirFotoSirvApi(fi.files[0], `clg_${extintorId}_${Date.now()}`);
+                    fotoURL = await subirFotoCloudinary(fi.files[0]);
                 } catch (err) {
                     console.error('Error al subir foto en checklist global:', err);
                     alert('⚠️ Error al subir la foto: ' + err.message + '\nEl checklist se guardará sin foto.');
@@ -3843,8 +3818,9 @@
             setTimeout(() => verFichaPublica(), 500);
         }
 
-        console.log('🔥 Gestión de Extintores - SuperSpuma (v2.5)');
+        console.log('🔥 Gestión de Extintores - SuperSpuma (v2.6)');
         console.log('📱 Diseño moderno con navegación inferior y cards responsivas');
+        console.log('☁️ Integración de fotos mediante Cloudinary (sin errores CORS)');
         console.log('📄 Reportes PDF mejorados con todos los datos');
         console.log('✅ Botones de ficha pública funcionando correctamente');
         console.log('📊 CSV mejorado: formato limpio y ordenado');
@@ -3853,7 +3829,6 @@
         console.log('🏷️ Campo "Cartel" agregado');
         console.log('🧯 Tipo K agregado');
         console.log('✅ Checklist: Manómetro N/A para CO2, verificación BIE');
-        console.log('📸 Subida de fotos A SIRV (API REST v2)');
         console.log('✏️ Botón de editar en modal con contraseña');
         console.log('📱 Botones de acción visibles en móviles');
     </script>
