@@ -55,6 +55,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
         /* ============================================================
@@ -251,12 +253,13 @@
             fill: var(--red-50);
         }
 
-        .bottom-nav .nav-item.scan-btn {
+        /* Botón BIE (central) con estilo similar al antiguo scan-btn */
+        .bottom-nav .nav-item.bie-btn {
             position: relative;
             top: -12px;
         }
 
-        .bottom-nav .nav-item.scan-btn .scan-wrapper {
+        .bottom-nav .nav-item.bie-btn .bie-wrapper {
             width: 56px;
             height: 56px;
             border-radius: 50%;
@@ -268,19 +271,19 @@
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .bottom-nav .nav-item.scan-btn .scan-wrapper svg {
+        .bottom-nav .nav-item.bie-btn .bie-wrapper svg {
             width: 28px;
             height: 28px;
             stroke: white;
             stroke-width: 2;
         }
 
-        .bottom-nav .nav-item.scan-btn:active .scan-wrapper {
+        .bottom-nav .nav-item.bie-btn:active .bie-wrapper {
             transform: scale(0.92);
             box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
         }
 
-        .bottom-nav .nav-item.scan-btn span {
+        .bottom-nav .nav-item.bie-btn span {
             margin-top: 4px;
         }
 
@@ -310,6 +313,341 @@
             display: block !important;
         }
 
+        /* -------------------- Estilos para BIE -------------------- */
+        .bie-form-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+        }
+
+        .bie-form-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .bie-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .bie-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        .bie-grid .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bie-grid .form-group input,
+        .bie-grid .form-group select {
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .bie-grid .form-group input:focus,
+        .bie-grid .form-group select:focus {
+            outline: none;
+            border-color: var(--red-600);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+        }
+
+        .bie-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 12px 0;
+        }
+
+        .bie-tabla th,
+        .bie-tabla td {
+            border: 1px solid var(--border);
+            padding: 8px 6px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .bie-tabla th {
+            background: var(--red-50);
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .bie-tabla .param-nombre {
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .bie-tabla select.bie-select {
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1.5px solid var(--border);
+            background: var(--bg);
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            width: 60px;
+            text-align: center;
+        }
+
+        .bie-tabla select.bie-select.val-B {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #16a34a;
+        }
+        .bie-tabla select.bie-select.val-R {
+            background: #fef9c3;
+            border-color: #f59e0b;
+            color: #a16207;
+        }
+        .bie-tabla select.bie-select.val-M {
+            background: #fef2f2;
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+
+        .bie-tabla input.bie-nota {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 12px;
+            background: var(--bg);
+            color: var(--text-primary);
+            min-width: 80px;
+        }
+
+        .bie-tabla input.bie-nota:focus {
+            outline: none;
+            border-color: var(--red-600);
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1);
+        }
+
+        .bie-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .bie-historial {
+            margin-top: 20px;
+        }
+
+        .bie-historial table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .bie-historial th,
+        .bie-historial td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .bie-historial th {
+            background: var(--bg);
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .bie-historial .badge-b {
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .bie-historial .badge-r {
+            background: #fef9c3;
+            color: #a16207;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .bie-historial .badge-m {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .bie-resumen-mini {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            align-items: center;
+            padding: 4px 12px;
+            background: var(--bg);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .bie-resumen-mini .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .bie-resumen-mini .dot.ok { background: #22c55e; }
+        .bie-resumen-mini .dot.reg { background: #f59e0b; }
+        .bie-resumen-mini .dot.mal { background: #dc2626; }
+
+        /* Menú engranaje para sectores */
+        .sector-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sector-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            background: var(--surface);
+            min-width: 200px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 10;
+            padding: 8px 0;
+            margin-top: 4px;
+            right: 0;
+        }
+
+        .sector-dropdown .dropdown-content.show {
+            display: block;
+        }
+
+        .sector-dropdown .dropdown-content .dropdown-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.1s;
+        }
+
+        .sector-dropdown .dropdown-content .dropdown-item:hover {
+            background: var(--red-50);
+        }
+
+        .sector-dropdown .dropdown-content .dropdown-item.danger {
+            color: var(--red-600);
+        }
+
+        .sector-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 6px;
+            padding: 8px;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .sector-input-group input {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            background: var(--bg);
+        }
+
+        .sector-list-eliminar {
+            margin-top: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .sector-list-eliminar .sector-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .sector-list-eliminar .sector-item button {
+            background: transparent;
+            border: none;
+            color: var(--red-600);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .bie-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .bie-tabla {
+                font-size: 11px;
+            }
+            .bie-tabla th,
+            .bie-tabla td {
+                padding: 4px;
+            }
+            .bie-tabla select.bie-select {
+                width: 50px;
+                font-size: 12px;
+            }
+            .bie-actions {
+                flex-direction: column;
+            }
+            .bie-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .bie-resumen-mini {
+                font-size: 9px;
+                padding: 2px 8px;
+                gap: 6px;
+            }
+            .sector-dropdown .dropdown-content {
+                right: auto;
+                left: 0;
+                min-width: 180px;
+            }
+        }
+
+        /* ============================================================
+           ESTILOS EXISTENTES (se mantienen igual)
+           ============================================================ */
         .grid-sucursales {
             display: grid;
             grid-template-columns: 1fr;
@@ -520,6 +858,7 @@
 
         .tabs-sucursal {
             display: flex;
+            align-items: center;
             gap: 4px;
             background: var(--surface);
             border-radius: var(--radius);
@@ -531,7 +870,7 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        .tabs-sucursal button {
+        .tabs-sucursal .tab-btn {
             flex: 0 0 auto;
             padding: 8px 16px;
             border: none;
@@ -546,15 +885,49 @@
             white-space: nowrap;
         }
 
-        .tabs-sucursal button:hover {
+        .tabs-sucursal .tab-btn:hover {
             background: var(--red-50);
             color: var(--red-600);
         }
 
-        .tabs-sucursal button.activo {
+        .tabs-sucursal .tab-btn.activo {
             background: var(--red-600);
             color: white;
             box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+        }
+
+        .bie-resumen {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            background: var(--bg);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .bie-resumen .bie-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .bie-resumen .bie-item .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .bie-resumen .bie-item .dot.ok { background: #22c55e; }
+        .bie-resumen .bie-item .dot.nook { background: #dc2626; }
+        .bie-resumen .bie-item .dot.na { background: #94a3b8; }
+        .bie-resumen .bie-item .count {
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
         .tab-sucursal {
@@ -1327,7 +1700,8 @@
         .dark-mode .sucursal-header,
         .dark-mode .tabla-container,
         .dark-mode .form-card,
-        .dark-mode .modal {
+        .dark-mode .modal,
+        .dark-mode .bie-form-card {
             background: var(--surface);
             border-color: var(--border);
         }
@@ -1339,7 +1713,11 @@
 
         .dark-mode .form-group input,
         .dark-mode .form-group select,
-        .dark-mode .form-group textarea {
+        .dark-mode .form-group textarea,
+        .dark-mode .bie-grid .form-group input,
+        .dark-mode .bie-grid .form-group select,
+        .dark-mode .bie-tabla input.bie-nota,
+        .dark-mode .bie-tabla select.bie-select {
             background: var(--bg);
             color: var(--text-primary);
             border-color: var(--border);
@@ -1350,7 +1728,7 @@
             border-color: var(--border);
         }
 
-        .dark-mode .tabs-sucursal button:not(.activo):hover {
+        .dark-mode .tabs-sucursal .tab-btn:not(.activo):hover {
             background: var(--bg);
             color: var(--red-600);
         }
@@ -1382,6 +1760,10 @@
         .dark-mode .badge.na {
             background: #1e293b;
             color: #94a3b8;
+        }
+
+        .dark-mode .bie-tabla th {
+            background: var(--bg);
         }
 
         .install-banner {
@@ -1479,9 +1861,6 @@
             }
         }
 
-        /* ============================================================
-           MEJORAS PARA MÓVILES (botones visibles)
-           ============================================================ */
         @media (max-width: 480px) {
             .app-header .logo h1 {
                 font-size: 16px;
@@ -1506,11 +1885,11 @@
                 width: 20px;
                 height: 20px;
             }
-            .bottom-nav .nav-item.scan-btn .scan-wrapper {
+            .bottom-nav .nav-item.bie-btn .bie-wrapper {
                 width: 48px;
                 height: 48px;
             }
-            .bottom-nav .nav-item.scan-btn .scan-wrapper svg {
+            .bottom-nav .nav-item.bie-btn .bie-wrapper svg {
                 width: 24px;
                 height: 24px;
             }
@@ -1523,7 +1902,6 @@
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
-            /* Botones en modal */
             .modal .btn {
                 font-size: 12px;
                 padding: 10px 12px;
@@ -1533,17 +1911,20 @@
             .modal .flex-wrap {
                 gap: 6px;
             }
-            /* Botones de acción en tabla móvil */
             .tabla-extintores .extintor-card .acciones button {
                 padding: 8px 14px;
                 font-size: 13px;
             }
-            /* Tabla de escritorio en móvil: ocultar */
             .tabla-extintores-table {
                 display: none;
             }
             .tabla-extintores {
                 display: flex;
+            }
+            .bie-resumen {
+                font-size: 8px;
+                padding: 2px 8px;
+                gap: 4px;
             }
         }
 
@@ -1554,6 +1935,113 @@
             .grid-sucursales {
                 grid-template-columns: repeat(2, 1fr);
             }
+        }
+
+        .bie-select {
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 6px;
+            border: 1.5px solid var(--border);
+            background: var(--bg);
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            min-width: 70px;
+        }
+        .bie-select:focus {
+            outline: none;
+            border-color: var(--red-600);
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+        }
+        .bie-select option {
+            background: var(--surface);
+            color: var(--text-primary);
+        }
+
+        /* Estilos para la tabla de BIEs */
+        .tabla-bies {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .tabla-bies th {
+            text-align: left;
+            padding: 8px 10px;
+            background: var(--bg);
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 10px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border);
+        }
+        .tabla-bies td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        .tabla-bies .foto-mini {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 6px;
+            background: white;
+            border: 1px solid var(--border);
+        }
+        .tabla-bies .acciones {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .tabla-bies .acciones button {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .tabla-bies .acciones button:hover {
+            background: var(--red-50);
+            color: var(--red-600);
+        }
+
+        /* Subpestañas dentro de BIE */
+        .sub-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+        .sub-tabs .sub-tab {
+            padding: 6px 16px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 20px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .sub-tabs .sub-tab:hover {
+            background: var(--red-50);
+            color: var(--red-600);
+        }
+        .sub-tabs .sub-tab.activo {
+            background: var(--red-600);
+            color: white;
+        }
+        .sub-panel {
+            display: none;
+            animation: fadeUp 0.2s ease-out;
+        }
+        .sub-panel.activo {
+            display: block;
         }
     </style>
 </head>
@@ -1579,6 +2067,7 @@
 
     <main class="app-container">
 
+        <!-- Vista Inicio -->
         <section id="vista-sucursales" class="vista vista-activa">
             <div class="grid-sucursales" id="grid-sucursales-container">
                 <p class="empty-state">Cargando extintores...</p>
@@ -1595,24 +2084,41 @@
             </div>
         </section>
 
+        <!-- Vista Panel de Sucursal -->
         <section id="vista-panel-sucursal" class="vista">
             <div class="sucursal-header" id="sucursal-header"></div>
+
+            <!-- BARRA DE PESTAÑAS CON RESUMEN BIE -->
             <div class="tabs-sucursal" id="tabs-sucursal">
-                <button class="activo" onclick="mostrarTabSucursal('extintores')">🧯 Extintores</button>
-                <button onclick="mostrarTabSucursal('agregar')">➕ Agregar</button>
-                <button onclick="mostrarTabSucursal('checklist')">✅ Checklist</button>
-                <button onclick="mostrarTabSucursal('historial-cl')">📋 Historial</button>
-                <button onclick="mostrarTabSucursal('escanear')">📷 Escanear</button>
-                <button onclick="mostrarTabSucursal('etiquetas')">🏷️ Etiquetas</button>
+                <button class="tab-btn activo" onclick="mostrarTabSucursal('extintores')">🧯 Extintores</button>
+                <button class="tab-btn" onclick="mostrarTabSucursal('agregar')">➕ Agregar</button>
+                <button class="tab-btn" onclick="mostrarTabSucursal('checklist')">✅ Checklist</button>
+                <button class="tab-btn" onclick="mostrarTabSucursal('historial-cl')">📋 Historial</button>
+                <button class="tab-btn" onclick="mostrarTabSucursal('escanear')">📷 Escanear</button>
+                <button class="tab-btn" onclick="mostrarTabSucursal('etiquetas')">🏷️ Etiquetas</button>
+                <button class="tab-btn" onclick="mostrarTabSucursal('bie')">BIE</button>  <!-- Quitado el 🧯 -->
+
+                <!-- Resumen BIE -->
+                <div class="bie-resumen" id="bieResumen">
+                    <span class="bie-item"><span class="dot ok"></span> OK <span class="count" id="bieOkCount">0</span></span>
+                    <span class="bie-item"><span class="dot nook"></span> NO OK <span class="count" id="bieNookCount">0</span></span>
+                    <span class="bie-item"><span class="dot na"></span> N/A <span class="count" id="bieNaCount">0</span></span>
+                </div>
             </div>
 
+            <!-- Pestaña Extintores -->
             <div id="tab-extintores" class="tab-sucursal activo">
                 <div class="tabla-container">
                     <div class="flex-between mb-16">
                         <h3>🧯 Extintores</h3>
-                        <button class="btn btn-primary btn-sm" onclick="mostrarTabSucursal('agregar')">
-                            <i data-lucide="plus"></i> Agregar
-                        </button>
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn btn-primary btn-sm" onclick="mostrarTabSucursal('agregar')">
+                                <i data-lucide="plus"></i> Agregar
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="navegarA('escanear')">
+                                <i data-lucide="scan-qr"></i> Escanear
+                            </button>
+                        </div>
                     </div>
                     <table class="tabla-extintores-table" id="tabla-extintores-desktop">
                         <thead>
@@ -1623,6 +2129,7 @@
                                 <th>Tipo</th>
                                 <th>Vence</th>
                                 <th>CL</th>
+                                <th>BIE</th>
                                 <th>QR</th>
                                 <th>Acciones</th>
                             </tr>
@@ -1633,6 +2140,7 @@
                 </div>
             </div>
 
+            <!-- Pestaña Agregar -->
             <div id="tab-agregar" class="tab-sucursal">
                 <div class="form-card">
                     <h3>➕ Agregar Extintor</h3>
@@ -1703,6 +2211,7 @@
                 </div>
             </div>
 
+            <!-- Pestaña Checklist -->
             <div id="tab-checklist" class="tab-sucursal">
                 <div class="form-card">
                     <h3>✅ Checklist de Inspección</h3>
@@ -1727,7 +2236,6 @@
                             <div class="fill" id="cl-progress" style="width:0%;"></div>
                         </div>
                         <div id="cl-items"></div>
-                        <!-- Verificación BIE -->
                         <div class="form-group full" style="margin-top:16px;">
                             <label><i data-lucide="fire-extinguisher"></i> Verificación BIE</label>
                             <select id="cl-bie">
@@ -1749,6 +2257,7 @@
                 </div>
             </div>
 
+            <!-- Pestaña Historial CL -->
             <div id="tab-historial-cl" class="tab-sucursal">
                 <div class="tabla-container">
                     <h3>📋 Historial de Checklists</h3>
@@ -1770,6 +2279,7 @@
                 </div>
             </div>
 
+            <!-- Pestaña Escanear -->
             <div id="tab-escanear" class="tab-sucursal">
                 <div class="tabla-container">
                     <h3>📷 Escanear QR</h3>
@@ -1784,6 +2294,7 @@
                 </div>
             </div>
 
+            <!-- Pestaña Etiquetas -->
             <div id="tab-etiquetas" class="tab-sucursal">
                 <div class="tabla-container">
                     <h3>🏷️ Etiquetas para Imprimir</h3>
@@ -1794,8 +2305,192 @@
                     <div id="etiquetas-container" class="etiqueta-container"></div>
                 </div>
             </div>
+
+            <!-- ============================================================
+            PESTAÑA BIE (NUEVA ESTRUCTURA CON SUBPESTAÑAS)
+            ============================================================ -->
+            <div id="tab-bie" class="tab-sucursal">
+                <!-- Subpestañas internas -->
+                <div class="sub-tabs">
+                    <button class="sub-tab activo" onclick="mostrarSubTabBIE('activos')">📦 Activos BIE</button>
+                    <button class="sub-tab" onclick="mostrarSubTabBIE('inspecciones')">🔍 Inspecciones</button>
+                </div>
+
+                <!-- Panel: Activos BIE -->
+                <div id="sub-bie-activos" class="sub-panel activo">
+                    <div class="bie-form-card">
+                        <h3>🧯 Gestión de Bocas de Incendio (BIE)</h3>
+                        <form onsubmit="agregarBIE(event)">
+                            <div class="bie-grid">
+                                <div class="form-group">
+                                    <label><i data-lucide="hash"></i> Número / ID *</label>
+                                    <input type="text" id="bie-numero" required placeholder="Ej: BIE-001" />
+                                </div>
+                                <div class="form-group">
+                                    <label><i data-lucide="map-pin"></i> Ubicación *</label>
+                                    <input type="text" id="bie-ubicacion" required placeholder="Pasillo principal" />
+                                </div>
+                                <div class="form-group">
+                                    <label><i data-lucide="tag"></i> Tipo</label>
+                                    <select id="bie-tipo">
+                                        <option value="BIE 45">BIE 45</option>
+                                        <option value="BIE 45R">BIE 45R</option>
+                                        <option value="BIE 100">BIE 100</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i data-lucide="calendar"></i> Próxima inspección *</label>
+                                    <input type="date" id="bie-fecha" required />
+                                </div>
+                                <div class="form-group full">
+                                    <label><i data-lucide="camera"></i> Foto (opcional)</label>
+                                    <input type="file" id="bie-foto" accept="image/*" capture="environment" />
+                                </div>
+                                <div class="form-group full">
+                                    <label><i data-lucide="locate-fixed"></i> GPS</label>
+                                    <div id="bie-gps" class="gps-coordenadas">Obteniendo ubicación...</div>
+                                    <div id="bie-mapa"></div>
+                                </div>
+                                <div class="form-group full">
+                                    <label><i data-lucide="clipboard"></i> Observaciones</label>
+                                    <textarea id="bie-obs" rows="2" placeholder="Notas adicionales..."></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">💾 Guardar BIE</button>
+                        </form>
+                    </div>
+
+                    <!-- Tabla de BIEs -->
+                    <div class="tabla-container">
+                        <h3>📋 Lista de BIEs</h3>
+                        <div style="overflow-x:auto;">
+                            <table class="tabla-bies" id="tabla-bies">
+                                <thead>
+                                    <tr>
+                                        <th>Foto</th>
+                                        <th>N°</th>
+                                        <th>Ubicación</th>
+                                        <th>Tipo</th>
+                                        <th>Próx. Inspección</th>
+                                        <th>Estado</th>
+                                        <th>QR</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-bies-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel: Inspecciones BIE -->
+                <div id="sub-bie-inspecciones" class="sub-panel">
+                    <div class="bie-form-card">
+                        <h3>🔍 Verificación de Boca de Incendio (BIE)</h3>
+
+                        <!-- Datos de la inspección -->
+                        <div class="bie-grid">
+                            <div class="form-group">
+                                <label><i data-lucide="calendar"></i> Fecha</label>
+                                <input type="date" id="bieFecha" />
+                            </div>
+                            <div class="form-group">
+                                <label><i data-lucide="clock"></i> Hora</label>
+                                <input type="time" id="bieHora" step="60" />
+                            </div>
+                            <div class="form-group full">
+                                <label><i data-lucide="map-pin"></i> Sector / Punto de BIE</label>
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    <select id="bieSector" style="flex:1;">
+                                        <option value="">Seleccionar sector...</option>
+                                    </select>
+                                    <!-- Menú engranaje -->
+                                    <div class="sector-dropdown">
+                                        <button class="btn btn-secondary btn-sm" onclick="toggleSectorDropdown()" style="padding:6px 10px;">
+                                            <i data-lucide="settings"></i>
+                                        </button>
+                                        <div class="dropdown-content" id="sectorDropdown">
+                                            <div class="dropdown-item" onclick="mostrarAgregarSector()">
+                                                ➕ Agregar sector
+                                            </div>
+                                            <div class="dropdown-item danger" onclick="mostrarEliminarSector()">
+                                                🗑️ Eliminar sector
+                                            </div>
+                                            <div id="sectorAccionContainer" style="padding:8px 16px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label><i data-lucide="user"></i> Inspector / Responsable</label>
+                                <input type="text" id="bieInspector" placeholder="Nombre y OCF" />
+                            </div>
+                            <div class="form-group">
+                                <label><i data-lucide="qrcode"></i> Código QR / ID</label>
+                                <input type="text" id="bieCodigoQR" placeholder="Ej: QR 50 04F" />
+                            </div>
+                        </div>
+
+                        <!-- Tabla de evaluación -->
+                        <div style="overflow-x:auto;">
+                            <table class="bie-tabla" id="bieTabla">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th style="text-align:left;">Componente</th>
+                                        <th style="width:100px;">Estado</th>
+                                        <th style="min-width:120px;">Notas Rápidas</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bieTablaBody">
+                                    <!-- Las filas se generan con JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Observaciones generales -->
+                        <div class="form-group" style="margin-top:12px;">
+                            <label><i data-lucide="clipboard"></i> Observaciones Generales</label>
+                            <textarea id="bieObsGenerales" rows="2" placeholder="Observaciones adicionales..."></textarea>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="bie-actions">
+                            <button class="btn btn-success" onclick="guardarInspeccionBIE()">💾 Guardar Inspección</button>
+                            <button class="btn btn-primary" onclick="exportarBIEExcel()">📊 Exportar a Excel</button>
+                            <button class="btn btn-secondary" onclick="marcarTodoBuenoBIE()">✅ Marcar Todo Bueno (B)</button>
+                            <button class="btn btn-secondary" onclick="resetearFormularioBIE()">🔄 Limpiar Formulario</button>
+                        </div>
+                    </div>
+
+                    <!-- Historial de inspecciones BIE -->
+                    <div class="bie-historial" id="bieHistorialContainer">
+                        <h3>📋 Historial de Inspecciones BIE</h3>
+                        <div style="overflow-x:auto;">
+                            <table id="bieHistorialTabla">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Sector</th>
+                                        <th>Inspector</th>
+                                        <th>Resumen</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bieHistorialBody">
+                                    <tr><td colspan="5" class="empty-state">Cargando historial...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- FIN PESTAÑA BIE -->
+
         </section>
 
+        <!-- Vista Historial Global -->
         <section id="vista-historial" class="vista">
             <div class="tabla-container">
                 <h3>📋 Historial de Vencimientos</h3>
@@ -1822,6 +2517,7 @@
             </div>
         </section>
 
+        <!-- Vista Checklist Global -->
         <section id="vista-checklist-global" class="vista">
             <div class="form-card">
                 <h3>✅ Checklist Global</h3>
@@ -1852,7 +2548,6 @@
                         <div class="fill" id="clg-progress" style="width:0%;"></div>
                     </div>
                     <div id="clg-items"></div>
-                    <!-- Verificación BIE Global -->
                     <div class="form-group full" style="margin-top:16px;">
                         <label><i data-lucide="fire-extinguisher"></i> Verificación BIE</label>
                         <select id="clg-bie">
@@ -1876,6 +2571,7 @@
 
     </main>
 
+    <!-- Navegación inferior -->
     <nav class="bottom-nav" id="bottomNav">
         <button class="nav-item active" data-vista="sucursales" onclick="navegarA('sucursales')">
             <i data-lucide="home"></i>
@@ -1885,11 +2581,11 @@
             <i data-lucide="list"></i>
             <span>Extintores</span>
         </button>
-        <button class="nav-item scan-btn" onclick="navegarA('escanear')">
-            <span class="scan-wrapper">
-                <i data-lucide="scan-qr"></i>
+        <button class="nav-item bie-btn" onclick="navegarA('bie')">
+            <span class="bie-wrapper">
+                <i data-lucide="droplets"></i>
             </span>
-            <span>Escanear</span>
+            <span>BIE</span>
         </button>
         <button class="nav-item" data-vista="historial" onclick="navegarA('historial')">
             <i data-lucide="clock"></i>
@@ -1901,6 +2597,7 @@
         </button>
     </nav>
 
+    <!-- Banners y modales -->
     <div class="install-banner" id="installBanner">
         <div class="install-text">
             <strong>📱 Instalar Gestión de Extintores</strong>
@@ -1940,6 +2637,22 @@
         </div>
     </div>
 
+    <!-- Modal para ver detalle de inspección BIE -->
+    <div class="modal-overlay" id="modal-bie-detalle" onclick="cerrarModalBIEDetalle()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div id="modal-bie-detalle-contenido"></div>
+            <button class="btn btn-secondary close-modal" onclick="cerrarModalBIEDetalle()">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal para detalle de BIE (activo) -->
+    <div class="modal-overlay" id="modal-bie-activo-detalle" onclick="cerrarModalBIEActivoDetalle()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div id="modal-bie-activo-detalle-contenido"></div>
+            <button class="btn btn-secondary close-modal" onclick="cerrarModalBIEActivoDetalle()">Cerrar</button>
+        </div>
+    </div>
+
     <script>
         // ============================================================
         // CONFIGURACIÓN FIREBASE
@@ -1958,7 +2671,7 @@
         const PASSWORD_MAESTRA = '1234';
 
         // ============================================================
-        // CONFIGURACIÓN DE CLOUDINARY (Subida de fotos optimizada)
+        // CONFIGURACIÓN DE CLOUDINARY
         // ============================================================
         const CLOUD_NAME = "ahzhrnm0";
         const UPLOAD_PRESET = "preset_extintores";
@@ -1967,40 +2680,78 @@
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", UPLOAD_PRESET);
-
             try {
                 const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
                     method: "POST",
                     body: formData
                 });
-
                 const data = await response.json();
-
-                if (data.secure_url) {
-                    return data.secure_url; // URL HTTPS de la foto subida
-                } else {
-                    throw new Error(data.error?.message || "Error desconocido en Cloudinary");
-                }
+                if (data.secure_url) return data.secure_url;
+                throw new Error(data.error?.message || "Error en Cloudinary");
             } catch (error) {
-                console.error("Error al conectar con Cloudinary:", error);
+                console.error("Error Cloudinary:", error);
                 throw error;
             }
         }
 
         // ============================================================
-        // DATOS
+        // DATOS GLOBALES
         // ============================================================
         const SUCURSALES = {
             'villeta': { nombre: 'Villeta (Planta Industrial)', direccion: 'Ruta Ypané-Villeta' }
         };
+
         const CHECKLIST_ITEMS_BASE = ['Manguera', 'Precinto', 'Boquilla', 'Etiqueta', 'Gatillo', 'Pintura', 'Soporte'];
+
+        // Lista de sectores BIE (21 áreas del formulario original)
+        const SECTORES_BIE_BASE = [
+            "PORTERÍA",
+            "ESTACIONAMIENTO ADM",
+            "RECEPCIÓN PLANTA ALTA",
+            "OFICINA INFORMÁTICA",
+            "GUARDERÍA",
+            "PASILLO DPTO VENTAS",
+            "VESTUARIO MASCULINO",
+            "ZONA MANIOBRAS",
+            "PUNTO DE ENCUENTRO 1",
+            "TANQUE ELEVADO",
+            "CORTE - EXP. COMBUS",
+            "PLASTIFICADO LISO EXT",
+            "CORTE DE ESPUMA",
+            "CORTE DE BLOQUE B",
+            "CORTE DE BLOQUE B",
+            "I+D",
+            "CURADO DEBLOQUE",
+            "CALLE LATERAL ESPUM",
+            "ESPUMACIÓN DENTRO",
+            "TTO EFLUENTES",
+            "FRENTE PICADITO"
+        ];
+
+        // Parámetros de evaluación BIE (8 items)
+        const PARAMETROS_BIE = [
+            { id: 'acceso', nombre: 'Acceso (Libre de obstáculos)' },
+            { id: 'manguera', nombre: 'Manguera (Sin grietas, acoplada)' },
+            { id: 'piton', nombre: 'Pitón / Boquilla (Operativo)' },
+            { id: 'llave', nombre: 'Llave / Válvula (Giratoria/Limpia)' },
+            { id: 'armario', nombre: 'Armario / Gabinete (Cierre ok)' },
+            { id: 'fijacion', nombre: 'Fijación / Soporte (Firme)' },
+            { id: 'pintura', nombre: 'Pintura / Estado (Buen estado)' },
+            { id: 'carteleria', nombre: 'Cartelería / Signal (Visible)' }
+        ];
+
         let datosExtintores = {},
             datosChecklists = {},
+            datosBIE = {},
+            datosBIEActivos = {},
             sucursalActiva = 'villeta',
             html5QrCode = null,
             editMode = false,
             currentEditId = null,
             coordenadasActuales = null;
+        let sectoresBIE = [...SECTORES_BIE_BASE]; // lista dinámica (se puede ampliar)
+        let editBIEMode = false,
+            currentBIEEditId = null;
 
         // ============================================================
         // FUNCIONES AUXILIARES
@@ -2030,35 +2781,30 @@
 
         function getChecklistItems(tipo) {
             const items = [...CHECKLIST_ITEMS_BASE];
-            if (tipo !== 'CO2') {
-                items.unshift('Manómetro');
-            }
+            if (tipo !== 'CO2') items.unshift('Manómetro');
             return items;
         }
 
-        // ============================================================
-        // FUNCIÓN DE ORDENAMIENTO GLOBAL POR NÚMERO DE EXTINTOR
-        // ============================================================
         function ordenarPorNumero(items) {
-            // Si items es un array de objetos con estructura [id, data]
-            // soporta tanto arrays como objetos estándar.
             if (Array.isArray(items) && items.length > 0 && Array.isArray(items[0])) {
-                // Es un array de pares [id, data]
                 items.sort((a, b) => {
                     const numA = parseInt((a[1].numero || '').match(/\d+/)?.[0] || '0');
                     const numB = parseInt((b[1].numero || '').match(/\d+/)?.[0] || '0');
                     return numA - numB;
                 });
             } else if (Array.isArray(items)) {
-                // Es un array de objetos
                 items.sort((a, b) => {
-                    // Intenta obtener el número de 'numero' o del extintor referenciado
                     const numA = parseInt((a.numero || (datosExtintores[a.extintorId]?.numero) || '').match(/\d+/)?.[0] || '0');
                     const numB = parseInt((b.numero || (datosExtintores[b.extintorId]?.numero) || '').match(/\d+/)?.[0] || '0');
                     return numA - numB;
                 });
             }
             return items;
+        }
+
+        function limpiarGPS(gps) {
+            if (!gps) return '';
+            return gps.replace(/^📍\s*/g, '').replace(/^GPS:\s*/g, '').trim();
         }
 
         // ============================================================
@@ -2105,7 +2851,7 @@
         });
 
         // ============================================================
-        // QR / FICHA PÚBLICA
+        // QR / FICHA PÚBLICA (Extintores)
         // ============================================================
         function generarQRParaExtintor(extintorId, containerId, mostrarLoading = true) {
             const container = document.getElementById(containerId);
@@ -2165,6 +2911,8 @@
                     `<div class="qr-data-row"><span class="label">📅 Vence:</span><span class="value">${ext.fechaProxima||'N/A'} <span style="font-size:11px;color:${estado.clase === 'vencido' ? '#dc2626' : estado.clase === 'critico' ? '#ea580c' : estado.clase === 'alerta' ? '#a16207' : '#16a34a'};">(${estado.texto})</span></span></div>`;
                 html +=
                     `<div class="qr-data-row"><span class="label">🏷️ Cartel:</span><span class="value">${ext.cartel || 'No especificado'}</span></div>`;
+                html +=
+                    `<div class="qr-data-row"><span class="label">BIE:</span><span class="value">${ext.bie || 'N/A'}</span></div>`;
                 if (ext.gps) html +=
                     `<div class="qr-data-row"><span class="label">📍 GPS:</span><span class="value">${ext.gps}</span></div>`;
                 if (ext.observaciones) html +=
@@ -2199,7 +2947,7 @@
         function generarQRParaSucursal(sucursalId) {
             if (!sucursalId) return;
             const extintores = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalId);
-            ordenarPorNumero(extintores); // ORDENADO
+            ordenarPorNumero(extintores);
             extintores.forEach(([id], index) => {
                 setTimeout(() => {
                     generarQRParaExtintor(id, `qr-desk-${id}`, true);
@@ -2275,6 +3023,15 @@
                 datosChecklists = snap.val() || {};
                 renderDashboard();
             });
+            db.ref('inspecciones_bie').once('value', snap => {
+                datosBIE = snap.val() || {};
+                cargarHistorialBIE();
+                actualizarResumenBIE();
+            });
+            db.ref('bies').once('value', snap => {
+                datosBIEActivos = snap.val() || {};
+                cargarBIEs();
+            });
             db.ref('extintores').on('value', snap => {
                 datosExtintores = snap.val() || {};
                 actualizarTodo();
@@ -2286,6 +3043,15 @@
                 actualizarTodo();
                 renderDashboard();
             });
+            db.ref('inspecciones_bie').on('value', snap => {
+                datosBIE = snap.val() || {};
+                cargarHistorialBIE();
+                actualizarResumenBIE();
+            });
+            db.ref('bies').on('value', snap => {
+                datosBIEActivos = snap.val() || {};
+                cargarBIEs();
+            });
         }
 
         function actualizarTodo() {
@@ -2296,6 +3062,9 @@
                 cargarSelectExtintoresCL();
                 cargarHistorialCL();
                 cargarVisualizar();
+                cargarHistorialBIE();
+                actualizarResumenBIE();
+                cargarBIEs();
             }
         }
 
@@ -2332,6 +3101,15 @@
                 cargarSelectCLG();
                 generarItemsCLG();
                 obtenerGPS('clg-gps', 'clg-mapa');
+            } else if (vista === 'bie') {
+                // Navegar a panel-sucursal y activar pestaña BIE
+                document.getElementById('vista-sucursales').classList.remove('vista-activa');
+                document.getElementById('vista-panel-sucursal').classList.add('vista-activa');
+                document.getElementById('vista-historial').classList.remove('vista-activa');
+                document.getElementById('vista-checklist-global').classList.remove('vista-activa');
+                mostrarTabSucursal('bie');
+                // Asegurar que la subpestaña activa sea "activos"
+                mostrarSubTabBIE('activos');
             } else if (vista === 'escanear') {
                 if (!document.getElementById('vista-panel-sucursal').classList.contains('vista-activa')) {
                     document.getElementById('vista-sucursales').classList.remove('vista-activa');
@@ -2344,11 +3122,17 @@
             }
 
             document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
-            const target = document.querySelector(`.bottom-nav .nav-item[data-vista="${vista}"]`);
-            if (target) target.classList.add('active');
-            if (vista === 'escanear') {
-                document.querySelector('.bottom-nav .nav-item.scan-btn')?.classList.add('active');
+            if (vista === 'bie') {
+                document.querySelector('.bottom-nav .nav-item.bie-btn')?.classList.add('active');
+            } else {
+                const target = document.querySelector(`.bottom-nav .nav-item[data-vista="${vista}"]`);
+                if (target) target.classList.add('active');
             }
+            // Si es 'panel-sucursal' y se llamó desde otro lugar, el botón Extintores se activa
+            if (vista === 'panel-sucursal') {
+                document.querySelector('.bottom-nav .nav-item[data-vista="panel-sucursal"]')?.classList.add('active');
+            }
+            // Si es 'escanear' desde el botón de la cabecera, activamos el de escanear? mejor no, porque no hay botón en nav.
         }
 
         // ============================================================
@@ -2393,6 +3177,9 @@
             cargarSelectExtintoresCL();
             cargarHistorialCL();
             cargarVisualizar();
+            cargarHistorialBIE();
+            actualizarResumenBIE();
+            cargarBIEs();
             mostrarTabSucursal('extintores');
         }
 
@@ -2418,6 +3205,7 @@
                             <div class="direccion"><i data-lucide="map-pin" style="width:14px;height:14px;"></i> ${s.direccion}</div>
                         </div>
                         <div class="header-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="navegarA('escanear')"><i data-lucide="scan-qr"></i> Escanear</button>
                             <button class="btn btn-secondary btn-sm" onclick="regenerarQRSucursal()"><i data-lucide="qrcode"></i> QR</button>
                             <button class="btn btn-secondary btn-sm" onclick="cerrarSucursal()"><i data-lucide="arrow-left"></i> Volver</button>
                         </div>
@@ -2436,10 +3224,10 @@
             const tabElement = document.getElementById('tab-' + tab);
             if (tabElement) tabElement.classList.add('activo');
 
-            document.querySelectorAll('#tabs-sucursal button').forEach(b => b.classList.remove('activo'));
-            const tabs = ['extintores', 'agregar', 'checklist', 'historial-cl', 'escanear', 'etiquetas'];
+            document.querySelectorAll('#tabs-sucursal .tab-btn').forEach(b => b.classList.remove('activo'));
+            const tabs = ['extintores', 'agregar', 'checklist', 'historial-cl', 'escanear', 'etiquetas', 'bie'];
             const idx = tabs.indexOf(tab);
-            if (idx >= 0) document.querySelectorAll('#tabs-sucursal button')[idx]?.classList.add('activo');
+            if (idx >= 0) document.querySelectorAll('#tabs-sucursal .tab-btn')[idx]?.classList.add('activo');
 
             if (tab === 'checklist') {
                 cargarSelectExtintoresCL();
@@ -2452,6 +3240,25 @@
             }
             if (tab === 'historial-cl') cargarHistorialCL();
             if (tab === 'etiquetas') generarEtiquetas();
+            if (tab === 'bie') {
+                cargarHistorialBIE();
+                actualizarResumenBIE();
+                cargarBIEs();
+                // Set fecha y hora por defecto
+                const ahora = new Date();
+                document.getElementById('bieFecha').value = ahora.toISOString().split('T')[0];
+                const horas = String(ahora.getHours()).padStart(2, '0');
+                const minutos = String(ahora.getMinutes()).padStart(2, '0');
+                document.getElementById('bieHora').value = horas + ':' + minutos;
+                // Inicializar tabla de parámetros
+                renderizarTablaBIE();
+                // Cargar sectores
+                cargarSectoresBIE();
+                // Obtener GPS para el formulario de BIE activo
+                obtenerGPS('bie-gps', 'bie-mapa');
+                // Inicializar subpestaña activos
+                mostrarSubTabBIE('activos');
+            }
             if (tab !== 'escanear') {
                 detenerEscaner();
                 document.getElementById('qr-info-resultado').style.display = 'none';
@@ -2463,12 +3270,21 @@
         }
 
         // ============================================================
-        // EXTINTORES (TABLA + CARDS) - ORDENADOS
+        // SUBPESTAÑAS PARA BIE
+        // ============================================================
+        function mostrarSubTabBIE(sub) {
+            document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('activo'));
+            document.getElementById('sub-bie-' + sub).classList.add('activo');
+            document.querySelectorAll('.sub-tabs .sub-tab').forEach(b => b.classList.remove('activo'));
+            document.querySelector(`.sub-tabs .sub-tab[onclick*="${sub}"]`)?.classList.add('activo');
+        }
+
+        // ============================================================
+        // EXTINTORES (TABLA + CARDS) - ORDENADOS + BIE + INFORME
         // ============================================================
         function cargarExtintoresSucursal() {
             if (!sucursalActiva) return;
             let items = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalActiva);
-            // ORDENAMIENTO NUMÉRICO ESTRICTO
             ordenarPorNumero(items);
 
             const tbodyDesktop = document.getElementById('tabla-extintores-sucursal-desktop');
@@ -2480,6 +3296,7 @@
                     const color = estado.clase === 'vencido' ? '#dc2626' :
                         estado.clase === 'critico' ? '#ea580c' :
                         estado.clase === 'alerta' ? '#a16207' : '#16a34a';
+                    const bieActual = d.bie || 'N/A';
                     return `<tr>
                             <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '📷'}</td>
                             <td><strong>${d.numero || 'N/A'}</strong></td>
@@ -2487,15 +3304,23 @@
                             <td>${d.tipo||'N/A'}</td>
                             <td style="color:${color};font-weight:700;">${d.fechaProxima||'N/A'} <span style="font-size:9px;">${estado.texto}</span></td>
                             <td>${cl ? '<span class="badge ok">✅</span>' : '<span class="badge falla">❌</span>'}</td>
+                            <td>
+                                <select class="bie-select" data-id="${id}" onchange="actualizarBIE('${id}', this.value)">
+                                    <option value="OK" ${bieActual === 'OK' ? 'selected' : ''}>OK</option>
+                                    <option value="NO OK" ${bieActual === 'NO OK' ? 'selected' : ''}>NO OK</option>
+                                    <option value="N/A" ${bieActual === 'N/A' ? 'selected' : ''}>N/A</option>
+                                </select>
+                            </td>
                             <td><div id="qr-desk-${id}" class="qr-container-sucursal" style="min-width:50px;min-height:50px;"><span style="color:#94a3b8;font-size:9px;">⏳</span></div></td>
                             <td>
                                 <div class="acciones">
                                     <button onclick="event.stopPropagation();editarExtintor('${id}')">✏️</button>
                                     <button onclick="event.stopPropagation();pedirPasswordEliminar('${id}')">🗑️</button>
+                                    <button onclick="event.stopPropagation();generarInformePDF('${id}')" title="Descargar Informe">📄</button>
                                 </div>
                             </td>
                         </tr>`;
-                }).join('') || '<tr><td colspan="8"><div class="empty-state"><span class="icon">🧯</span>No hay extintores</div></td></tr>';
+                }).join('') || '<tr><td colspan="9"><div class="empty-state"><span class="icon">🧯</span>No hay extintores</div></td></tr>';
             }
 
             const container = document.getElementById('tabla-extintores-sucursal');
@@ -2510,6 +3335,7 @@
                     const badgeClass = estado.clase === 'vencido' ? 'vencido' :
                         estado.clase === 'critico' ? 'critico' :
                         estado.clase === 'alerta' ? 'alerta' : 'normal';
+                    const bieActual = d.bie || 'N/A';
                     return `<div class="extintor-card" onclick="verDetalleExtintor('${id}')">
                             <div>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '📷'}</div>
                             <div class="info">
@@ -2520,6 +3346,15 @@
                                     <span style="color:${color};">${d.fechaProxima||'N/A'} ${estado.texto}</span>
                                 </div>
                                 <div style="font-size:10px;color:var(--text-muted);">Cartel: ${d.cartel||'No especificado'}</div>
+                                <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
+                                    <span style="font-size:11px;font-weight:600;">BIE:</span>
+                                    <select class="bie-select" data-id="${id}" onchange="actualizarBIE('${id}', this.value)" onclick="event.stopPropagation();">
+                                        <option value="OK" ${bieActual === 'OK' ? 'selected' : ''}>OK</option>
+                                        <option value="NO OK" ${bieActual === 'NO OK' ? 'selected' : ''}>NO OK</option>
+                                        <option value="N/A" ${bieActual === 'N/A' ? 'selected' : ''}>N/A</option>
+                                    </select>
+                                    <button onclick="event.stopPropagation();generarInformePDF('${id}')" class="btn btn-secondary btn-sm" style="font-size:10px;">📄 Informe</button>
+                                </div>
                             </div>
                             <div class="estado">
                                 <span class="badge ${badgeClass}">${estado.label}</span>
@@ -2541,6 +3376,39 @@
                 });
             }, 300);
             lucide.createIcons();
+        }
+
+        // ============================================================
+        // ACTUALIZAR BIE EN FIREBASE (para extintores)
+        // ============================================================
+        function actualizarBIE(id, valor) {
+            db.ref('extintores/' + id + '/bie').set(valor).then(() => {
+                console.log('BIE actualizado para', id, valor);
+                actualizarResumenBIE();
+            }).catch(error => {
+                console.error('Error al actualizar BIE:', error);
+                alert('Error al guardar el cambio de BIE');
+            });
+        }
+
+        // ============================================================
+        // ACTUALIZAR RESUMEN BIE (barra de pestañas)
+        // ============================================================
+        function actualizarResumenBIE() {
+            if (!sucursalActiva) return;
+            const extintores = Object.values(datosExtintores).filter(e => e.sucursal === sucursalActiva);
+            let ok = 0,
+                nook = 0,
+                na = 0;
+            extintores.forEach(e => {
+                const bie = e.bie || 'N/A';
+                if (bie === 'OK') ok++;
+                else if (bie === 'NO OK') nook++;
+                else na++;
+            });
+            document.getElementById('bieOkCount').textContent = ok;
+            document.getElementById('bieNookCount').textContent = nook;
+            document.getElementById('bieNaCount').textContent = na;
         }
 
         // ============================================================
@@ -2615,6 +3483,7 @@
                 fotoURL,
                 gps: gpsText.includes('Obteniendo') ? '' : gpsText,
                 coordenadas: coords,
+                bie: 'N/A',
                 createdAt: new Date().toISOString()
             };
 
@@ -2706,6 +3575,7 @@
                 fotoURL,
                 gps: gpsText.includes('Obteniendo') ? datosExtintores[id]?.gps || '' : gpsText,
                 coordenadas: coords || datosExtintores[id]?.coordenadas || null,
+                bie: datosExtintores[id]?.bie || 'N/A',
                 updatedAt: new Date().toISOString()
             };
 
@@ -2765,7 +3635,7 @@
             }
         }
 
-        function compartirWhatsAppFicha(numero, ubicacion, tipo, tamano, fecha, estadoTexto, id, gps, cartel) {
+        function compartirWhatsAppFicha(numero, ubicacion, tipo, tamano, fecha, estadoTexto, id, gps, cartel, bie) {
             const texto = encodeURIComponent(
                 '🧯 *SUPERSPUMA - Ficha del Extintor*%0A%0A' +
                 '🔢 *N° Extintor:* ' + (numero || 'N/A') + '%0A' +
@@ -2773,6 +3643,7 @@
                 '🏷️ *Tipo:* ' + (tipo || 'N/A') + ' · ' + (tamano || 'N/A') + '%0A' +
                 '📅 *Vence:* ' + (fecha || 'N/A') + ' (' + estadoTexto + ')%0A' +
                 '🏷️ *Cartel:* ' + (cartel || 'No especificado') + '%0A' +
+                '🧯 *BIE:* ' + (bie || 'N/A') + '%0A' +
                 '🆔 *ID:* ' + id + '%0A' +
                 (gps ? '📍 *GPS:* ' + gps + '%0A' : '') +
                 '🔗 *Ver ficha:* ' + window.location.href
@@ -2843,6 +3714,10 @@
                             <span style="color:#475569;font-weight:600;">🏷️ Cartel</span>
                             <span style="font-weight:700;">${extintor.cartel || 'No especificado'}</span>
                         </div>
+                        <div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;">
+                            <span style="color:#475569;font-weight:600;">BIE</span>
+                            <span style="font-weight:700;">${extintor.bie || 'N/A'}</span>
+                        </div>
                         ${extintor.gps ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📍 GPS</span><span style="font-weight:700;">${extintor.gps}</span></div>` : ''}
                         ${extintor.coordenadas ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📌 Coordenadas</span><span style="font-weight:700;">${extintor.coordenadas.lat}, ${extintor.coordenadas.lng}</span></div>` : ''}
                         ${extintor.observaciones ? `<div class="campo" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;font-size:14px;"><span style="color:#475569;font-weight:600;">📝 Observaciones</span><span style="font-weight:700;">${extintor.observaciones}</span></div>` : ''}
@@ -2874,7 +3749,7 @@
                     ${estilos}
                     <div id="contenedor-ficha">${fichaHTML}</div>
                     <div class="botones">
-                        <button class="btn-wsp" onclick="compartirWhatsAppFicha('${extintor.numero || 'N/A'}', '${extintor.ubicacion || 'N/A'}', '${extintor.tipo || 'N/A'}', '${extintor.tamano || 'N/A'}', '${extintor.fechaProxima || 'N/A'}', '${estado.texto}', '${id}', '${extintor.gps || ''}', '${extintor.cartel || ''}')">📤 WhatsApp</button>
+                        <button class="btn-wsp" onclick="compartirWhatsAppFicha('${extintor.numero || 'N/A'}', '${extintor.ubicacion || 'N/A'}', '${extintor.tipo || 'N/A'}', '${extintor.tamano || 'N/A'}', '${extintor.fechaProxima || 'N/A'}', '${estado.texto}', '${id}', '${extintor.gps || ''}', '${extintor.cartel || ''}', '${extintor.bie || ''}')">📤 WhatsApp</button>
                         <button class="btn-descargar" onclick="descargarFicha()">📥 Descargar</button>
                         ${extintor.coordenadas ? `<button class="btn-mapa" onclick="verMapaFicha(${extintor.coordenadas.lat}, ${extintor.coordenadas.lng})">🗺️ Ver Mapa</button>` : ''}
                         <button class="btn-volver" onclick="window.location.href='/'">⬅ Volver</button>
@@ -2907,7 +3782,7 @@
             if (!sel) return;
             sel.innerHTML = '<option value="">Seleccionar...</option>';
             let entries = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalActiva);
-            ordenarPorNumero(entries); // ORDENADO
+            ordenarPorNumero(entries);
             entries.forEach(([id, d]) => {
                 sel.innerHTML += `<option value="${id}" data-tipo="${d.tipo}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
             });
@@ -3017,8 +3892,6 @@
             if (!sucursalActiva) return;
             let items = Object.values(datosChecklists)
                 .filter(c => c.tipo === 'checklist' && c.sucursal === sucursalActiva);
-            
-            // ORDENAMIENTO POR NÚMERO DE EXTINTOR
             ordenarPorNumero(items);
 
             const tbody = document.getElementById('tabla-historial-cl');
@@ -3211,7 +4084,7 @@
         function generarEtiquetas() {
             if (!sucursalActiva) return;
             let items = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === sucursalActiva);
-            ordenarPorNumero(items); // ORDENADO
+            ordenarPorNumero(items);
 
             const container = document.getElementById('etiquetas-container');
             if (!container) return;
@@ -3243,6 +4116,7 @@
                         <div class="info-row"><span class="label">Tamaño:</span><span class="value">${d.tamano||'N/A'}</span></div>
                         <div class="info-row"><span class="label">Vence:</span><span class="value">${d.fechaProxima||'N/A'} <span style="color:${color};">${estado.texto}</span></span></div>
                         <div class="info-row"><span class="label">Cartel:</span><span class="value">${d.cartel||'No especificado'}</span></div>
+                        <div class="info-row"><span class="label">BIE:</span><span class="value">${d.bie||'N/A'}</span></div>
                         ${gpsText ? `<div class="gps-info">📍 ${gpsText}</div>` : ''}
                         <div class="qr-wrapper" id="qr-et-${id}"></div>
                         <div style="text-align:center;font-size:7px;color:#94a3b8;margin-top:4px;">ID: ${id.slice(0,8)}</div>
@@ -3311,7 +4185,7 @@
             sel.innerHTML = '<option value="">Seleccionar...</option>';
             if (!s) return;
             let entries = Object.entries(datosExtintores).filter(([id, d]) => d.sucursal === s);
-            ordenarPorNumero(entries); // ORDENADO
+            ordenarPorNumero(entries);
             entries.forEach(([id, d]) => {
                 sel.innerHTML += `<option value="${id}" data-tipo="${d.tipo}">${d.numero || 'N/A'} - ${d.ubicacion||'N/A'}</option>`;
             });
@@ -3432,12 +4306,11 @@
         }
 
         // ============================================================
-        // HISTORIAL GLOBAL - ORDENADO (IMAGEN SOLICITADA)
+        // HISTORIAL GLOBAL - ORDENADO
         // ============================================================
         function cargarHistorial() {
             const tbody = document.getElementById('tabla-historial');
             let items = Object.entries(datosExtintores);
-            // ELIMINAMOS EL ORDEN POR FECHA Y LO CAMBIAMOS POR NÚMERO DE EXTINTOR
             ordenarPorNumero(items);
 
             tbody.innerHTML = items.map(([id, d]) => {
@@ -3459,7 +4332,7 @@
         }
 
         // ============================================================
-        // EXPORTAR CSV (MEJORADO v2.5)
+        // EXPORTAR CSV (MEJORADO v2.6)
         // ============================================================
         async function exportarCSVHistorial() {
             const btn = event?.target || document.activeElement;
@@ -3474,7 +4347,7 @@
                 const sep = ';';
                 let csv = '\uFEFF';
                 csv += 'Sucursal' + sep + 'N° Extintor' + sep + 'Ubicación' + sep + 'Tipo' + sep + 'Tamaño' + sep + 'Vence' +
-                    sep + 'Estado' + sep + 'Cartel' + sep + 'GPS\n';
+                    sep + 'Estado' + sep + 'Cartel' + sep + 'BIE' + sep + 'GPS\n';
 
                 Object.entries(extintores).forEach(([id, d]) => {
                     const estado = obtenerEstadoVencimiento(d.fechaProxima);
@@ -3495,6 +4368,7 @@
                     csv += `"${fechaFormateada}"` + sep;
                     csv += `"${estado.texto}"` + sep;
                     csv += `"${d.cartel || 'No especificado'}"` + sep;
+                    csv += `"${d.bie || 'N/A'}"` + sep;
                     csv += `"${gpsText}"\n`;
                 });
 
@@ -3511,12 +4385,6 @@
                 btn.textContent = textoOriginal;
                 btn.disabled = false;
             }
-        }
-
-        function limpiarGPS(gps) {
-            if (!gps) return '';
-            let limpio = gps.replace(/^📍\s*/g, '').replace(/^GPS:\s*/g, '').trim();
-            return limpio;
         }
 
         // ============================================================
@@ -3586,6 +4454,7 @@
                     <p><strong>Tipo:</strong> ${d.tipo||'N/A'} · ${d.tamano||'N/A'}</p>
                     <p><strong>Vence:</strong> ${d.fechaProxima||'N/A'} <span style="color:${colorEstado};font-weight:700;">(${estado.texto})</span></p>
                     <p><strong>Cartel:</strong> ${d.cartel||'No especificado'}</p>
+                    <p><strong>BIE:</strong> ${d.bie||'N/A'}</p>
                     ${d.gps ? `<p><strong>📍 GPS:</strong> ${d.gps}</p>` : ''}
                     ${d.coordenadas ? `<p><strong>📍 Coordenadas:</strong> ${d.coordenadas.lat}, ${d.coordenadas.lng}</p>` : ''}
                     ${d.observaciones ? `<p><strong>Observaciones:</strong> ${d.observaciones}</p>` : ''}
@@ -3640,7 +4509,7 @@
         function cerrarModalPassword() { document.getElementById('modal-password').style.display = 'none'; }
 
         // ============================================================
-        // GENERAR INFORME PDF
+        // GENERAR INFORME PDF (ahora también accesible desde la lista)
         // ============================================================
         function generarInformePDF(id) {
             const ext = datosExtintores[id];
@@ -3670,6 +4539,7 @@
                             <div><strong>Tipo:</strong> ${ext.tipo || 'N/A'} · ${ext.tamano || 'N/A'}</div>
                             <div><strong>Vencimiento:</strong> ${ext.fechaProxima || 'N/A'}</div>
                             <div><strong>Cartel:</strong> ${ext.cartel || 'No especificado'}</div>
+                            <div><strong>BIE:</strong> ${ext.bie || 'N/A'}</div>
                             <div><strong>GPS:</strong> ${gpsText}</div>
                             <div><strong>Fecha informe:</strong> ${new Date().toLocaleString()}</div>
                         </div>
@@ -3840,6 +4710,734 @@
         }
 
         // ============================================================
+        // NUEVAS FUNCIONES PARA EL MÓDULO BIE
+        // ============================================================
+
+        // Cargar sectores en el select
+        function cargarSectoresBIE() {
+            const select = document.getElementById('bieSector');
+            if (!select) return;
+            select.innerHTML = '<option value="">Seleccionar sector...</option>';
+            sectoresBIE.forEach(s => {
+                select.innerHTML += `<option value="${s}">${s}</option>`;
+            });
+            select.innerHTML += `<option value="__OTRO__">➕ Otro (agregar nuevo)</option>`;
+            // Evento para mostrar input de nuevo sector (ahora manejado por el menú)
+        }
+
+        // Menú de engranaje para sectores
+        function toggleSectorDropdown() {
+            const dropdown = document.getElementById('sectorDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+                // Limpiar el contenedor de acciones
+                document.getElementById('sectorAccionContainer').innerHTML = '';
+            }
+        }
+
+        function mostrarAgregarSector() {
+            const container = document.getElementById('sectorAccionContainer');
+            container.innerHTML = `
+                    <div class="sector-input-group">
+                        <input type="text" id="sectorNuevoInput" placeholder="Nombre del sector" />
+                        <button class="btn btn-primary btn-sm" onclick="agregarSectorDesdeMenu()">Guardar</button>
+                    </div>
+                `;
+            document.getElementById('sectorNuevoInput')?.focus();
+        }
+
+        function agregarSectorDesdeMenu() {
+            const input = document.getElementById('sectorNuevoInput');
+            if (!input) return;
+            const nombre = input.value.trim();
+            if (!nombre) {
+                alert('Ingresa un nombre');
+                return;
+            }
+            if (sectoresBIE.includes(nombre)) {
+                alert('Ya existe');
+                return;
+            }
+            sectoresBIE.push(nombre);
+            const select = document.getElementById('bieSector');
+            const opt = document.createElement('option');
+            opt.value = nombre;
+            opt.textContent = nombre;
+            select.insertBefore(opt, select.querySelector('option[value="__OTRO__"]'));
+            select.value = nombre;
+            // Cerrar menú
+            document.getElementById('sectorDropdown').classList.remove('show');
+            alert('✅ Sector agregado');
+        }
+
+        function mostrarEliminarSector() {
+            const container = document.getElementById('sectorAccionContainer');
+            const personalizados = sectoresBIE.filter(s => !SECTORES_BIE_BASE.includes(s));
+            if (personalizados.length === 0) {
+                container.innerHTML = '<p style="font-size:13px;color:var(--text-muted);">No hay sectores personalizados para eliminar.</p>';
+                return;
+            }
+            let html = '<div class="sector-list-eliminar">';
+            personalizados.forEach(s => {
+                html += `
+                        <div class="sector-item">
+                            <span>${s}</span>
+                            <button onclick="eliminarSector('${s}')">🗑️</button>
+                        </div>
+                    `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function eliminarSector(nombre) {
+            if (!confirm(`¿Eliminar el sector "${nombre}"?`)) return;
+            sectoresBIE = sectoresBIE.filter(s => s !== nombre);
+            const select = document.getElementById('bieSector');
+            const opt = select.querySelector(`option[value="${nombre}"]`);
+            if (opt) opt.remove();
+            if (select.value === nombre) select.value = '';
+            document.getElementById('sectorDropdown').classList.remove('show');
+            alert('✅ Sector eliminado');
+        }
+
+        // Renderizar tabla de parámetros BIE
+        function renderizarTablaBIE() {
+            const tbody = document.getElementById('bieTablaBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            PARAMETROS_BIE.forEach((p, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td class="param-nombre">${p.nombre}</td>
+                        <td>
+                            <select class="bie-select val-B" data-param="${p.id}" onchange="updateBIESelectStyle(this)">
+                                <option value="B">B</option>
+                                <option value="R">R</option>
+                                <option value="M">M</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="bie-nota" data-param="${p.id}" placeholder="Nota rápida..." />
+                        </td>
+                    `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateBIESelectStyle(select) {
+            select.className = 'bie-select val-' + select.value;
+        }
+
+        // Marcar todos los parámetros como "B"
+        function marcarTodoBuenoBIE() {
+            document.querySelectorAll('#bieTablaBody select.bie-select').forEach(sel => {
+                sel.value = 'B';
+                sel.className = 'bie-select val-B';
+            });
+            document.querySelectorAll('#bieTablaBody input.bie-nota').forEach(inp => {
+                inp.value = '';
+            });
+        }
+
+        // Resetear formulario BIE
+        function resetearFormularioBIE() {
+            const ahora = new Date();
+            document.getElementById('bieFecha').value = ahora.toISOString().split('T')[0];
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            document.getElementById('bieHora').value = horas + ':' + minutos;
+            document.getElementById('bieSector').value = '';
+            document.getElementById('bieInspector').value = '';
+            document.getElementById('bieCodigoQR').value = '';
+            document.getElementById('bieObsGenerales').value = '';
+            marcarTodoBuenoBIE();
+        }
+
+        // Guardar inspección BIE en Firebase
+        async function guardarInspeccionBIE() {
+            const sector = document.getElementById('bieSector').value;
+            if (!sector || sector === '__OTRO__') {
+                alert('❌ Por favor selecciona un sector válido');
+                return;
+            }
+            const inspector = document.getElementById('bieInspector').value.trim();
+            if (!inspector) {
+                alert('❌ Por favor ingresa el nombre del inspector');
+                return;
+            }
+            const fecha = document.getElementById('bieFecha').value;
+            const hora = document.getElementById('bieHora').value;
+            const codigoQR = document.getElementById('bieCodigoQR').value.trim();
+            const obsGenerales = document.getElementById('bieObsGenerales').value.trim();
+
+            // Recoger parámetros
+            const items = {};
+            const notas = {};
+            document.querySelectorAll('#bieTablaBody tr').forEach(tr => {
+                const select = tr.querySelector('select.bie-select');
+                const input = tr.querySelector('input.bie-nota');
+                if (select) {
+                    const paramId = select.dataset.param;
+                    items[paramId] = select.value;
+                }
+                if (input) {
+                    const paramId = input.dataset.param;
+                    notas[paramId] = input.value.trim();
+                }
+            });
+
+            const gpsText = '📍 ' + (coordenadasActuales ? `${coordenadasActuales.lat.toFixed(6)}, ${coordenadasActuales.lng.toFixed(6)}` : 'No disponible');
+
+            const datos = {
+                sucursal: sucursalActiva,
+                sector: sector,
+                fecha: fecha,
+                hora: hora,
+                inspector: inspector,
+                codigoQR: codigoQR,
+                items: items,
+                notas_items: notas,
+                observaciones_generales: obsGenerales,
+                gps: gpsText,
+                coordenadas: coordenadasActuales || null,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                await db.ref('inspecciones_bie').push(datos);
+                alert('✅ Inspección BIE guardada correctamente');
+                resetearFormularioBIE();
+                cargarHistorialBIE();
+                actualizarResumenBIE();
+            } catch (error) {
+                console.error('Error al guardar inspección BIE:', error);
+                alert('❌ Error al guardar la inspección BIE');
+            }
+        }
+
+        // Cargar historial de inspecciones BIE
+        function cargarHistorialBIE() {
+            const tbody = document.getElementById('bieHistorialBody');
+            if (!tbody) return;
+
+            let items = Object.entries(datosBIE || {}).filter(([id, d]) => d.sucursal === sucursalActiva);
+            items.sort((a, b) => new Date(b[1].timestamp) - new Date(a[1].timestamp));
+
+            if (items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Sin inspecciones BIE registradas</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = items.slice(0, 50).map(([id, d]) => {
+                // Calcular resumen de estados
+                const valores = Object.values(d.items || {});
+                const total = valores.length;
+                const buenos = valores.filter(v => v === 'B').length;
+                const regulares = valores.filter(v => v === 'R').length;
+                const malos = valores.filter(v => v === 'M').length;
+
+                let resumenHTML = '';
+                if (total === 0) {
+                    resumenHTML = '<span class="badge-na">Sin datos</span>';
+                } else if (malos > 0) {
+                    resumenHTML = `<span class="badge-m">M (${malos})</span>`;
+                } else if (regulares > 0) {
+                    resumenHTML = `<span class="badge-r">R (${regulares})</span>`;
+                } else if (buenos === total) {
+                    resumenHTML = `<span class="badge-b">B (${buenos}/${total})</span>`;
+                } else {
+                    resumenHTML = `<span class="badge-na">${buenos}/${total}</span>`;
+                }
+
+                return `<tr>
+                        <td>${d.fecha || ''} ${d.hora || ''}</td>
+                        <td>${d.sector || 'N/A'}</td>
+                        <td>${d.inspector || 'N/A'}</td>
+                        <td>${resumenHTML}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="verDetalleBIE('${id}')">🔍 Ver</button>
+                            <button class="btn btn-danger btn-sm" onclick="pedirPasswordEliminarBIE('${id}')">🗑️</button>
+                        </td>
+                    </tr>`;
+            }).join('');
+        }
+
+        // Ver detalle de inspección BIE en modal
+        function verDetalleBIE(id) {
+            const data = datosBIE[id];
+            if (!data) {
+                alert('Inspección no encontrada');
+                return;
+            }
+
+            const items = data.items || {};
+            const notas = data.notas_items || {};
+
+            let itemsHTML = '';
+            PARAMETROS_BIE.forEach(p => {
+                const val = items[p.id] || '—';
+                const nota = notas[p.id] || '';
+                const color = val === 'B' ? '#16a34a' : val === 'R' ? '#a16207' : val === 'M' ? '#dc2626' : '#94a3b8';
+                itemsHTML += `
+                        <tr style="border-bottom:1px solid var(--border);">
+                            <td style="padding:4px 8px;">${p.nombre}</td>
+                            <td style="padding:4px 8px;font-weight:700;color:${color};">${val}</td>
+                            <td style="padding:4px 8px;font-size:12px;color:var(--text-secondary);">${nota || '—'}</td>
+                        </tr>
+                    `;
+            });
+
+            const content = `
+                    <h3>🧯 Detalle de Inspección BIE</h3>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;font-size:13px;">
+                        <div><strong>Fecha:</strong> ${data.fecha || ''} ${data.hora || ''}</div>
+                        <div><strong>Sector:</strong> ${data.sector || 'N/A'}</div>
+                        <div><strong>Inspector:</strong> ${data.inspector || 'N/A'}</div>
+                        <div><strong>Código QR:</strong> ${data.codigoQR || 'N/A'}</div>
+                        <div style="grid-column:1/-1;"><strong>GPS:</strong> ${data.gps || 'No registrado'}</div>
+                    </div>
+                    <h4 style="margin-top:12px;">📋 Evaluación de Parámetros</h4>
+                    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                        <thead>
+                            <tr style="background:var(--bg);">
+                                <th style="padding:6px 8px;text-align:left;">Componente</th>
+                                <th style="padding:6px 8px;text-align:center;">Estado</th>
+                                <th style="padding:6px 8px;text-align:left;">Nota</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsHTML}</tbody>
+                    </table>
+                    ${data.observaciones_generales ? `<p style="margin-top:12px;"><strong>Observaciones generales:</strong> ${data.observaciones_generales}</p>` : ''}
+                `;
+
+            document.getElementById('modal-bie-detalle-contenido').innerHTML = content;
+            document.getElementById('modal-bie-detalle').style.display = 'flex';
+        }
+
+        function cerrarModalBIEDetalle() {
+            document.getElementById('modal-bie-detalle').style.display = 'none';
+        }
+
+        // Eliminar inspección BIE (con contraseña)
+        function pedirPasswordEliminarBIE(id) {
+            const password = prompt('🔒 Ingresa la contraseña maestra para eliminar esta inspección:');
+            if (password === PASSWORD_MAESTRA) {
+                db.ref('inspecciones_bie/' + id).remove().then(() => {
+                    alert('✅ Inspección BIE eliminada');
+                    cargarHistorialBIE();
+                    actualizarResumenBIE();
+                }).catch(err => {
+                    console.error(err);
+                    alert('❌ Error al eliminar');
+                });
+            } else if (password !== null) {
+                alert('❌ Contraseña incorrecta');
+            }
+        }
+
+        // Exportar a Excel (inspecciones BIE)
+        async function exportarBIEExcel() {
+            const btn = event?.target || document.activeElement;
+            const textoOriginal = btn.textContent;
+            btn.textContent = '⏳ Generando...';
+            btn.disabled = true;
+
+            try {
+                const snapshot = await db.ref('inspecciones_bie').once('value');
+                const datos = snapshot.val() || {};
+                const items = Object.entries(datos).filter(([id, d]) => d.sucursal === sucursalActiva);
+                items.sort((a, b) => new Date(a[1].timestamp) - new Date(b[1].timestamp));
+
+                if (items.length === 0) {
+                    alert('❌ No hay inspecciones BIE para exportar');
+                    btn.textContent = textoOriginal;
+                    btn.disabled = false;
+                    return;
+                }
+
+                const excelData = [
+                    ["SUPERSPUMA - VERIFICACIÓN DE BOCA DE INCENDIO (BIE)"],
+                    ["Sucursal:", SUCURSALES[sucursalActiva]?.nombre || sucursalActiva],
+                    ["Fecha de exportación:", new Date().toLocaleString()],
+                    [],
+                    ["N°", "Fecha", "Hora", "Sector", "Inspector", "Código QR", "Acceso", "Manguera", "Pitón", "Llave", "Armario", "Fijación", "Pintura", "Cartelería", "Observaciones Generales"]
+                ];
+
+                // Nombres de parámetros en orden
+                const paramIds = ['acceso', 'manguera', 'piton', 'llave', 'armario', 'fijacion', 'pintura', 'carteleria'];
+
+                items.forEach(([id, d], idx) => {
+                    const row = [
+                        idx + 1,
+                        d.fecha || '',
+                        d.hora || '',
+                        d.sector || '',
+                        d.inspector || '',
+                        d.codigoQR || ''
+                    ];
+                    paramIds.forEach(p => {
+                        row.push(d.items?.[p] || '—');
+                    });
+                    row.push(d.observaciones_generales || '');
+                    excelData.push(row);
+                });
+
+                // Añadir notas de parámetros
+                excelData.push([]);
+                excelData.push(["NOTAS POR PARÁMETRO (por inspección)"]);
+                const headerNotas = ["N°", "Sector", "Fecha"];
+                paramIds.forEach(p => {
+                    const pObj = PARAMETROS_BIE.find(pp => pp.id === p);
+                    headerNotas.push(pObj ? pObj.nombre.substring(0, 20) + '...' : p);
+                });
+                excelData.push(headerNotas);
+
+                items.forEach(([id, d], idx) => {
+                    const row = [
+                        idx + 1,
+                        d.sector || '',
+                        d.fecha || ''
+                    ];
+                    paramIds.forEach(p => {
+                        row.push(d.notas_items?.[p] || '');
+                    });
+                    excelData.push(row);
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(excelData);
+                ws['!cols'] = [
+                    { wch: 5 }, { wch: 12 }, { wch: 6 }, { wch: 30 }, { wch: 20 },
+                    { wch: 15 }, { wch: 8 }, { wch: 10 }, { wch: 8 }, { wch: 8 },
+                    { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 10 }, { wch: 30 }
+                ];
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Inspecciones BIE");
+
+                const fecha = new Date().toISOString().slice(0, 10);
+                XLSX.writeFile(wb, `Inspecciones_BIE_${fecha}.xlsx`);
+            } catch (error) {
+                console.error('Error al exportar BIE:', error);
+                alert('❌ Error al generar el Excel');
+            } finally {
+                btn.textContent = textoOriginal;
+                btn.disabled = false;
+            }
+        }
+
+        // ============================================================
+        // GESTIÓN DE ACTIVOS BIE (nuevo módulo)
+        // ============================================================
+        function cargarBIEs() {
+            if (!sucursalActiva) return;
+            const tbody = document.getElementById('tabla-bies-body');
+            if (!tbody) return;
+            const items = Object.entries(datosBIEActivos || {}).filter(([id, d]) => d.sucursal === sucursalActiva);
+            ordenarPorNumero(items);
+
+            if (items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No hay BIEs registrados</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = items.map(([id, d]) => {
+                const estado = obtenerEstadoVencimiento(d.fechaProxima);
+                const color = estado.clase === 'vencido' ? '#dc2626' :
+                    estado.clase === 'critico' ? '#ea580c' :
+                    estado.clase === 'alerta' ? '#a16207' : '#16a34a';
+                const bieEstado = d.bie || 'N/A';
+                return `<tr>
+                        <td>${d.fotoURL ? `<img src="${d.fotoURL}" class="foto-mini">` : '📷'}</td>
+                        <td><strong>${d.numero || 'N/A'}</strong></td>
+                        <td>${d.ubicacion || 'N/A'}</td>
+                        <td>${d.tipo || 'N/A'}</td>
+                        <td style="color:${color};">${d.fechaProxima || 'N/A'} <span style="font-size:9px;">${estado.texto}</span></td>
+                        <td><span class="badge ${bieEstado === 'OK' ? 'ok' : bieEstado === 'NO OK' ? 'falla' : 'na'}">${bieEstado}</span></td>
+                        <td><div id="qr-bie-${id}" class="qr-container-sucursal" style="min-width:50px;min-height:50px;"><span style="color:#94a3b8;font-size:9px;">⏳</span></div></td>
+                        <td class="acciones">
+                            <button onclick="editarBIE('${id}')">✏️</button>
+                            <button onclick="pedirPasswordEliminarBIEActivo('${id}')">🗑️</button>
+                            <button onclick="generarInformeBIE('${id}')">📄</button>
+                        </td>
+                    </tr>`;
+            }).join('');
+
+            // Generar QR para cada BIE
+            setTimeout(() => {
+                items.forEach(([id], index) => {
+                    setTimeout(() => {
+                        const container = document.getElementById('qr-bie-' + id);
+                        if (container) {
+                            try {
+                                const baseURL = window.location.origin + window.location.pathname;
+                                const urlQR = baseURL + '?bie=' + id;
+                                new QRCode(container, {
+                                    text: urlQR,
+                                    width: 70,
+                                    height: 70,
+                                    colorDark: "#dc2626",
+                                    colorLight: "#ffffff",
+                                    correctLevel: QRCode.CorrectLevel.H
+                                });
+                            } catch (e) {
+                                console.error('QR BIE error:', e);
+                                container.innerHTML = '<span style="color:#dc2626;font-size:10px;">⚠️</span>';
+                            }
+                        }
+                    }, 200 + (index * 50));
+                });
+            }, 300);
+        }
+
+        // Agregar BIE (con foto y GPS)
+        async function agregarBIE(e) {
+            e.preventDefault();
+            const numero = document.getElementById('bie-numero').value.trim();
+            const ubicacion = document.getElementById('bie-ubicacion').value.trim();
+            const tipo = document.getElementById('bie-tipo').value;
+            const fechaProxima = document.getElementById('bie-fecha').value;
+            const obs = document.getElementById('bie-obs').value.trim();
+            const fotoFile = document.getElementById('bie-foto').files[0];
+
+            if (!numero || !ubicacion || !fechaProxima) {
+                alert('❌ Completá los campos obligatorios');
+                return;
+            }
+
+            let fotoURL = '';
+            if (fotoFile) {
+                try {
+                    fotoURL = await subirFotoCloudinary(fotoFile);
+                } catch (error) {
+                    console.error('Error al subir foto BIE:', error);
+                    alert('⚠️ Error al subir la foto. Se guardará sin foto.');
+                }
+            }
+
+            const gpsText = document.getElementById('bie-gps').textContent;
+            const coords = coordenadasActuales ? { lat: coordenadasActuales.lat, lng: coordenadasActuales.lng } : null;
+
+            const nuevoBIE = {
+                sucursal: sucursalActiva,
+                numero,
+                ubicacion,
+                tipo,
+                fechaProxima,
+                observaciones: obs,
+                fotoURL,
+                gps: gpsText.includes('Obteniendo') ? '' : gpsText,
+                coordenadas: coords,
+                bie: 'N/A',
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                const ref = db.ref('bies').push();
+                const id = ref.key;
+                await ref.set(nuevoBIE);
+                alert('✅ BIE agregado correctamente');
+                document.getElementById('bie-numero').value = '';
+                document.getElementById('bie-ubicacion').value = '';
+                document.getElementById('bie-fecha').value = '';
+                document.getElementById('bie-obs').value = '';
+                document.getElementById('bie-foto').value = '';
+                document.getElementById('bie-tipo').value = 'BIE 45';
+                datosBIEActivos[id] = nuevoBIE;
+                cargarBIEs();
+            } catch (error) {
+                console.error('Error al guardar BIE:', error);
+                alert('❌ Error al guardar el BIE');
+            }
+        }
+
+        // Editar BIE
+        function editarBIE(id) {
+            const d = datosBIEActivos[id];
+            if (!d) return;
+            document.getElementById('bie-numero').value = d.numero || '';
+            document.getElementById('bie-ubicacion').value = d.ubicacion || '';
+            document.getElementById('bie-tipo').value = d.tipo || 'BIE 45';
+            document.getElementById('bie-fecha').value = d.fechaProxima || '';
+            document.getElementById('bie-obs').value = d.observaciones || '';
+            editBIEMode = true;
+            currentBIEEditId = id;
+            const btn = document.querySelector('#sub-bie-activos form button[type="submit"]');
+            btn.textContent = '✏️ Actualizar BIE';
+            btn.style.background = '#1565C0';
+            // Cambiar el título
+            document.querySelector('#sub-bie-activos .bie-form-card h3').textContent = '✏️ Editar BIE';
+            const form = document.querySelector('#sub-bie-activos form');
+            form.onsubmit = function(e) {
+                e.preventDefault();
+                actualizarBIE(id);
+            };
+        }
+
+        async function actualizarBIE(id) {
+            const numero = document.getElementById('bie-numero').value.trim();
+            const ubicacion = document.getElementById('bie-ubicacion').value.trim();
+            const tipo = document.getElementById('bie-tipo').value;
+            const fechaProxima = document.getElementById('bie-fecha').value;
+            const obs = document.getElementById('bie-obs').value.trim();
+            const fotoFile = document.getElementById('bie-foto').files[0];
+
+            if (!numero || !ubicacion || !fechaProxima) {
+                alert('❌ Completá los campos obligatorios');
+                return;
+            }
+
+            let fotoURL = datosBIEActivos[id]?.fotoURL || '';
+            if (fotoFile) {
+                try {
+                    fotoURL = await subirFotoCloudinary(fotoFile);
+                } catch (error) {
+                    console.error('Error al subir foto BIE:', error);
+                    alert('⚠️ Error al subir la foto. Manteniendo la anterior.');
+                }
+            }
+
+            const gpsText = document.getElementById('bie-gps').textContent;
+            const coords = coordenadasActuales ? { lat: coordenadasActuales.lat, lng: coordenadasActuales.lng } : null;
+
+            const datosActualizados = {
+                sucursal: sucursalActiva,
+                numero,
+                ubicacion,
+                tipo,
+                fechaProxima,
+                observaciones: obs,
+                fotoURL,
+                gps: gpsText.includes('Obteniendo') ? datosBIEActivos[id]?.gps || '' : gpsText,
+                coordenadas: coords || datosBIEActivos[id]?.coordenadas || null,
+                bie: datosBIEActivos[id]?.bie || 'N/A',
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                await db.ref('bies/' + id).update(datosActualizados);
+                alert('✅ BIE actualizado correctamente');
+                resetearFormularioBIEActivo();
+                cargarBIEs();
+            } catch (error) {
+                console.error('Error al actualizar BIE:', error);
+                alert('❌ Error al actualizar el BIE');
+            }
+        }
+
+        function resetearFormularioBIEActivo() {
+            document.getElementById('bie-numero').value = '';
+            document.getElementById('bie-ubicacion').value = '';
+            document.getElementById('bie-fecha').value = '';
+            document.getElementById('bie-obs').value = '';
+            document.getElementById('bie-foto').value = '';
+            document.getElementById('bie-tipo').value = 'BIE 45';
+            editBIEMode = false;
+            currentBIEEditId = null;
+            const btn = document.querySelector('#sub-bie-activos form button[type="submit"]');
+            btn.textContent = '💾 Guardar BIE';
+            btn.style.background = '';
+            document.querySelector('#sub-bie-activos .bie-form-card h3').textContent = '🧯 Gestión de Bocas de Incendio (BIE)';
+            const form = document.querySelector('#sub-bie-activos form');
+            form.onsubmit = agregarBIE;
+        }
+
+        // Eliminar BIE (activo)
+        function pedirPasswordEliminarBIEActivo(id) {
+            const password = prompt('🔒 Ingresa la contraseña maestra para eliminar este BIE:');
+            if (password === PASSWORD_MAESTRA) {
+                db.ref('bies/' + id).remove().then(() => {
+                    alert('✅ BIE eliminado');
+                    cargarBIEs();
+                }).catch(err => {
+                    console.error(err);
+                    alert('❌ Error al eliminar');
+                });
+            } else if (password !== null) {
+                alert('❌ Contraseña incorrecta');
+            }
+        }
+
+        // Generar informe PDF para BIE
+        function generarInformeBIE(id) {
+            const bie = datosBIEActivos[id];
+            if (!bie) {
+                alert('BIE no encontrado');
+                return;
+            }
+
+            // Buscar inspecciones asociadas a este BIE (por código QR o sector)
+            const inspecciones = Object.values(datosBIE || {}).filter(c => c.sector === bie.ubicacion || c.codigoQR === bie.numero);
+            const gpsText = bie.gps || (bie.coordenadas ? `${bie.coordenadas.lat}, ${bie.coordenadas.lng}` : 'No registrado');
+
+            const contenido = `
+                    <div id="pdf-bie-content" style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; background: white;">
+                        <div style="display: flex; align-items: center; border-bottom: 3px solid #dc2626; padding-bottom: 10px;">
+                            <img src="LOGO_NVO_SUPERSPUMA.webp" style="width: 60px; height: 60px; margin-right: 15px;" />
+                            <div>
+                                <h1 style="color: #dc2626; margin: 0;">SuperSpuma</h1>
+                                <p style="margin: 0; color: #475569;">Informe de Boca de Incendio (BIE)</p>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0;">
+                            <div><strong>N° BIE:</strong> ${bie.numero || 'N/A'}</div>
+                            <div><strong>Ubicación:</strong> ${bie.ubicacion || 'N/A'}</div>
+                            <div><strong>Tipo:</strong> ${bie.tipo || 'N/A'}</div>
+                            <div><strong>Próxima inspección:</strong> ${bie.fechaProxima || 'N/A'}</div>
+                            <div><strong>Estado BIE:</strong> ${bie.bie || 'N/A'}</div>
+                            <div><strong>GPS:</strong> ${gpsText}</div>
+                            <div><strong>Fecha informe:</strong> ${new Date().toLocaleString()}</div>
+                        </div>
+                        ${bie.fotoURL ? `<img src="${bie.fotoURL}" style="width:100%;max-height:200px;object-fit:contain;border-radius:8px;margin:10px 0;" />` : ''}
+                        <h3>📋 Historial de Inspecciones</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <thead><tr style="background: #dc2626; color: white;">
+                                <th style="padding: 8px;">Fecha</th><th>Inspector</th><th>Resultado</th><th>Observaciones</th>
+                            </tr></thead>
+                            <tbody>
+                                ${inspecciones.length > 0 ? inspecciones.map(c => `
+                                    <tr style="border-bottom: 1px solid #ddd;">
+                                        <td>${new Date(c.timestamp).toLocaleDateString()}</td>
+                                        <td>${c.inspector || 'N/A'}</td>
+                                        <td>${Object.values(c.items||{}).every(v=>v==='B') ? '✅ OK' : '❌ Con fallas'}</td>
+                                        <td>${c.observaciones_generales || ''}</td>
+                                    </tr>
+                                `).join('') : '<tr><td colspan="4">Sin inspecciones registradas</td></tr>'}
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 15px; display: flex; justify-content: space-between;">
+                            <div><strong>Firma digital:</strong> ${new Date().toISOString().slice(0,10)} - SuperSpuma</div>
+                            <div style="color: #94a3b8; font-size: 10px;">Documento generado automáticamente</div>
+                        </div>
+                    </div>
+                `;
+
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = contenido;
+            document.body.appendChild(wrapper);
+
+            const element = document.getElementById('pdf-bie-content');
+            html2pdf()
+                .set({
+                    margin: 0.5,
+                    filename: `informe_BIE_${bie.numero || id}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false }
+                })
+                .from(element)
+                .save()
+                .then(() => {
+                    document.body.removeChild(wrapper);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Error al generar el PDF. Intentá de nuevo.');
+                    document.body.removeChild(wrapper);
+                });
+        }
+
+        // ============================================================
         // INICIALIZACIÓN
         // ============================================================
         cargarDatos();
@@ -3848,6 +5446,9 @@
         const params = new URLSearchParams(window.location.search);
         if (params.has('id')) {
             setTimeout(() => verFichaPublica(), 500);
+        }
+        if (params.has('bie')) {
+            // Si se pasa parámetro bie, se podría mostrar ficha de BIE (pendiente)
         }
 
         console.log('🔥 Gestión de Extintores - SuperSpuma (v2.6)');
@@ -3864,6 +5465,11 @@
         console.log('✅ Checklist: Manómetro N/A para CO2, verificación BIE');
         console.log('✏️ Botón de editar en modal con contraseña');
         console.log('📱 Botones de acción visibles en móviles');
+        console.log('🧯 BIE: módulo completo de verificación de Boca de Incendio');
+        console.log('🔄 Navegación inferior: reemplazado "Escanear" por "BIE"');
+        console.log('📷 Escáner QR reubicado en cabecera y lista de extintores');
+        console.log('⚙️ Menú de engranaje para gestionar sectores (agregar/eliminar)');
+        console.log('📦 Gestión de activos BIE con foto y GPS, similar a extintores');
     </script>
 
 </body>
